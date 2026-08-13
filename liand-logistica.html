@@ -1,0 +1,3299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liand · Logística</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --panel:#FFFFFF;
+    --panel-alt:#F7F3EE;
+    --line:#E6DFD3;
+    --ink:#332822;
+    --muted:#8B7D70;
+    --burgundy:#A63A2A;
+    --burgundy-dark:#7E2C1F;
+    --ok:#3F7D4C;     --ok-bg:#E8F4EA;
+    --warn:#C97C1F;   --warn-bg:#FBEEDA;
+    --off:#B23A2A;    --off-bg:#F7E3DE;
+    --plan:#8C6A1F;   --plan-bg:#F5EBD6;
+    --frig:#3E5C8A;   --frig-bg:#E4E9F1;
+    --carn:#6B4E99;   --carn-bg:#EFE9F5;
+    --infra:#5C6570;
+    --shadow:rgba(51,40,34,.16);
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --display:'Barlow Condensed',sans-serif;
+    --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;overflow:hidden;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;}
+  button{font-family:var(--body);cursor:pointer;}
+  input,select,textarea{font-family:var(--body);}
+  ::placeholder{color:var(--muted);}
+
+  /* Solo el Panel (la vista tipo TV) oculta controles fuera de "Editar" */
+  body:not(.admin-mode) .admin-only{display:none!important;}
+
+  #app{display:flex;flex-direction:column;height:100vh;}
+  #aviso-sin-guardado{
+    flex-shrink:0;background:var(--off);color:#fff;display:flex;align-items:center;gap:10px;
+    padding:10px 18px;font-size:13px;font-weight:600;line-height:1.4;
+  }
+  #aviso-sin-guardado.hidden{display:none;}
+  #aviso-sin-guardado button{background:none;border:none;color:#fff;font-size:15px;cursor:pointer;margin-left:auto;padding:0 4px;flex-shrink:0;}
+  .topbar{
+    background:var(--panel);color:var(--ink);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;height:64px;flex-shrink:0;
+    border-bottom:3px solid var(--burgundy);
+  }
+  .brand{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:baseline;gap:9px;}
+  .brand span{font-size:13px;font-weight:600;color:var(--burgundy);letter-spacing:3px;}
+  .topbar-right{display:flex;align-items:center;gap:16px;}
+  .clock{font-family:var(--mono);text-align:right;line-height:1.25;}
+  .clock .time{font-size:19px;font-weight:700;}
+  .clock .sync{font-size:10.5px;color:var(--muted);}
+  .topbar-actions{display:flex;gap:8px;}
+  .btn{
+    border:1px solid transparent;border-radius:3px;padding:9px 15px;font-size:12.5px;
+    font-weight:600;letter-spacing:.3px;text-transform:uppercase;transition:.15s;
+  }
+  .btn-primary{background:var(--burgundy);color:#fff;}
+  .btn-primary:hover{background:var(--burgundy-dark);}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--ink);}
+  .btn-outline{background:var(--panel-alt);color:var(--ink);border-color:var(--line);}
+  .btn-outline:hover{border-color:var(--burgundy);}
+  .btn-sm{padding:5px 10px;font-size:11px;}
+  .btn-danger-text{background:none;border:none;color:var(--off);font-size:12px;font-weight:600;padding:2px 4px;}
+
+  .tabbar{display:flex;gap:2px;padding:0 22px;background:var(--panel-alt);border-bottom:1px solid var(--line);flex-shrink:0;overflow-x:auto;}
+  .tab-btn{background:none;border:none;padding:11px 16px;font-family:var(--display);font-size:14px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.4px;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+  .tab-btn:hover{color:var(--ink);}
+  .tab-btn.active{color:var(--burgundy);border-bottom-color:var(--burgundy);}
+
+  .view-shell{flex:1;min-height:0;position:relative;}
+  .view-shell > *{position:absolute;inset:0;}
+  .view-page{overflow-y:auto;padding:26px 32px;}
+
+  .layout{display:grid;grid-template-columns:220px 260px 220px minmax(380px,1fr);overflow-x:auto;overflow-y:hidden;}
+  .col{overflow-y:auto;padding:16px 18px 26px;border-right:1px solid var(--line);min-width:0;}
+  .col::-webkit-scrollbar{width:6px;}
+  .col::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+  .col-map{position:relative;padding:0;overflow:hidden;border-right:none;}
+  #map{position:absolute;inset:0;}
+
+  .col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .col-header h2{font-family:var(--display);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:0;}
+  .count-pill{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:11.5px;padding:1px 8px;border-radius:10px;margin-left:8px;}
+  .search-row{display:flex;gap:6px;margin-bottom:12px;}
+  .search-row input{flex:1;border:1px solid var(--line);border-radius:3px;padding:7px 9px;font-size:12.5px;background:var(--panel-alt);color:var(--ink);}
+
+  .group-head{font-family:var(--display);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--muted);display:flex;align-items:center;gap:8px;margin:16px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--line);}
+  .group-head:first-child{margin-top:0;}
+  .group-head.st-disponible{color:var(--ok);border-color:rgba(63,125,76,.35);}
+  .group-head.st-en_ruta{color:var(--warn);border-color:rgba(201,124,31,.35);}
+  .group-head.st-mantenimiento, .group-head.st-descanso{color:var(--off);border-color:rgba(178,58,42,.35);}
+  .group-head.st-asignado_hoy{color:var(--plan);border-color:rgba(140,106,31,.35);}
+  .g-count{background:rgba(51,40,34,.07);padding:1px 8px;border-radius:9px;font-family:var(--mono);font-size:11px;}
+
+  .ticket-list{display:flex;flex-direction:column;gap:9px;}
+  .ticket{
+    position:relative;background:var(--panel);border:1px solid var(--line);
+    border-left:5px solid var(--muted);border-radius:4px;padding:11px 13px 10px;
+    cursor:pointer;transition:.12s;
+  }
+  .ticket:hover{border-color:#cabfae;}
+  .ticket.selected{outline:2px solid var(--burgundy);outline-offset:-2px;}
+  .ticket.st-disponible{border-left-color:var(--ok);}
+  .ticket.st-en_ruta{border-left-color:var(--warn);}
+  .ticket.st-mantenimiento, .ticket.st-descanso{border-left-color:var(--off);}
+  .ticket.st-asignado_hoy{border-left-color:var(--plan);}
+  .t-row1{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;}
+  .t-id{font-family:var(--mono);font-weight:700;font-size:18px;letter-spacing:.5px;}
+  .t-name{font-family:var(--body);font-weight:700;font-size:16.5px;}
+  .t-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .pill{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:9px;white-space:nowrap;}
+  .pill.st-disponible{background:var(--ok-bg);color:var(--ok);}
+  .pill.st-en_ruta{background:var(--warn-bg);color:var(--warn);}
+  .pill.st-mantenimiento, .pill.st-descanso{background:var(--off-bg);color:var(--off);}
+  .pill.st-asignado_hoy{background:var(--plan-bg);color:var(--plan);}
+  .t-meta{font-size:12.5px;margin-top:8px;line-height:1.6;color:#5C5045;}
+  .t-meta b{color:var(--ink);}
+  .t-comment{font-size:12px;font-style:italic;color:var(--muted);margin-top:6px;border-top:1px dashed var(--line);padding-top:6px;}
+  .t-actions{display:flex;gap:12px;margin-top:8px;}
+  .t-actions button{background:none;border:none;font-size:11.5px;font-weight:600;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:2px;}
+  .t-actions .finish{color:var(--ok);}
+  .t-actions .del{color:var(--off);}
+  .empty-msg{font-size:12.5px;color:var(--muted);padding:10px 2px;font-style:italic;}
+
+  .trips-toggle{margin-top:16px;padding:10px 12px;border:1px dashed var(--line);border-radius:4px;background:var(--panel);cursor:pointer;font-size:12.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;color:var(--ink);}
+  .trips-toggle:hover{border-color:var(--burgundy);}
+
+  .map-legend{
+    position:absolute;left:14px;bottom:14px;z-index:500;background:rgba(255,255,255,.94);
+    border:1px solid var(--line);border-radius:4px;padding:9px 13px;font-size:11.5px;color:var(--ink);
+    display:flex;flex-wrap:wrap;gap:13px 18px;align-items:center;box-shadow:0 4px 14px var(--shadow);max-width:calc(100% - 28px);
+  }
+  .legend-group{display:flex;gap:13px;align-items:center;}
+  .legend-label{font-weight:700;text-transform:uppercase;font-size:9.5px;color:var(--muted);letter-spacing:.4px;}
+  .legend-div{width:1px;height:16px;background:var(--line);}
+  .legend-item{display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .dot.ok{background:var(--ok);} .dot.warn{background:var(--warn);} .dot.off{background:var(--off);}
+  .dot.infra{background:var(--infra);} .dot.frig{background:var(--frig);} .dot.carn{background:var(--carn);}
+
+  .info-card{
+    position:absolute;top:16px;right:16px;z-index:500;width:280px;background:var(--panel);
+    border:1px solid var(--line);border-radius:5px;box-shadow:0 10px 30px var(--shadow);
+    padding:15px 17px;color:var(--ink);
+  }
+  .info-card.hidden{display:none;}
+  .info-card .close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:17px;color:var(--muted);}
+  .info-card h3{font-family:var(--mono);margin:0 0 3px;font-size:18px;}
+  .info-card .pill{margin-bottom:9px;display:inline-block;}
+  .info-card .row{font-size:13px;margin-top:6px;line-height:1.5;}
+  .info-card .row b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);}
+  .voucher-row{font-size:13px;margin-top:8px;line-height:1.5;}
+  .voucher-row b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);}
+
+  .map-tooltip{
+    background:var(--ink)!important;color:#fff!important;border:1px solid var(--line)!important;
+    font-family:var(--mono);font-size:11.5px!important;padding:4px 9px!important;
+    border-radius:3px!important;box-shadow:0 3px 10px var(--shadow);
+  }
+  .map-tooltip::before{border-top-color:var(--ink)!important;}
+
+  .pick-hint{
+    position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:600;
+    background:var(--burgundy);color:#fff;padding:10px 20px;border-radius:20px;
+    font-size:13px;font-weight:600;box-shadow:0 6px 18px var(--shadow);
+  }
+  .pick-hint.hidden{display:none;}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(51,40,34,.55);z-index:1000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px;}
+  .modal-backdrop.hidden{display:none;}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:6px;width:100%;max-width:480px;padding:22px 24px 24px;box-shadow:0 24px 60px var(--shadow);color:var(--ink);}
+  .modal h2{font-family:var(--display);font-size:23px;text-transform:uppercase;letter-spacing:.4px;margin:0 0 4px;}
+  .modal .modal-sub{font-size:12.5px;color:var(--muted);margin-bottom:16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:5px;}
+  .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:3px;padding:9px 10px;font-size:14px;background:var(--panel-alt);color:var(--ink);}
+  .field textarea{resize:vertical;min-height:46px;}
+  .money-input{position:relative;}
+  .money-input .money-prefix{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:14px;pointer-events:none;}
+  .money-input input{padding-left:24px!important;}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;}
+  .calc-box{background:var(--panel-alt);border:1px dashed var(--line);border-radius:4px;padding:13px 15px;margin:14px 0;}
+  .calc-line{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;}
+  .calc-line b{font-family:var(--mono);}
+  .calc-total{border-top:1px solid var(--line);margin-top:6px;padding-top:9px;font-size:16px;font-weight:700;}
+  .calc-total b{font-family:var(--mono);color:var(--burgundy);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:-6px;margin-bottom:12px;}
+
+  table.trips{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.trips th{text-align:left;font-size:10.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding:6px;}
+  table.trips td{padding:7px 6px;border-bottom:1px solid var(--line);font-family:var(--mono);}
+  table.trips tr:hover td{background:var(--panel-alt);}
+
+  .finanzas-card{background:var(--panel-alt);border:1px solid var(--line);border-radius:6px;padding:16px 20px;min-width:220px;}
+  .fc-label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;margin-bottom:6px;}
+  .fc-value{font-family:var(--mono);font-size:25px;font-weight:700;color:var(--burgundy);}
+  .chart-box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin-bottom:26px;}
+  .fin-h2{font-family:var(--display);font-size:20px;text-transform:uppercase;margin:0 0 6px;letter-spacing:.3px;}
+  .mae-link{background:none;border:none;font-size:11.5px;font-weight:600;text-decoration:underline;cursor:pointer;color:var(--ink);padding:0;}
+  .mae-link.del{color:var(--off);}
+  .ticker-wrap{background:var(--ink);border-radius:5px;overflow:hidden;white-space:nowrap;height:36px;display:flex;align-items:center;margin-bottom:14px;}
+  .ticker-track{display:inline-flex;white-space:nowrap;animation:ticker-scroll 26s linear infinite;}
+  .ticker-wrap:hover .ticker-track{animation-play-state:paused;}
+  .ticker-item{padding:0 42px;font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.3px;color:#fff;display:inline-flex;align-items:center;gap:6px;}
+  .ticker-item b{color:#8FD19E;font-size:13px;}
+  .ticker-item .tick-sep{color:#6b6055;}
+  @keyframes ticker-scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* planilla semanal — origen en filas, días en columnas, 4 campos independientes por casillero */
+  #plan-notas{width:100%;max-width:640px;min-height:40px;margin-bottom:14px;border:1px solid var(--line);border-radius:3px;padding:8px 10px;font-size:12.5px;background:var(--panel-alt);color:var(--ink);resize:vertical;}
+  .plan-table{border:1px solid var(--line);border-radius:6px;overflow:hidden;min-width:1100px;}
+  .plan-row{display:grid;grid-template-columns:180px repeat(7,1fr);}
+  .plan-header-row{background:var(--panel-alt);}
+  .plan-h{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:12px;text-align:center;padding:10px 4px;letter-spacing:.3px;border-left:1px solid var(--line);}
+  .plan-h:first-child{border-left:none;}
+  .plan-origen-row{border-top:2px solid var(--line);}
+  .plan-origen-row:first-of-type{border-top:none;}
+  .plan-label{background:var(--panel-alt);border-left:1px solid var(--line);padding:9px 10px;font-family:var(--body);font-weight:700;font-size:12.5px;display:flex;align-items:flex-start;justify-content:space-between;gap:6px;}
+  .plan-label-actions{display:flex;gap:6px;flex-shrink:0;}
+  .plan-label-actions button{background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:0;}
+  .plan-label-actions button:hover{color:var(--burgundy);}
+  .plan-daycell{border-left:1px solid var(--line);display:flex;flex-direction:column;}
+  .plan-field{padding:5px 7px;font-size:10.5px;line-height:1.3;cursor:pointer;border-top:1px dashed var(--line);display:flex;align-items:center;gap:5px;min-height:24px;}
+  body:not(.admin-mode) .plan-field{cursor:default;}
+  .plan-field:first-child{border-top:none;}
+  .plan-field:hover{background:var(--panel-alt);}
+  .plan-field.editing{padding:3px 4px;cursor:default;}
+  .plan-field.editing:hover{background:transparent;}
+  .plan-field-ico{opacity:.55;font-size:10px;flex-shrink:0;}
+  .plan-field select,.plan-field input{width:100%;font-size:10.5px;padding:4px 5px;border:1px solid var(--burgundy);border-radius:3px;background:#fff;}
+  .plan-empty{color:#C9C0B4;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="aviso-sin-guardado" class="hidden">
+    <span>⚠️</span>
+    <span id="aviso-sin-guardado-msg"></span>
+    <button onclick="document.getElementById('aviso-sin-guardado').classList.add('hidden')">✕</button>
+  </div>
+  <header class="topbar">
+    <div class="brand">Liand <span>Logística</span></div>
+    <div class="topbar-right">
+      <div class="clock"><div class="time" id="clock-time">–</div><div class="sync" id="clock-sync">sincronizando…</div></div>
+      <button class="btn btn-ghost btn-sm" id="btn-edit-toggle">✎ Editar panel</button>
+      <div class="topbar-actions admin-only">
+        <button class="btn btn-ghost" id="btn-config">Configuración</button>
+        <button class="btn btn-ghost" id="btn-ubicacion">+ Ubicación</button>
+        <button class="btn btn-primary" id="btn-nuevo-viaje">+ Nuevo viaje</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-view="panel" onclick="switchView('panel')">📺 Panel</button>
+    <button class="tab-btn" data-view="planificacion" onclick="switchView('planificacion')">📅 Planificación semanal</button>
+    <button class="tab-btn" data-view="gastos" onclick="switchView('gastos')">🧾 Gastos y modificaciones</button>
+    <button class="tab-btn" data-view="combustible" onclick="switchView('combustible')">⛽ Combustible</button>
+    <button class="tab-btn" data-view="finanzas" onclick="switchView('finanzas')">💰 Finanzas del taller</button>
+    <button class="tab-btn" data-view="resumen" onclick="switchView('resumen')">🗓️ Resumen mensual</button>
+    <button class="tab-btn" data-view="maestros" onclick="switchView('maestros')">🗂️ Datos maestros</button>
+  </nav>
+
+  <div class="view-shell">
+    <!-- ================= PANEL (TV) ================= -->
+    <div class="layout" id="view-panel">
+      <section class="col col-choferes">
+        <div class="col-header">
+          <h2>Choferes <span class="count-pill" id="count-choferes">0</span></h2>
+          <button class="btn btn-outline btn-sm admin-only" id="add-chofer">+ chofer</button>
+        </div>
+        <div class="search-row"><input id="search-choferes" placeholder="Buscar chofer, teléfono…"></div>
+        <div id="lista-choferes"></div>
+      </section>
+
+      <section class="col col-camiones">
+        <div class="col-header">
+          <h2>Camiones <span class="count-pill" id="count-camiones">0</span></h2>
+          <button class="btn btn-outline btn-sm admin-only" id="add-camion">+ camión</button>
+        </div>
+        <div class="search-row"><input id="search-camiones" placeholder="Buscar patente, chofer, destino…"></div>
+        <div id="lista-camiones"></div>
+        <div class="trips-toggle" id="btn-historial">
+          <span>📋 Historial de viajes</span>
+          <span id="count-viajes" style="font-family:var(--mono);color:var(--muted);">0 registrados</span>
+        </div>
+      </section>
+
+      <section class="col col-ubicaciones">
+        <div class="col-header">
+          <h2>Ubicaciones <span class="count-pill" id="count-ubicaciones">0</span></h2>
+          <button class="btn btn-outline btn-sm admin-only" id="add-ubicacion-col">+ punto</button>
+        </div>
+        <div class="search-row"><input id="search-ubicaciones" placeholder="Buscar ubicación…"></div>
+        <div id="lista-ubicaciones-col"></div>
+      </section>
+
+      <main class="col col-map">
+        <div id="map"></div>
+        <div class="pick-hint hidden" id="pick-hint">📍 Hacé clic en el mapa para fijar el punto</div>
+        <div class="map-legend">
+          <div class="legend-group">
+            <span class="legend-label">Camiones</span>
+            <div class="legend-item"><span class="dot ok"></span>Disponible</div>
+            <div class="legend-item"><span class="dot warn"></span>En ruta</div>
+            <div class="legend-item"><span class="dot off"></span>Mantenimiento</div>
+          </div>
+          <div class="legend-div"></div>
+          <div class="legend-group">
+            <span class="legend-label">Puntos</span>
+            <div class="legend-item"><span class="dot infra"></span>Depósito / taller / oficina</div>
+            <div class="legend-item"><span class="dot frig"></span>Frigorífico</div>
+            <div class="legend-item"><span class="dot carn"></span>Carnicería</div>
+          </div>
+          <div class="legend-div"></div>
+          <div class="legend-group">
+            <span class="legend-label">Ruta</span>
+            <div class="legend-item"><span style="width:16px;height:2px;background:#A63A2A;display:inline-block;"></span>Camino real</div>
+            <div class="legend-item"><span style="width:16px;height:0;border-top:2px dashed #A63A2A;display:inline-block;"></span>Estimada</div>
+          </div>
+        </div>
+        <div class="info-card hidden" id="info-card"></div>
+      </main>
+    </div>
+
+    <!-- ================= PLANIFICACIÓN SEMANAL (planilla) ================= -->
+    <div class="view-page" id="view-planificacion" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="cambiarSemana(-1)">← Anterior</button>
+          <h2 style="font-family:var(--display);font-size:23px;text-transform:uppercase;margin:0;letter-spacing:.4px;" id="plan-semana-label">Semana</h2>
+          <button class="btn btn-outline btn-sm" onclick="cambiarSemana(1)">Siguiente →</button>
+          <button class="btn btn-outline btn-sm" onclick="irSemanaActual()">Hoy</button>
+        </div>
+        <button class="btn btn-primary btn-sm admin-only" onclick="agregarDestinoPlan()">+ Agregar destino</button>
+      </div>
+      <textarea id="plan-notas" placeholder="Notas de la semana (ej: turnos de service, recordatorios)…" onblur="guardarNotaSemana(this.value)"></textarea>
+      <div class="hint">Tocá cualquier casillero para cargarlo o modificarlo — se guarda al toque, para todos. Cada semana queda guardada aparte y arranca en blanco: vos decidís cuándo pasar a la siguiente y cargarla, no es automático.</div>
+      <div id="plan-grid-wrap" style="overflow-x:auto;"></div>
+    </div>
+
+    <!-- ================= GASTOS Y MODIFICACIONES ================= -->
+    <div class="view-page" id="view-gastos" style="display:none;">
+      <h2 style="font-family:var(--display);font-size:22px;text-transform:uppercase;margin:0 0 6px;">Gastos y modificaciones</h2>
+
+      <div class="hint">Elegí un camión para ver su historial y cargarle gastos, arreglos o modificaciones. Es la misma información que aparece en su ficha (clic en la patente, en el Panel).</div>
+      <h3 class="fin-h2" style="font-size:16px;margin:16px 0 8px;">Por camión</h3>
+      <div class="field" style="max-width:340px;">
+        <label>Camión</label>
+        <select id="gv-camion" onchange="onGastoCamionChange()"></select>
+      </div>
+      <div id="gv-body" style="display:none;margin-top:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div>
+            <div class="fc-label" style="margin-bottom:2px;">Total gastado</div>
+            <div class="fc-value" id="gv-total">$ 0</div>
+          </div>
+          <button class="btn btn-primary btn-sm admin-only" id="gv-add-btn">+ Registrar gasto o modificación</button>
+        </div>
+        <div id="gv-historial" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <hr style="border:none;border-top:2px solid var(--line);margin:32px 0 22px;">
+
+      <div class="hint">Elegí un chofer para ver su historial y cargarle novedades (choques, multas, llegadas tarde, reconocimientos, etc.). Es la misma información que aparece en su ficha (clic en el nombre, en el Panel).</div>
+      <h3 class="fin-h2" style="font-size:16px;margin:16px 0 8px;">Por chofer</h3>
+      <div class="field" style="max-width:340px;">
+        <label>Chofer</label>
+        <select id="gvc-chofer" onchange="onGastoChoferChange()"></select>
+      </div>
+      <div id="gvc-body" style="display:none;margin-top:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div>
+            <div class="fc-label" style="margin-bottom:2px;">Total registrado</div>
+            <div class="fc-value" id="gvc-total">$ 0</div>
+          </div>
+          <button class="btn btn-primary btn-sm admin-only" id="gvc-add-btn">+ Registrar novedad</button>
+        </div>
+        <div id="gvc-historial" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+
+    <!-- ================= COMBUSTIBLE ================= -->
+    <div class="view-page" id="view-combustible" style="display:none;">
+      <h2 style="font-family:var(--display);font-size:22px;text-transform:uppercase;margin:0 0 6px;">Calculadora de combustible</h2>
+
+      <div class="ticker-wrap"><div class="ticker-track" id="ticker-track"></div></div>
+
+      <div class="hint">Precio de referencia: Diesel Infinia YPF, Buenos Aires — $2.431/l al 10/08/2026 (combustibles.ar). No hay forma de traerlo automático en tiempo real desde acá (ninguna app puede sin un servicio pago atrás), así que el cartel de arriba y el precio de abajo muestran esta referencia: ajustala vos cuando cambie o si usás Diesel 500 común, que suele salir un poco menos — se actualiza sola en el cartel apenas la cambiás.</div>
+
+      <div class="calc-box" style="max-width:460px;margin-top:16px;">
+        <div class="field">
+          <label>Precio combustible ($/l)</label>
+          <div class="money-input"><span class="money-prefix">$</span><input id="cb-precio" type="text" inputmode="numeric" placeholder="2.431" oninput="formatMilesLive(this);calcularCombustible();renderTicker()" onblur="guardarPrecioCombustibleRef()"></div>
+        </div>
+        <div class="field">
+          <label>Camión (opcional — autocompleta el consumo)</label>
+          <select id="cb-camion" onchange="onCombustibleCamionChange()"></select>
+        </div>
+        <div class="field-row">
+          <div class="field" style="margin-bottom:0;"><label>Consumo (L/100km)</label><input id="cb-consumo" type="number" step="0.1" placeholder="35" oninput="calcularCombustible()"></div>
+          <div class="field" style="margin-bottom:0;"><label>Km a recorrer</label><input id="cb-km" type="text" inputmode="numeric" placeholder="350" oninput="formatMilesLive(this);calcularCombustible()"></div>
+        </div>
+        <div class="calc-line" style="margin-top:10px;"><span>Litros necesarios</span><b id="cb-litros">–</b></div>
+        <div class="calc-line calc-total"><span>Costo total</span><b id="cb-total">–</b></div>
+        <button class="btn btn-primary admin-only" style="margin-top:16px;width:100%;" onclick="agregarGastoCombustible()">+ Cargar este gasto al camión</button>
+        <div class="hint" style="margin-top:10px;margin-bottom:0;">Necesitás elegir un camión arriba para poder cargarlo — queda registrado directo en su ficha, en "Gastos y modificaciones".</div>
+      </div>
+
+      <h3 class="fin-h2" style="font-size:18px;margin-top:34px;">Autorizaciones de carga</h3>
+      <div class="hint">Para cargar en la YPF con la cuenta corriente de Liand, el chofer tiene que mostrar esta autorización en el celular — reemplaza el papel. Toda autorización nace "Pendiente" hasta que un admin la aprueba desde el comprobante (podés avisarle a Javier por WhatsApp con un botón ahí mismo). Solo un admin la puede generar o aprobar; cualquiera puede verla para mostrarla.</div>
+      <button class="btn btn-primary btn-sm admin-only" style="margin:10px 0 16px;" onclick="abrirNuevaAutorizacion()">🔒 Generar autorización</button>
+      <div class="search-row" style="max-width:360px;"><input id="search-autorizaciones" placeholder="Buscar por chofer o código…"></div>
+      <table class="trips">
+        <thead><tr><th>Código</th><th>Chofer</th><th>Camión</th><th>Fecha</th><th>Monto</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="auth-tabla"></tbody>
+      </table>
+    </div>
+
+    <!-- ================= FINANZAS DEL TALLER ================= -->
+    <div class="view-page" id="view-finanzas" style="display:none;">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:26px;">
+        <div class="finanzas-card"><div class="fc-label">Total general</div><div class="fc-value" id="fin-total-general">$ 0</div></div>
+        <div class="finanzas-card"><div class="fc-label">Camiones (gastos / service)</div><div class="fc-value" id="fin-total-camiones">$ 0</div></div>
+        <div class="finanzas-card"><div class="fc-label">Viajes (combustible / peajes)</div><div class="fc-value" id="fin-total-viajes">$ 0</div></div>
+        <div class="finanzas-card"><div class="fc-label">Gastos generales del taller</div><div class="fc-value" id="fin-total-taller">$ 0</div></div>
+      </div>
+
+      <div class="chart-box">
+        <h2 class="fin-h2">Gasto total por camión</h2>
+        <div class="hint" style="margin-bottom:14px;">Suma gastos/service/choques registrados en la ficha de cada camión + combustible y peajes de sus viajes despachados. Tocá una barra para ver el detalle.</div>
+        <div style="position:relative;height:280px;"><canvas id="chart-por-camion"></canvas></div>
+      </div>
+
+      <div class="chart-box">
+        <h2 class="fin-h2">Gasto total por chofer</h2>
+        <div class="hint" style="margin-bottom:14px;">Suma novedades con costo (choques, multas) + combustible y peajes de los viajes que manejó. Tocá una barra para ver el detalle.</div>
+        <div style="position:relative;height:280px;"><canvas id="chart-por-chofer"></canvas></div>
+      </div>
+
+      <h2 class="fin-h2">Detalle por camión</h2>
+      <div class="hint">Tocá un camión para ver la descripción de cada gasto, abajo del todo.</div>
+      <table class="trips" style="margin-bottom:32px;">
+        <thead><tr><th>Camión</th><th>Modelo</th><th>Gastos/service</th><th>Combustible / peajes</th><th>Total</th></tr></thead>
+        <tbody id="fin-tabla-camiones"></tbody>
+      </table>
+
+      <h2 class="fin-h2">Detalle por chofer</h2>
+      <div class="hint">Tocá un chofer para ver la descripción de cada novedad, abajo del todo.</div>
+      <table class="trips" style="margin-bottom:32px;">
+        <thead><tr><th>Chofer</th><th>Novedades</th><th>Combustible / peajes</th><th>Total</th></tr></thead>
+        <tbody id="fin-tabla-choferes"></tbody>
+      </table>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <h2 class="fin-h2" style="margin:0;">Gastos generales del taller</h2>
+        <button class="btn btn-primary btn-sm admin-only" onclick="openGastoTallerModal()">+ Gasto general</button>
+      </div>
+      <div class="hint">Gastos del galpón/taller que no son de un camión puntual: alquiler, luz, herramientas, etc.</div>
+      <table class="trips" style="margin-bottom:32px;">
+        <thead><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th></th></tr></thead>
+        <tbody id="fin-tabla-taller"></tbody>
+      </table>
+
+      <div id="fin-detalle-wrap" style="display:none;padding-top:22px;border-top:2px solid var(--line);">
+        <h2 class="fin-h2" id="fin-detalle-titulo">Detalle</h2>
+        <div id="fin-detalle-lista" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+
+    <!-- ================= RESUMEN MENSUAL ================= -->
+    <div class="view-page" id="view-resumen" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="cambiarMes(-1)">← Anterior</button>
+          <h2 class="fin-h2" style="font-size:23px;margin:0;" id="rm-mes-label">Mes</h2>
+          <button class="btn btn-outline btn-sm" onclick="cambiarMes(1)">Siguiente →</button>
+          <button class="btn btn-outline btn-sm" onclick="irMesActual()">Hoy</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="exportarResumenExcel()">📊 Descargar Excel</button>
+          <button class="btn btn-outline btn-sm" onclick="exportarResumenPDF()">📄 Descargar PDF</button>
+        </div>
+      </div>
+      <div class="hint">Como un resumen de banco: todos los movimientos del mes elegido, con lo que ya venís cargando en Gastos y modificaciones, Finanzas del taller y los viajes despachados. No hace falta guardar nada aparte — se arma solo, y siempre está actualizado.</div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin:18px 0 26px;">
+        <div class="finanzas-card"><div class="fc-label">Total del mes</div><div class="fc-value" id="rm-total-general">$ 0</div></div>
+        <div class="finanzas-card"><div class="fc-label">Camiones (gastos + viajes)</div><div class="fc-value" id="rm-total-camiones">$ 0</div></div>
+        <div class="finanzas-card"><div class="fc-label">Choferes (novedades)</div><div class="fc-value" id="rm-total-choferes">$ 0</div></div>
+        <div class="finanzas-card"><div class="fc-label">Taller (general)</div><div class="fc-value" id="rm-total-taller">$ 0</div></div>
+      </div>
+
+      <h3 class="fin-h2" style="font-size:16px;">Por camión</h3>
+      <table class="trips" style="margin-bottom:26px;">
+        <thead><tr><th>Camión</th><th>Total del mes</th></tr></thead>
+        <tbody id="rm-tabla-camiones"></tbody>
+      </table>
+
+      <h3 class="fin-h2" style="font-size:16px;">Por chofer</h3>
+      <table class="trips" style="margin-bottom:26px;">
+        <thead><tr><th>Chofer</th><th>Total del mes</th></tr></thead>
+        <tbody id="rm-tabla-choferes"></tbody>
+      </table>
+
+      <h3 class="fin-h2" style="font-size:16px;">Todos los movimientos <span class="count-pill" id="rm-count-movs">0</span></h3>
+      <table class="trips">
+        <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Camión</th><th>Chofer</th><th>Descripción</th><th>Monto</th></tr></thead>
+        <tbody id="rm-tabla-movimientos"></tbody>
+      </table>
+    </div>
+
+    <!-- ================= DATOS MAESTROS ================= -->
+    <div class="view-page" id="view-maestros" style="display:none;">
+      <h2 class="fin-h2" style="font-size:22px;">Datos maestros</h2>
+      <div class="hint" style="margin-bottom:22px;">Acá vive la lista de base de toda la app: camiones, choferes, ubicaciones y orígenes/destinos. Lo que edites o elimines acá queda guardado (o borrado) para siempre, para todos.</div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 class="fin-h2" style="font-size:16px;margin:0;">Camiones <span class="count-pill" id="mae-count-camiones">0</span></h3>
+        <button class="btn btn-primary btn-sm admin-only" onclick="openCamionModal(null)">+ Camión</button>
+      </div>
+      <table class="trips" style="margin-bottom:30px;">
+        <thead><tr><th>Patente</th><th>Modelo</th><th>Carga</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="mae-tabla-camiones"></tbody>
+      </table>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 class="fin-h2" style="font-size:16px;margin:0;">Choferes <span class="count-pill" id="mae-count-choferes">0</span></h3>
+        <button class="btn btn-primary btn-sm admin-only" onclick="openChoferModal(null)">+ Chofer</button>
+      </div>
+      <table class="trips" style="margin-bottom:30px;">
+        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="mae-tabla-choferes"></tbody>
+      </table>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 class="fin-h2" style="font-size:16px;margin:0;">Ubicaciones <span class="count-pill" id="mae-count-ubicaciones">0</span></h3>
+        <button class="btn btn-primary btn-sm admin-only" onclick="openUbicacionModal()">+ Ubicación</button>
+      </div>
+      <div class="hint">Depósitos, saladores, talleres, oficina, frigoríficos y carnicerías — los puntos que se ven en el mapa del Panel.</div>
+      <table class="trips" style="margin-bottom:30px;">
+        <thead><tr><th>Nombre</th><th>Tipo</th><th></th></tr></thead>
+        <tbody id="mae-tabla-ubicaciones"></tbody>
+      </table>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 class="fin-h2" style="font-size:16px;margin:0;">Orígenes <span class="count-pill" id="mae-count-destinos">0</span></h3>
+        <button class="btn btn-primary btn-sm admin-only" onclick="agregarDestinoPlan()">+ Origen</button>
+      </div>
+      <div class="hint">Las filas de la Planificación semanal (ej: Villa Mercedes, María Grande, Chivilcoy…).</div>
+      <table class="trips" style="margin-bottom:30px;">
+        <thead><tr><th>Nombre</th><th></th></tr></thead>
+        <tbody id="mae-tabla-destinos"></tbody>
+      </table>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 class="fin-h2" style="font-size:16px;margin:0;">Destinos <span class="count-pill" id="mae-count-destinoscelda">0</span></h3>
+        <button class="btn btn-primary btn-sm admin-only" onclick="agregarDestinoCelda()">+ Destino</button>
+      </div>
+      <div class="hint">Las opciones del campo "📍 Destino" de cada casillero de la planilla (ej: Salados, Toscas, Magdalena…).</div>
+      <table class="trips" style="margin-bottom:30px;">
+        <thead><tr><th>Nombre</th><th></th></tr></thead>
+        <tbody id="mae-tabla-destinoscelda"></tbody>
+      </table>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 class="fin-h2" style="font-size:16px;margin:0;">Productos / Carga <span class="count-pill" id="mae-count-productos">0</span></h3>
+        <button class="btn btn-primary btn-sm admin-only" onclick="agregarProducto()">+ Producto</button>
+      </div>
+      <div class="hint">Las opciones del campo "📦 Lo que lleva" de cada casillero de la planilla (ej: Cueros, Grasa, Hueso…).</div>
+      <table class="trips">
+        <thead><tr><th>Nombre</th><th></th></tr></thead>
+        <tbody id="mae-tabla-productos"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: nuevo/editar camión -->
+<div class="modal-backdrop hidden" id="modal-camion">
+  <div class="modal">
+    <h2 id="mc-title">Nuevo camión</h2>
+    <div class="modal-sub">Datos del vehículo y su estado actual.</div>
+    <input type="hidden" id="mc-id">
+    <div class="field-row">
+      <div class="field"><label>Patente</label><input id="mc-patente" placeholder="AB123CD"></div>
+      <div class="field"><label>Modelo</label><input id="mc-modelo" placeholder="Ej: Scania P280"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Tipo de carga</label>
+        <select id="mc-tipo"><option value="cuero">Cuero</option><option value="grasa_hueso">Grasa / Hueso</option></select>
+      </div>
+      <div class="field"><label>Estado</label>
+        <select id="mc-estado"><option value="disponible">Disponible</option><option value="en_ruta">En ruta</option><option value="mantenimiento">Mantenimiento</option></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Consumo (L/100km)</label><input id="mc-consumo" type="number" step="0.1" placeholder="35"></div>
+      <div class="field"><label>Ubicación actual</label><select id="mc-ubicacion"></select></div>
+    </div>
+    <div class="field"><label>Destino (si está en ruta)</label><select id="mc-destino"></select></div>
+    <div class="field"><label>Comentario</label><textarea id="mc-comentario" placeholder="Notas para el equipo…"></textarea></div>
+    <div class="hint">El chofer que lo maneja se asigna desde "Planificación semanal" o al despachar un viaje — ya no queda fijo al camión.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-camion')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCamion()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: nuevo/editar chofer (alta rápida) -->
+<div class="modal-backdrop hidden" id="modal-chofer">
+  <div class="modal">
+    <h2 id="mch-title">Nuevo chofer</h2>
+    <div class="modal-sub">Alta rápida. El resto de los datos y el historial se cargan desde su ficha (clic en el nombre, en el Panel).</div>
+    <input type="hidden" id="mch-id">
+    <div class="field"><label>Nombre</label><input id="mch-nombre" placeholder="Nombre y apellido"></div>
+    <div class="field-row">
+      <div class="field"><label>Teléfono</label><input id="mch-telefono" placeholder="+54 9 11 …"></div>
+      <div class="field"><label>Estado</label>
+        <select id="mch-estado"><option value="disponible">Disponible</option><option value="en_ruta">En ruta</option><option value="descanso">Descanso</option></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-chofer')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarChofer()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ficha del chofer -->
+<div class="modal-backdrop hidden" id="modal-ficha-chofer">
+  <div class="modal" style="max-width:600px;">
+    <h2 id="fc-nombre">Chofer</h2>
+    <div class="modal-sub">Ficha y antecedentes.</div>
+    <div class="field-row">
+      <div class="field"><label>Teléfono</label><input id="fc-telefono"></div>
+      <div class="field"><label>DNI</label><input id="fc-dni"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Licencia / categoría</label><input id="fc-licencia" placeholder="Ej: Prof. E1"></div>
+      <div class="field"><label>Fecha de ingreso</label><input id="fc-ingreso" type="date"></div>
+    </div>
+    <div class="field"><label>Dirección</label><input id="fc-direccion"></div>
+    <div class="field"><label>Contacto de emergencia</label><input id="fc-emergencia" placeholder="Nombre y teléfono"></div>
+    <div class="modal-actions admin-only" style="margin-top:0;"><button class="btn btn-outline" onclick="guardarFichaChofer()">Guardar datos</button></div>
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:18px 0 14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Total registrado</div>
+      <div class="fc-value" style="font-size:18px;" id="fc-total">$ 0</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.4px;">Historial</div>
+      <button class="btn btn-outline btn-sm admin-only" id="fc-add-btn">+ Registrar</button>
+    </div>
+    <div id="fc-historial" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modal-ficha-chofer')">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: registrar/editar novedad de chofer -->
+<div class="modal-backdrop hidden" id="modal-incidente-chofer">
+  <div class="modal">
+    <h2 id="ic-title">Registrar novedad</h2>
+    <input type="hidden" id="ic-id">
+    <input type="hidden" id="ic-chofer-id">
+    <div class="field-row">
+      <div class="field"><label>Fecha</label><input id="ic-fecha" type="date"></div>
+      <div class="field"><label>Tipo</label>
+        <select id="ic-tipo">
+          <option value="choque">Choque / siniestro</option>
+          <option value="multa">Multa</option>
+          <option value="llegada_tarde">Llegada tarde</option>
+          <option value="reconocimiento">Reconocimiento</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Descripción</label><textarea id="ic-descripcion"></textarea></div>
+    <div class="field"><label>Monto asociado (opcional)</label><div class="money-input"><span class="money-prefix">$</span><input id="ic-monto" type="text" inputmode="numeric" placeholder="50.000" oninput="formatMilesLive(this)"></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-incidente-chofer')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarIncidenteChofer()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ficha del camión -->
+<div class="modal-backdrop hidden" id="modal-ficha-camion">
+  <div class="modal" style="max-width:600px;">
+    <h2 id="fk-patente">Camión</h2>
+    <div class="modal-sub">Ficha, mantenimiento y gastos.</div>
+    <input type="hidden" id="fk-camion-id">
+    <div class="field-row">
+      <div class="field"><label>Modelo</label><input id="fk-modelo" placeholder="Ej: Scania P280"></div>
+      <div class="field"><label>Consumo (L/100km)</label><input id="fk-consumo" type="number" step="0.1" placeholder="35"></div>
+    </div>
+    <div class="modal-actions admin-only" style="margin-top:0;"><button class="btn btn-outline" onclick="guardarFichaCamion()">Guardar datos</button></div>
+
+    <div id="fk-ruta-box" style="display:none;background:var(--panel-alt);border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-top:14px;font-size:12.5px;"></div>
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:18px 0 14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Total gastado</div>
+      <div class="fc-value" style="font-size:18px;" id="fk-total">$ 0</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.4px;">Historial</div>
+      <button class="btn btn-outline btn-sm admin-only" id="fk-add-btn">+ Registrar</button>
+    </div>
+    <div id="fk-historial" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modal-ficha-camion')">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: cargar el gasto real de combustible (comparar contra lo estimado) -->
+<div class="modal-backdrop hidden" id="modal-gasto-real">
+  <div class="modal">
+    <h2>Cargar gasto real</h2>
+    <div class="modal-sub" id="gr-sub">Lo que realmente se gastó cuando el camión llegó a destino.</div>
+    <div class="field"><label>Monto real gastado</label><div class="money-input"><span class="money-prefix">$</span><input id="gr-monto" type="text" inputmode="numeric" oninput="formatMilesLive(this)"></div></div>
+    <div class="hint">Se compara con lo estimado para ver si el camión gastó más, menos, o justo lo calculado.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-gasto-real')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarGastoReal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: registrar/editar gasto o modificación de camión -->
+<div class="modal-backdrop hidden" id="modal-gasto-camion">
+  <div class="modal">
+    <h2 id="gc-title">Registrar en la ficha del camión</h2>
+    <input type="hidden" id="gc-id">
+    <input type="hidden" id="gc-camion-id">
+    <div class="field-row">
+      <div class="field"><label>Fecha</label><input id="gc-fecha" type="date"></div>
+      <div class="field"><label>Tipo</label>
+        <select id="gc-tipo">
+          <option value="gasto">Gasto / service</option>
+          <option value="modificacion">Modificación</option>
+          <option value="choque">Choque / siniestro</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Descripción</label><textarea id="gc-descripcion" placeholder="Ej: cambio de embrague, service 20.000km, se le agregó baranda…"></textarea></div>
+    <div class="field"><label>Monto (opcional)</label><div class="money-input"><span class="money-prefix">$</span><input id="gc-monto" type="text" inputmode="numeric" placeholder="185.000" oninput="formatMilesLive(this)"></div></div>
+    <div class="hint">El monto es opcional — hay modificaciones que no tienen costo. Con la descripción alcanza para guardar.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-gasto-camion')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarGastoCamion()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: gasto general del taller -->
+<div class="modal-backdrop hidden" id="modal-gasto-taller">
+  <div class="modal">
+    <h2>Gasto general del taller</h2>
+    <div class="field-row">
+      <div class="field"><label>Fecha</label><input id="gt-fecha" type="date"></div>
+      <div class="field"><label>Categoría</label><input id="gt-categoria" placeholder="Ej: alquiler, luz, herramientas…"></div>
+    </div>
+    <div class="field"><label>Descripción</label><textarea id="gt-descripcion"></textarea></div>
+    <div class="field"><label>Monto</label><div class="money-input"><span class="money-prefix">$</span><input id="gt-monto" type="text" inputmode="numeric" placeholder="30.000" oninput="formatMilesLive(this)"></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-gasto-taller')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarGastoTaller()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: nuevo viaje / calculadora de ruta -->
+<div class="modal-backdrop hidden" id="modal-viaje">
+  <div class="modal">
+    <h2>Nuevo viaje</h2>
+    <div class="modal-sub">Calculá km, combustible y el efectivo a entregar antes de que salga el camión.</div>
+    <div class="field-row">
+      <div class="field"><label>Camión</label><select id="mv-camion" onchange="onCamionViajeChange()"></select></div>
+      <div class="field"><label>Chofer</label><select id="mv-chofer"></select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Origen</label><select id="mv-origen" onchange="calcularViaje()"></select></div>
+      <div class="field"><label>Destino</label><select id="mv-destino" onchange="calcularViaje()"></select></div>
+    </div>
+    <div class="hint">Buscamos el camino real por calles automáticamente. Si no hay conexión con el servicio de rutas, cae a una estimación en línea recta ×1.3 que podés ajustar a mano.</div>
+
+    <div class="calc-box">
+      <div class="calc-line" style="margin-bottom:6px;"><span>Cálculo de distancia</span><b id="calc-metodo">–</b></div>
+      <div class="field-row" style="margin-bottom:8px;">
+        <div class="field" style="margin-bottom:0;"><label>Km</label><input id="mv-km" type="text" inputmode="numeric" placeholder="350" oninput="formatMilesLive(this);recalcularCostos()"></div>
+        <div class="field" style="margin-bottom:0;"><label>Consumo (L/100km)</label><input id="mv-consumo" type="number" step="0.1" placeholder="35" oninput="recalcularCostos()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0;"><label>Precio combustible ($/l)</label><div class="money-input"><span class="money-prefix">$</span><input id="mv-precio" type="text" inputmode="numeric" placeholder="2.431" oninput="formatMilesLive(this);recalcularCostos()"></div></div>
+        <div class="field" style="margin-bottom:0;"><label>Peajes</label><div class="money-input"><span class="money-prefix">$</span><input id="mv-peajes" type="text" inputmode="numeric" placeholder="15.000" oninput="formatMilesLive(this);recalcularCostos()"></div></div>
+      </div>
+      <div class="field" style="margin-top:8px;margin-bottom:0;"><label>Viáticos extra</label><div class="money-input"><span class="money-prefix">$</span><input id="mv-viaticos" type="text" inputmode="numeric" placeholder="20.000" oninput="formatMilesLive(this);recalcularCostos()"></div></div>
+      <div class="calc-line" style="margin-top:10px;"><span>Litros necesarios</span><b id="calc-litros">–</b></div>
+      <div class="calc-line"><span>Costo combustible</span><b id="calc-combustible">–</b></div>
+      <div class="calc-line calc-total"><span>Total a entregar al chofer</span><b id="calc-total">–</b></div>
+    </div>
+
+    <div class="field"><label>Notas del viaje</label><textarea id="mv-notas" placeholder="Ej: retirar en 3 frigoríficos antes de volver al salador…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-viaje')">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarViaje()">Confirmar y despachar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: nueva autorización de carga -->
+<div class="modal-backdrop hidden" id="modal-autorizacion">
+  <div class="modal">
+    <h2>Generar autorización de carga</h2>
+    <div class="modal-sub">Se sugieren litros según lo que ya calculaste arriba — podés ajustarlo.</div>
+    <div class="field"><label>Chofer</label><select id="auth-chofer"></select></div>
+    <div class="field"><label>Camión</label><select id="auth-camion"></select></div>
+    <div class="field">
+      <label>Litros autorizados</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="setLitrosAuth(100)">100 L</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="setLitrosAuth(200)">200 L</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="setLitrosAuth(300)">300 L</button>
+      </div>
+      <input id="auth-litros" type="text" inputmode="numeric" placeholder="Otra cantidad…" oninput="formatMilesLive(this);actualizarMontoAuth()">
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Precio ($/l)</label><div class="money-input"><span class="money-prefix">$</span><input id="auth-precio" type="text" inputmode="numeric" oninput="formatMilesLive(this);actualizarMontoAuth()"></div></div>
+      <div class="field"><label>Costo estimado</label><div style="padding:9px 10px;border:1px solid var(--line);border-radius:3px;background:var(--panel-alt);font-family:var(--mono);font-weight:700;color:var(--burgundy);" id="auth-monto-preview">$ 0</div></div>
+    </div>
+    <div class="field"><label>Descripción (opcional)</label><textarea id="auth-notas" placeholder="Ej: también tiene que cargar urea"></textarea></div>
+    <div class="hint">Válida solo para hoy. Queda con un código único y registrado quién la autorizó.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-autorizacion')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarAutorizacion()">Generar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: comprobante / voucher de autorización -->
+<div class="modal-backdrop hidden" id="modal-voucher">
+  <div class="modal" style="max-width:380px;">
+    <div id="voucher-body"></div>
+    <div id="voucher-acciones-aprobacion" style="display:flex;gap:8px;margin-top:6px;"></div>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline admin-only" id="voucher-btn-usada" onclick="marcarAutorizacionUsada()">Marcar usada</button>
+        <button class="btn btn-outline admin-only" id="voucher-btn-cancelar" onclick="cancelarAutorizacion()" style="color:var(--off);">Cancelar</button>
+      </div>
+      <button class="btn btn-primary" onclick="closeModal('modal-voucher')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: config -->
+<div class="modal-backdrop hidden" id="modal-config">
+  <div class="modal">
+    <h2>Configuración</h2>
+    <div class="modal-sub">Valores por defecto para los cálculos de viaje.</div>
+    <div class="field-row">
+      <div class="field"><label>Precio combustible por defecto ($/l)</label><div class="money-input"><span class="money-prefix">$</span><input id="cfg-precio" type="text" inputmode="numeric" placeholder="2.431" oninput="formatMilesLive(this)"></div></div>
+      <div class="field"><label>Factor de ruta (real vs. línea recta)</label><input id="cfg-factor" type="number" step="0.05"></div>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--line);margin:16px 0;">
+    <div class="field">
+      <label>API key OpenRouteService (ruteo real para camiones)</label>
+      <input id="cfg-ors-key" type="text" placeholder="Pegá acá tu API key">
+    </div>
+    <div class="hint">
+      Es gratis. Sacala en <a href="https://openrouteservice.org/dev/#/signup" target="_blank" rel="noopener" style="color:var(--burgundy);">openrouteservice.org/dev</a> con tu email (2000 rutas/día gratis).
+      Con esta clave, las rutas evitan mejor calles no aptas para camiones. Sin clave, sigue funcionando con ruteo genérico de auto.
+    </div>
+    <hr style="border:none;border-top:1px solid var(--line);margin:16px 0;">
+    <div class="hint" style="margin-bottom:0;">Los usuarios que pueden entrar como admin (email y contraseña) se gestionan desde la consola de Firebase → Authentication → Users, no desde acá.</div>
+    <hr style="border:none;border-top:1px solid var(--line);margin:16px 0;">
+    <div class="field">
+      <label>Email de Red Petrol (para autorizaciones)</label>
+      <input id="cfg-email-redpetrol" type="email" placeholder="jimena.b@redpetrol.com.ar">
+    </div>
+    <div class="hint" style="margin-bottom:0;">A esta dirección se arma el mail cuando tocás "Enviar por mail" en una autorización de carga.</div>
+    <div class="field" style="margin-top:14px;">
+      <label>Teléfono de Javier (WhatsApp, para aprobar autorizaciones)</label>
+      <input id="cfg-tel-javier" type="text" placeholder="5491122334455">
+    </div>
+    <div class="hint" style="margin-bottom:0;">Código de país + número, sin espacios ni "+" (ej: Argentina 54 9 11 2233-4455 → 5491122334455).</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-config')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarConfig()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: historial de viajes -->
+<!-- MODAL: confirmación / aviso genérico (reemplaza confirm()/alert() nativos) -->
+<div class="modal-backdrop hidden" id="modal-confirm">
+  <div class="modal" style="max-width:380px;">
+    <h2 id="confirm-title">Confirmar</h2>
+    <div class="modal-sub" id="confirm-message" style="margin-bottom:20px;font-size:13.5px;color:var(--ink);"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="confirm-cancel-btn">Cancelar</button>
+      <button class="btn btn-primary" id="confirm-ok-btn">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: entrada de texto simple (reemplaza prompt() nativo) -->
+<div class="modal-backdrop hidden" id="modal-prompt">
+  <div class="modal" style="max-width:420px;">
+    <h2 id="prompt-title">Ingresar dato</h2>
+    <div class="field"><input id="prompt-input" type="text"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="prompt-cancel-btn">Cancelar</button>
+      <button class="btn btn-primary" id="prompt-ok-btn">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: login de admin (Firebase Authentication) -->
+<div class="modal-backdrop hidden" id="modal-login">
+  <div class="modal" style="max-width:380px;">
+    <h2>Ingresar como admin</h2>
+    <div class="modal-sub">Usá el email y la contraseña que te dio quien administra el sistema.</div>
+    <div class="field"><label>Email</label><input id="login-email" type="email" placeholder="nombre@liandsa.com.ar" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus();"></div>
+    <div class="field"><label>Contraseña</label><input id="login-pass" type="password" onkeydown="if(event.key==='Enter')hacerLogin();"></div>
+    <div id="login-error" style="display:none;color:var(--off);font-size:12.5px;font-weight:600;margin:-6px 0 12px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-login')">Cancelar</button>
+      <button class="btn btn-primary" onclick="hacerLogin()">Ingresar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop hidden" id="modal-historial">
+  <div class="modal" style="max-width:640px;">
+    <h2>Historial de viajes</h2>
+    <div class="modal-sub">Últimos viajes registrados, más reciente primero.</div>
+    <div style="max-height:420px;overflow-y:auto;">
+      <table class="trips">
+        <thead><tr><th>Fecha</th><th>Camión</th><th>Ruta</th><th>Km</th><th>Total</th><th></th></tr></thead>
+        <tbody id="tabla-viajes"></tbody>
+      </table>
+    </div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modal-historial')">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: ubicaciones (depósitos, talleres, frigoríficos, carnicerías) -->
+<div class="modal-backdrop hidden" id="modal-ubicacion">
+  <div class="modal" style="max-width:560px;">
+    <h2 id="mu-title">Nueva ubicación</h2>
+    <div class="modal-sub">Depósitos/saladores, talleres, frigoríficos y carnicerías donde operan los camiones.</div>
+    <input type="hidden" id="mu-id">
+    <div class="field"><label>Nombre</label><input id="mu-nombre" placeholder="Ej: Frigorífico Rioplatense"></div>
+    <div class="field">
+      <label>Tipo</label>
+      <select id="mu-tipo">
+        <option value="frigorifico">Frigorífico (origen de cueros)</option>
+        <option value="carniceria">Carnicería (origen de grasa/hueso)</option>
+        <option value="deposito">Depósito / salador</option>
+        <option value="taller">Taller</option>
+        <option value="oficina">Oficina</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Latitud</label><input id="mu-lat" type="number" step="0.0001" placeholder="-34.65"></div>
+      <div class="field"><label>Longitud</label><input id="mu-lng" type="number" step="0.0001" placeholder="-58.55"></div>
+    </div>
+    <div class="hint">Tip: tocá "Elegir en el mapa" y hacé clic en el punto exacto, o buscalo en Google Maps (clic derecho → copiar coordenadas) y pegalo acá.</div>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <button class="btn btn-outline" onclick="activarPickMode()">📍 Elegir en el mapa</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline" id="mu-cancel-edit" onclick="resetUbicForm()" style="display:none;">Cancelar edición</button>
+        <button class="btn btn-primary" onclick="guardarUbicacion()">Guardar</button>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modal-ubicacion')">Cerrar</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  import {
+    getFirestore, doc, onSnapshot, setDoc
+  } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+  import {
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPOlsNBt5TMZht4O4SK-nN4L8MJM7Aels",
+    authDomain: "liand-logistica.firebaseapp.com",
+    projectId: "liand-logistica",
+    storageBucket: "liand-logistica.firebasestorage.app",
+    messagingSenderId: "878081040976",
+    appId: "1:878081040976:web:cf2aaf9c317cfe9826e755"
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
+  const auth = getAuth(fbApp);
+
+  window.FB = { db, auth, doc, onSnapshot, setDoc, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+  window.firebaseReady = true;
+  document.dispatchEvent(new CustomEvent('firebase-ready'));
+</script>
+<script>
+/* ============================================================
+   LIAND · LOGÍSTICA — prototipo
+   4 vistas: Panel (TV) | Planificación semanal (planilla) |
+   Gastos y modificaciones | Finanzas del taller.
+
+   El toggle "Editar panel" SOLO oculta/muestra controles del Panel
+   (pensado para la TV). Las otras 3 pestañas son de uso administrativo
+   y sus controles siempre están visibles.
+   ============================================================ */
+
+let STATE = null;
+let map, markersLayer, routesLayer, selectedId = null;
+let pendingRouteGeom = null, pendingRouteKey = '', pendingRouteMetodo = '';
+let adminMode = false;
+let currentView = 'panel';
+let editingPlanCell = null;
+let fichaChoferId = null, fichaCamionId = null, gastoVistaCamionId = null, gastoVistaChoferId = null;
+
+/* ---------------- fechas / semana / días ---------------- */
+const DIAS = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+const DIAS_LABEL = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado',domingo:'Domingo'};
+function mondayOf(d){
+  const dt = new Date(d);
+  dt.setHours(0,0,0,0);
+  const day = (dt.getDay()+6)%7;
+  dt.setDate(dt.getDate()-day);
+  return dt.toISOString().slice(0,10);
+}
+function diaDeHoy(){
+  const map7 = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+  return map7[new Date().getDay()];
+}
+function fmtDateCorta(iso){ if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${d}/${m}`; }
+function fmtDateLarga(iso){ if(!iso) return '–'; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+let semanaActualPlan = mondayOf(new Date());
+
+/* ---------------- ubicaciones base ---------------- */
+const UBIC_SEED = [
+  {id:'u-quilmes',    nombre:'Depósito Quilmes',    lat:-34.7206, lng:-58.2635, tipo:'deposito'},
+  {id:'u-sanluis',    nombre:'Depósito San Luis',   lat:-33.2950, lng:-66.3356, tipo:'deposito'},
+  {id:'u-delviso',    nombre:'Depósito Del Viso',   lat:-34.4667, lng:-58.7833, tipo:'deposito'},
+  {id:'u-lanus',      nombre:'Taller Lanús',        lat:-34.7128, lng:-58.3936, tipo:'taller'},
+  {id:'u-montserrat', nombre:'Oficina Montserrat (Av. J.A. Roca 636)', lat:-34.6110, lng:-58.3773, tipo:'oficina'},
+  {id:'u-carn-sur',   nombre:'Carnicería Zona Sur',   lat:-34.6800, lng:-58.4000, tipo:'carniceria'},
+  {id:'u-carn-oeste', nombre:'Carnicería Zona Oeste', lat:-34.6200, lng:-58.6500, tipo:'carniceria'},
+  {id:'u-frig-liniers', nombre:'Frigorífico Mercado de Liniers', lat:-34.6520, lng:-58.5285, tipo:'frigorifico'},
+  {id:'u-frig-canuelas', nombre:'Frigorífico Cañuelas', lat:-35.0525, lng:-58.7625, tipo:'frigorifico'},
+  // orígenes/destinos reales de la planilla y del detalle de flota
+  {id:'u-villamercedes', nombre:'Villa Mercedes (San Luis)', lat:-33.6757, lng:-65.4578, tipo:'frigorifico'},
+  {id:'u-venadotuerto',  nombre:'Venado Tuerto (Santa Fe)',  lat:-33.7500, lng:-61.9667, tipo:'frigorifico'},
+  {id:'u-riosegundo',    nombre:'Río Segundo (Córdoba)',     lat:-31.6500, lng:-63.9000, tipo:'frigorifico'},
+  {id:'u-chivilcoy',     nombre:'Chivilcoy (Buenos Aires)',  lat:-34.8833, lng:-60.0167, tipo:'frigorifico'},
+  {id:'u-25demayo',      nombre:'25 de Mayo (Buenos Aires)', lat:-35.4333, lng:-60.1667, tipo:'frigorifico'},
+  {id:'u-mariagrande',   nombre:'María Grande (Entre Ríos)', lat:-31.6833, lng:-59.9333, tipo:'frigorifico'},
+  {id:'u-lasflores',     nombre:'Las Flores (Buenos Aires)', lat:-36.0167, lng:-59.1000, tipo:'frigorifico'},
+  {id:'u-treslomas',     nombre:'Tres Lomas (Buenos Aires)', lat:-36.4667, lng:-62.8667, tipo:'frigorifico'},
+  {id:'u-villaguay',     nombre:'Villaguay (Entre Ríos)',    lat:-31.8667, lng:-59.0167, tipo:'frigorifico'},
+  {id:'u-rosario',       nombre:'Rosario (Santa Fe)',        lat:-32.9468, lng:-60.6393, tipo:'frigorifico'},
+  {id:'u-lastoscas',     nombre:'Las Toscas (Santa Fe)',     lat:-28.3500, lng:-59.2667, tipo:'frigorifico'},
+  {id:'u-pasodelrey',    nombre:'Paso del Rey (Moreno, Buenos Aires)', lat:-34.6333, lng:-58.7833, tipo:'frigorifico'},
+  {id:'u-punilla',       nombre:'Punilla — Villa Carlos Paz (Córdoba)', lat:-31.4241, lng:-64.4978, tipo:'frigorifico'},
+  {id:'u-sadesa',        nombre:'Sadesa (Lomas de Zamora)',  lat:-34.7592, lng:-58.4021, tipo:'deposito'},
+];
+
+const CHOFERES_SEED = [
+  {id:'ch-julio-fernandez', nombre:'Julio Fernández', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-daniel-bravo', nombre:'Daniel Bravo', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-sergio-corbalan', nombre:'Sergio Corbalán', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-mauricio-nunez', nombre:'Mauricio Núñez', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-santiago-vanegas', nombre:'Santiago Vanegas', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-matias-azagra', nombre:'Matías Azagra', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-josue-martinez', nombre:'Josué Martínez', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-juan-trinidad', nombre:'Juan Trinidad', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-martin-aranda', nombre:'Martín Aranda', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-federico-villagra', nombre:'Federico Villagra', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-mauro-badino', nombre:'Mauro Badino', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-mauricio-badino', nombre:'Mauricio Badino', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-edgardo-badino', nombre:'Edgardo Badino', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-fabian-romero', nombre:'Fabián Romero', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-daniel-fernandez', nombre:'Daniel Fernández', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-ale-fernandez', nombre:'Ale Fernández', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-nahuel-ramirez', nombre:'Nahuel Ramírez', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-sebastian-scalise', nombre:'Sebastián Scalise', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+  {id:'ch-fernando-leguizamon', nombre:'Fernando Leguizamón', telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''},
+];
+
+const CAMIONES_SEED = [
+  {id:'c-bqz165', patente:'BQZ165', modelo:'Pettinari ACOPLADO (1997)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-julio-fernandez', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-fru411', patente:'FRU411', modelo:'Pettinari ACOPLADO (2006)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-daniel-bravo', ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-xdn659', patente:'XDN659', modelo:'Helvetica SEMIRREMOLQUE (1965)', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-cri794', patente:'CRI794', modelo:'Pettinari SEMIRREMOLQUE (1999)', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-oze349', patente:'OZE349', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2015)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-sergio-corbalan', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: SUBPGA Y CHIVILCOY.', actualizado:Date.now()},
+  {id:'c-ag107bn', patente:'AG107BN', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2023)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-mauricio-nunez', ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: MARIA GRANDE.', actualizado:Date.now()},
+  {id:'c-ag107bm', patente:'AG107BM', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2023)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-santiago-vanegas', ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: VM/ESPZA.', actualizado:Date.now()},
+  {id:'c-okt127', patente:'OKT127', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2014)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-sergio-corbalan', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: SUBPGA Y CHIVILCOY.', actualizado:Date.now()},
+  {id:'c-af488fn', patente:'AF488FN', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2022)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-matias-azagra', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: VM/ESPZA.', actualizado:Date.now()},
+  {id:'c-otn387', patente:'OTN387', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2015)', tipoCarga:'cuero', estado:'disponible', choferActualId:null, ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: MARIA GRANDE.', actualizado:Date.now()},
+  {id:'c-otn386', patente:'OTN386', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2015)', tipoCarga:'cuero', estado:'disponible', choferActualId:null, ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: VT/SURPIEL.', actualizado:Date.now()},
+  {id:'c-ah046sk', patente:'AH046SK', modelo:'Salto BA-SCV3E (2025)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-josue-martinez', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: VACACIONES.', actualizado:Date.now()},
+  {id:'c-uug317', patente:'UUG317', modelo:'', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Razón social: CASINI. ', actualizado:Date.now()},
+  {id:'c-af587of', patente:'AF587OF', modelo:'Salto 48-SRV3E SEMIRREMOQUE (2022)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-juan-trinidad', ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: LOGROS/PUNILLA.', actualizado:Date.now()},
+  {id:'c-ah833ka', patente:'AH833KA', modelo:'Salto SCBV3E SEMIRREMOLQUE (2025)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-martin-aranda', ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-aa245xo', patente:'AA245XO', modelo:'Randon 07 SR.CG. 2+1 14,50 MTS LARGO (2016)', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-okb826', patente:'OKB826', modelo:'Salto 45-SRBV3E (2015)', tipoCarga:'cuero', estado:'disponible', choferActualId:null, ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-hzs177', patente:'HZS177', modelo:'Salto 05-SRBV (2009)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-federico-villagra', ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: PUNILLA/BS AS.', actualizado:Date.now()},
+  {id:'c-mgx719', patente:'MGX719', modelo:'Salto 05-SRBV-2013 (2013)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-mauro-badino', ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-pem835', patente:'PEM835', modelo:'M. Benz 893-AXOR 2035 S (2015)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-federico-villagra', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: VM/ESPZA.', actualizado:Date.now()},
+  {id:'c-aa320vh', patente:'AA320VH', modelo:'Scania 480-R360 A4X2 (2016)', tipoCarga:'cuero', estado:'disponible', choferActualId:null, ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: MARIA GRANDE.', actualizado:Date.now()},
+  {id:'c-ab366tc', patente:'AB366TC', modelo:'Ford B06-CARGO 1729-37 CD MT (2017)', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-ab120kv', patente:'AB120KV', modelo:'M. Benz B51-ATEGO 1726 S (2017)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-mauricio-badino', ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: VT/SURPIEL.', actualizado:Date.now()},
+  {id:'c-ab167rd', patente:'AB167RD', modelo:'M. Benz B51-ATEGO 1726 S (2017)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-mauricio-nunez', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: PUNILLA/BS AS.', actualizado:Date.now()},
+  {id:'c-ab743ym', patente:'AB743YM', modelo:'M. Benz B51-ATEGO 1726 S (2017)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-santiago-vanegas', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: MARIA GRANDE.', actualizado:Date.now()},
+  {id:'c-ag235xu', patente:'AG235XU', modelo:'M. Benz D32-AXOR 2544 LS (2023)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-juan-trinidad', ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: VM/ESPZA.', actualizado:Date.now()},
+  {id:'c-af136jm', patente:'AF136JM', modelo:'M. Benz D01-ATEGO 1729 S (2021)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-edgardo-badino', ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Razón social: BALCAT SA. Destino habitual: VACACIONES.', actualizado:Date.now()},
+  {id:'c-aa606li', patente:'AA606LI', modelo:'M. Benz FT-958 ATEGO 1726 36 (2016)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-sergio-corbalan', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Razón social: BALCAT SA. Destino habitual: SUBPGA Y CHIVILCOY.', actualizado:Date.now()},
+  {id:'c-ab045sj', patente:'AB045SJ', modelo:'M. Benz B45-AXOR 2036 S (2017)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-matias-azagra', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: LOGROS/PUNILLA.', actualizado:Date.now()},
+  {id:'c-ai159ja', patente:'AI159JA', modelo:'Scania R620 (2013)', tipoCarga:'cuero', estado:'disponible', choferActualId:null, ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-scaniaazul', patente:'SCANIA AZUL', modelo:'', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-ai294sa', patente:'AI294SA', modelo:'Volkswagen (2026)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-josue-martinez', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-ai294rz', patente:'AI294RZ', modelo:'Volkswagen (2026)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-martin-aranda', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-whv146', patente:'WHV146', modelo:'', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-rnz046', patente:'RNZ046', modelo:'', tipoCarga:'cuero', estado:'mantenimiento', choferActualId:null, ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-lkf057', patente:'LKF057', modelo:'M. Benz 693 VERSION 1720/36 (2012)', tipoCarga:'grasa_hueso', estado:'disponible', choferActualId:'ch-fabian-romero', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: REPARTO.', actualizado:Date.now()},
+  {id:'c-ae502fr', patente:'AE502FR', modelo:'M. Benz GH-ACCELO 815 (2020)', tipoCarga:'grasa_hueso', estado:'disponible', choferActualId:null, ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: REPARTO.', actualizado:Date.now()},
+  {id:'c-aa290nr', patente:'AA290NR', modelo:'Iveco 20-170E22 (2016)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-daniel-fernandez', ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Destino habitual: MANECA.', actualizado:Date.now()},
+  {id:'c-aa590qw', patente:'AA590QW', modelo:'M. Benz FP-693 VERSION 1720 48 (2016)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-ale-fernandez', ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Razón social: BALCAT SA. Destino habitual: ROSARIO.', actualizado:Date.now()},
+  {id:'c-ieb942', patente:'IEB942', modelo:'M. Benz 848-L-1318 (2009)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-nahuel-ramirez', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Razón social: BALCAT SA. Destino habitual: MANECA/PELADERO.', actualizado:Date.now()},
+  {id:'c-jqm296', patente:'JQM296', modelo:'M. Benz 848-L-1318 (2011)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-sebastian-scalise', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Razón social: BALCAT SA. Destino habitual: MANECA/PELADERO.', actualizado:Date.now()},
+  {id:'c-ag369lk', patente:'AG369LK', modelo:'M. Benz ATEGO 1721 48 (2023)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-fernando-leguizamon', ubicacionId:'u-sanluis', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-af466pe', patente:'AF466PE', modelo:'M. Benz GE-ATEGO 1721 48 (2022)', tipoCarga:'cuero', estado:'disponible', choferActualId:null, ubicacionId:'u-delviso', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+  {id:'c-ae387fb', patente:'AE387FB', modelo:'M. Benz B63-ATEGO 1726 (2020)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-daniel-bravo', ubicacionId:'u-lanus', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'Razón social: BALCAT SA. ', actualizado:Date.now()},
+  {id:'c-ai282gh', patente:'AI282GH', modelo:'M. Benz E56-ATEGO 1732/42 (2026)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-julio-fernandez', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
+];
+
+function buildDestinosPlanSeed(){
+  return [
+    {id:'dp-subpga-chivilcoy', nombre:'Subpga y Chivilcoy'},
+    {id:'dp-maria-grande',     nombre:'María Grande'},
+    {id:'dp-vm-esperanza',     nombre:'Villa Mercedes / Esperanza'},
+    {id:'dp-vt-surpiel',       nombre:'Venado Tuerto / Surpiel'},
+    {id:'dp-logros-punilla',   nombre:'Logros / Punilla'},
+    {id:'dp-punilla-bsas',     nombre:'Punilla / Buenos Aires'},
+    {id:'dp-reparto',          nombre:'Reparto'},
+    {id:'dp-maneca',           nombre:'Maneca'},
+    {id:'dp-maneca-peladero',  nombre:'Maneca / Peladero'},
+    {id:'dp-rosario',          nombre:'Rosario'},
+  ];
+}
+
+
+function buildProductosSeed(){
+  return [
+    {id:'pr-cueros', nombre:'Cueros'},
+    {id:'pr-grasa', nombre:'Grasa'},
+    {id:'pr-hueso', nombre:'Hueso'},
+    {id:'pr-grasa-hueso', nombre:'Grasa y hueso'},
+    {id:'pr-vacio', nombre:'Vacío (sin carga)'},
+  ];
+}
+
+const DEFAULT_STATE = {
+  ubicaciones: UBIC_SEED,
+  camiones: CAMIONES_SEED,
+  choferes: CHOFERES_SEED,
+  viajes: [],
+  destinosPlan: buildDestinosPlanSeed(),
+  destinosCelda: [],
+  productos: buildProductosSeed(),
+  planCeldas: [],
+  planNotas: {},
+  historialChoferes: [],
+  historialCamiones: [],
+  gastosTaller: [],
+  autorizaciones: [],
+  config: { precioCombustible: 2431, factorRuta: 1.3, orsApiKey: null, emailRedPetrol: null, telefonoJavier: null }
+};
+
+const ESTADOS_CAMION = {disponible:'Disponible', asignado_hoy:'Asignado hoy', en_ruta:'En ruta', mantenimiento:'Mantenimiento'};
+const ESTADOS_CHOFER = {disponible:'Disponible', asignado_hoy:'Asignado hoy', en_ruta:'En ruta', descanso:'Descanso'};
+const TIPO_CARGA = {cuero:'Cueros', grasa_hueso:'Grasa / Hueso'};
+const TIPO_UBIC = {deposito:'Depósito / salador', taller:'Taller', oficina:'Oficina', frigorifico:'Frigorífico', carniceria:'Carnicería'};
+const TIPO_INCIDENTE_CHOFER = {choque:'Choque / siniestro', multa:'Multa', llegada_tarde:'Llegada tarde', reconocimiento:'Reconocimiento', otro:'Otro'};
+const TIPO_GASTO_CAMION = {gasto:'Gasto / service', modificacion:'Modificación', choque:'Choque / siniestro', otro:'Otro'};
+const ORDEN_CAMION = ['en_ruta','asignado_hoy','disponible','mantenimiento'];
+const ORDEN_CHOFER = ['en_ruta','asignado_hoy','disponible','descanso'];
+
+/* ---------------- storage ---------------- */
+const FS_COLLECTION = 'liand';
+const FS_DOC = 'estado';
+let _primeraCargaResuelta = false;
+
+async function aplicarMigraciones(){
+  if(!STATE.config) STATE.config = {precioCombustible:2431, factorRuta:1.3, orsApiKey:null};
+  if(STATE.config.orsApiKey===undefined) STATE.config.orsApiKey = null;
+  if(STATE.config.emailRedPetrol===undefined) STATE.config.emailRedPetrol = null;
+  if(STATE.config.telefonoJavier===undefined) STATE.config.telefonoJavier = null;
+  delete STATE.config.adminPassword; // ya no se usa: ahora el login es de verdad, con Firebase Authentication
+  let _huboLimpieza = false;
+  STATE.ubicaciones.forEach(u=>{
+    const limpio = (u.nombre||'').replace(/\s*\(ejemplo\)\s*/gi, '').trim();
+    if(limpio !== u.nombre){ u.nombre = limpio; _huboLimpieza = true; }
+  });
+  if(STATE.destinosPlan) STATE.destinosPlan.forEach(d=>{
+    const limpio = (d.nombre||'').replace(/\s*\(ejemplo\)\s*/gi, '').trim();
+    if(limpio !== d.nombre){ d.nombre = limpio; _huboLimpieza = true; }
+  });
+  const idsExistentes = new Set(STATE.ubicaciones.map(u=>u.id));
+  UBIC_SEED.forEach(u=>{
+    if(!idsExistentes.has(u.id)){ STATE.ubicaciones.push({...u}); _huboLimpieza = true; }
+  });
+  if(!STATE.destinosPlan) STATE.destinosPlan = buildDestinosPlanSeed();
+  if(!STATE.destinosCelda) STATE.destinosCelda = [];
+  if(!STATE.productos) STATE.productos = buildProductosSeed();
+  if(!STATE.planCeldas) STATE.planCeldas = [];
+  const buscarOCrear = (lista, nombre, prefijo)=>{
+    const encontrado = lista.find(x=>x.nombre.toLowerCase()===nombre.toLowerCase().trim());
+    if(encontrado) return encontrado.id;
+    const nuevo = {id:uid(prefijo), nombre:nombre.trim()};
+    lista.push(nuevo);
+    return nuevo.id;
+  };
+  STATE.planCeldas.forEach(c=>{
+    if(c.destinoId===undefined){
+      c.destinoId = c.destino ? buscarOCrear(STATE.destinosCelda, c.destino, 'dc') : null;
+      _huboLimpieza = true;
+    }
+    if(c.productoId===undefined){
+      c.productoId = c.carga ? buscarOCrear(STATE.productos, c.carga, 'pr') : null;
+      _huboLimpieza = true;
+    }
+  });
+  if(!STATE.planNotas) STATE.planNotas = {};
+  if(!STATE.historialChoferes) STATE.historialChoferes = [];
+  if(!STATE.historialCamiones) STATE.historialCamiones = [];
+  if(!STATE.gastosTaller) STATE.gastosTaller = [];
+  if(!STATE.autorizaciones) STATE.autorizaciones = [];
+  STATE.camiones.forEach(c=>{
+    if(c.choferActualId===undefined) c.choferActualId = null;
+    if(c.rutaEstado===undefined) c.rutaEstado = null;
+    if(c.modelo===undefined) c.modelo = '';
+    if(c.consumoL100km===undefined){
+      // dato viejo en km/l (o sin dato): lo convertimos a litros cada 100km
+      c.consumoL100km = c.consumoKml ? +(100/c.consumoKml).toFixed(1) : 35;
+      delete c.consumoKml;
+    }
+  });
+  STATE.choferes.forEach(ch=>{
+    if(ch.dni===undefined) ch.dni='';
+    if(ch.licencia===undefined) ch.licencia='';
+    if(ch.fechaIngreso===undefined) ch.fechaIngreso='';
+    if(ch.direccion===undefined) ch.direccion='';
+    if(ch.contactoEmergencia===undefined) ch.contactoEmergencia='';
+  });
+  return _huboLimpieza;
+}
+
+/* Carga inicial + escucha en tiempo real: cualquier cambio que guarde otro dispositivo
+   llega acá al instante (onSnapshot), sin necesidad de sondear cada 15 segundos como antes. */
+function loadState(){
+  return new Promise((resolve)=>{
+    let yaResolvio = false;
+    const resolverUnaVez = ()=>{ if(!yaResolvio){ yaResolvio = true; resolve(); } };
+
+    // resguardo: si en 8s no hubo ni éxito ni error (conexión colgada), arrancamos igual
+    // con los datos base para que la app nunca se quede pegada esperando para siempre.
+    const timeoutId = setTimeout(()=>{
+      if(!_primeraCargaResuelta){
+        console.warn('La base de datos no respondió a tiempo, arranco con los datos base.');
+        mostrarAvisoSinGuardado('No se pudo conectar con la base de datos a tiempo. Estás viendo los datos base, no los guardados — probá recargar la página o abrir el sitio publicado.');
+        _primeraCargaResuelta = true;
+        if(!STATE) STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        resolverUnaVez();
+      }
+    }, 8000);
+
+    const ref = window.FB.doc(window.FB.db, FS_COLLECTION, FS_DOC);
+    window.FB.onSnapshot(ref, async (snap)=>{
+      clearTimeout(timeoutId);
+      if(snap.exists() && snap.data().json){
+        try{ STATE = JSON.parse(snap.data().json); }
+        catch(e){ console.error('Datos guardados corruptos, uso base', e); STATE = JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+      }else{
+        STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+      const huboLimpieza = await aplicarMigraciones();
+
+      if(!_primeraCargaResuelta){
+        _primeraCargaResuelta = true;
+        if(huboLimpieza) await saveState();
+        resolverUnaVez();
+      }else{
+        // esto llegó en vivo (de otro dispositivo, o confirmación de nuestro propio guardado)
+        if(!anyModalOpen()){
+          renderAll();
+          if(currentView==='planificacion') renderPlanificacion();
+          if(currentView==='finanzas') renderFinanzas();
+          if(currentView==='resumen') renderResumenMensual();
+          if(currentView==='gastos'){
+            if(gastoVistaCamionId) renderHistorialCamion(gastoVistaCamionId,'gv-historial','gv-total');
+            if(gastoVistaChoferId) renderHistorialChofer(gastoVistaChoferId,'gvc-historial','gvc-total');
+          }
+          const rel = document.getElementById('clock-sync');
+          if(rel) rel.textContent = 'Sincronizado ' + new Date().toLocaleTimeString('es-AR');
+        }
+      }
+    }, (error)=>{
+      clearTimeout(timeoutId);
+      console.error('Error de Firestore:', error);
+      mostrarAvisoSinGuardado('No se pudo conectar con la base de datos. Revisá tu conexión a internet. Si el problema persiste, puede ser un problema de permisos (reglas de Firestore).');
+      if(!_primeraCargaResuelta){
+        _primeraCargaResuelta = true;
+        if(!STATE) STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        resolverUnaVez();
+      }
+    });
+  });
+}
+async function saveState(){
+  try{
+    const ref = window.FB.doc(window.FB.db, FS_COLLECTION, FS_DOC);
+    await window.FB.setDoc(ref, { json: JSON.stringify(STATE) });
+  }catch(e){
+    console.error('No se pudo guardar en Firestore:', e);
+    mostrarAvisoSinGuardado('No se pudo guardar el último cambio. Puede ser que no tengas la sesión de admin iniciada, o un problema de conexión.');
+  }
+}
+function mostrarAvisoSinGuardado(msg){
+  const el = document.getElementById('aviso-sin-guardado');
+  if(!el) return;
+  document.getElementById('aviso-sin-guardado-msg').textContent = msg;
+  el.classList.remove('hidden');
+}
+function uid(p){ return p+'-'+Math.random().toString(36).slice(2,9); }
+
+/* ---------------- helpers ---------------- */
+function ubic(id){ return STATE.ubicaciones.find(u=>u.id===id); }
+function camion(id){ return STATE.camiones.find(c=>c.id===id); }
+function chofer(id){ return STATE.choferes.find(c=>c.id===id); }
+function fmtMoney(n){ if(n===null||n===undefined||isNaN(n)) return '–'; return '$ '+Math.round(n).toLocaleString('es-AR'); }
+/* Formatea en vivo un input de texto con separador de miles estilo argentino (1000 -> 1.000),
+   manteniendo la posición del cursor razonablemente estable. Solo enteros (sin decimales). */
+function formatMilesLive(el){
+  const distDesdeFinal = el.value.length - el.selectionStart;
+  let digitos = el.value.replace(/\D/g,'').replace(/^0+(?=\d)/,'');
+  el.value = digitos ? Number(digitos).toLocaleString('es-AR') : '';
+  const pos = Math.max(0, el.value.length - distDesdeFinal);
+  try{ el.setSelectionRange(pos, pos); }catch(e){}
+}
+function numFromMiles(id){
+  const el = document.getElementById(id);
+  const raw = (el && el.value || '').replace(/\D/g,'');
+  return raw ? parseInt(raw,10) : 0;
+}
+function setMilesValue(id, num){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.value = (num || num===0) ? Number(Math.round(num)).toLocaleString('es-AR') : '';
+}
+function anyModalOpen(){ return [...document.querySelectorAll('.modal-backdrop')].some(m=>!m.classList.contains('hidden')); }
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function ubicColor(tipo){
+  if(tipo==='frigorifico') return '#3E5C8A';
+  if(tipo==='carniceria') return '#6B4E99';
+  return '#5C6570';
+}
+function rutaNota(c){
+  const o = ubic(c.ubicacionId);
+  if(!o) return '';
+  if(o.tipo==='frigorifico' || o.tipo==='carniceria') return ' · Recolección';
+  if(o.tipo==='deposito') return ' · Traslado interno';
+  return '';
+}
+function asignacionDeChofer(choferId, semana){
+  semana = semana || mondayOf(new Date());
+  return STATE.planCeldas.find(c=>c.semana===semana && c.choferId===choferId);
+}
+function asignacionDeCamion(camionId, semana){
+  semana = semana || mondayOf(new Date());
+  return STATE.planCeldas.find(c=>c.semana===semana && c.camionId===camionId);
+}
+function conductorDeCamion(c){
+  if(c.estado==='en_ruta' && c.choferActualId){
+    const ch = chofer(c.choferActualId);
+    if(ch) return {nombre:ch.nombre, planificado:false};
+  }
+  const a = asignacionDeCamion(c.id);
+  if(a){ const ch = chofer(a.choferId); if(ch) return {nombre:ch.nombre, planificado:true}; }
+  return null;
+}
+/* ¿Está este camión/chofer asignado en la planilla de HOY (semana y día actuales)? */
+function asignadoHoyCamion(camionId){
+  return STATE.planCeldas.some(pc=>pc.semana===mondayOf(new Date()) && pc.dia===diaDeHoy() && pc.camionId===camionId);
+}
+function asignadoHoyChofer(choferId){
+  return STATE.planCeldas.some(pc=>pc.semana===mondayOf(new Date()) && pc.dia===diaDeHoy() && pc.choferId===choferId);
+}
+/* Estado que se usa para agrupar/mostrar en el Panel: el real, salvo que esté "disponible" en los
+   datos pero ya lo hayan asignado hoy en la Planificación semanal — ahí pasa a "asignado_hoy". */
+function estadoEfectivoCamion(c){
+  if(c.estado!=='disponible') return c.estado;
+  return asignadoHoyCamion(c.id) ? 'asignado_hoy' : 'disponible';
+}
+function estadoEfectivoChofer(ch){
+  if(ch.estado!=='disponible') return ch.estado;
+  return asignadoHoyChofer(ch.id) ? 'asignado_hoy' : 'disponible';
+}
+function camionDeChofer(ch){
+  const live = STATE.camiones.find(c=>c.estado==='en_ruta' && c.choferActualId===ch.id);
+  if(live) return {patente:live.patente, planificado:false};
+  const a = asignacionDeChofer(ch.id);
+  if(a){ const c = camion(a.camionId); if(c) return {patente:c.patente, planificado:true}; }
+  return null;
+}
+function colorIncidenteChofer(tipo){
+  if(tipo==='choque'||tipo==='multa') return '#B23A2A';
+  if(tipo==='llegada_tarde') return '#C97C1F';
+  if(tipo==='reconocimiento') return '#3F7D4C';
+  return '#8B7D70';
+}
+function colorGastoCamion(tipo){
+  if(tipo==='choque') return '#B23A2A';
+  if(tipo==='gasto') return '#C97C1F';
+  if(tipo==='modificacion') return '#3E5C8A';
+  return '#8B7D70';
+}
+
+/* ---------------- vistas (tabs) ---------------- */
+function switchView(name){
+  currentView = name;
+  document.getElementById('view-panel').style.display = name==='panel' ? 'grid' : 'none';
+  document.getElementById('view-planificacion').style.display = name==='planificacion' ? 'block' : 'none';
+  document.getElementById('view-gastos').style.display = name==='gastos' ? 'block' : 'none';
+  document.getElementById('view-combustible').style.display = name==='combustible' ? 'block' : 'none';
+  document.getElementById('view-finanzas').style.display = name==='finanzas' ? 'block' : 'none';
+  document.getElementById('view-resumen').style.display = name==='resumen' ? 'block' : 'none';
+  document.getElementById('view-maestros').style.display = name==='maestros' ? 'block' : 'none';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+
+  if(name==='panel'){ setTimeout(()=>{ if(map) map.invalidateSize(); }, 50); }
+  if(name==='planificacion') renderPlanificacion();
+  if(name==='finanzas') renderFinanzas();
+  if(name==='resumen') renderResumenMensual();
+  if(name==='maestros') renderMaestros();
+  if(name==='gastos'){
+    const sel = document.getElementById('gv-camion');
+    const prev = sel.value;
+    fillSelect(sel, STATE.camiones.map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+c.modelo:'')})), prev, 'Elegí un camión');
+    if(prev && STATE.camiones.some(c=>c.id===prev)){
+      gastoVistaCamionId = prev;
+      document.getElementById('gv-body').style.display = 'block';
+      renderHistorialCamion(prev, 'gv-historial', 'gv-total');
+    }else{
+      gastoVistaCamionId = null;
+      document.getElementById('gv-body').style.display = 'none';
+    }
+
+    const selCh = document.getElementById('gvc-chofer');
+    const prevCh = selCh.value;
+    fillSelect(selCh, STATE.choferes, prevCh, 'Elegí un chofer');
+    if(prevCh && STATE.choferes.some(c=>c.id===prevCh)){
+      gastoVistaChoferId = prevCh;
+      document.getElementById('gvc-body').style.display = 'block';
+      renderHistorialChofer(prevCh, 'gvc-historial', 'gvc-total');
+    }else{
+      gastoVistaChoferId = null;
+      document.getElementById('gvc-body').style.display = 'none';
+    }
+  }
+  if(name==='combustible'){
+    const sel = document.getElementById('cb-camion');
+    const prev = sel.value;
+    fillSelect(sel, STATE.camiones.map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+c.modelo:'')})), prev, 'Sin camión (solo calcular)');
+    setMilesValue('cb-precio', STATE.config.precioCombustible || 2431);
+    if(prev && STATE.camiones.some(c=>c.id===prev)){
+      document.getElementById('cb-consumo').value = camion(prev).consumoL100km || '';
+    }
+    calcularCombustible();
+    renderTicker();
+    renderAutorizaciones();
+  }
+}
+
+/* ---------------- render: Panel (TV) ---------------- */
+function renderAll(){
+  renderCamiones();
+  renderChoferes();
+  renderUbicacionesColumn();
+  renderMap();
+  renderMaestros();
+}
+
+function cardCamionHtml(c){
+  const ubicacion = ubic(c.ubicacionId);
+  const destino = c.destinoId ? ubic(c.destinoId) : null;
+  const conductor = conductorDeCamion(c);
+  const estEf = estadoEfectivoCamion(c);
+  return `
+  <div class="ticket st-${estEf} ${selectedId===c.id?'selected':''}" onclick="selectCamion('${c.id}')">
+    <div class="t-row1">
+      <div>
+        <div class="t-id" onclick="event.stopPropagation();openFichaCamion('${c.id}')" style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;">${c.patente}</div>
+        <div class="t-sub">${c.modelo?escapeHtml(c.modelo)+' · ':''}${TIPO_CARGA[c.tipoCarga]||''}${rutaNota(c)}</div>
+      </div>
+      <span class="pill st-${estEf}">${ESTADOS_CAMION[estEf]}</span>
+    </div>
+    <div class="t-meta">
+      <b>${conductor ? conductor.nombre+(conductor.planificado?' (planificado)':'') : 'Sin chofer asignado'}</b><br>
+      📍 ${ubicacion?ubicacion.nombre:'Ubicación sin definir'}${destino?` → <b>${destino.nombre}</b>`:''}
+    </div>
+    ${c.comentario?`<div class="t-comment">"${escapeHtml(c.comentario)}"</div>`:''}
+    <div class="t-actions admin-only">
+      <button onclick="event.stopPropagation();openCamionModal('${c.id}')">Editar</button>
+      ${c.estado==='en_ruta'?`<button class="finish" onclick="event.stopPropagation();finalizarViaje('${c.id}')">Marcar llegada</button>`:''}
+      <button class="del" onclick="event.stopPropagation();borrarCamion('${c.id}')">Eliminar</button>
+    </div>
+  </div>`;
+}
+function renderCamiones(){
+  const q = (document.getElementById('search-camiones').value||'').toLowerCase();
+  const cont = document.getElementById('lista-camiones');
+  const filtered = STATE.camiones.filter(c=>{
+    const conductor = conductorDeCamion(c);
+    const dest = c.destinoId ? ubic(c.destinoId)?.nombre : '';
+    const blob = [c.patente, c.modelo, conductor?conductor.nombre:'', dest, c.comentario].join(' ').toLowerCase();
+    return blob.includes(q);
+  });
+  document.getElementById('count-camiones').textContent = STATE.camiones.length;
+  let html = '';
+  ORDEN_CAMION.forEach(est=>{
+    const items = filtered.filter(c=>estadoEfectivoCamion(c)===est);
+    if(items.length===0) return;
+    html += `<div class="group-head st-${est}">${ESTADOS_CAMION[est]} <span class="g-count">${items.length}</span></div>`;
+    html += `<div class="ticket-list">${items.map(cardCamionHtml).join('')}</div>`;
+  });
+  cont.innerHTML = html || '<div class="empty-msg">No hay camiones que coincidan.</div>';
+}
+function cardChoferHtml(ch){
+  const camionInfo = camionDeChofer(ch);
+  const estEf = estadoEfectivoChofer(ch);
+  return `
+  <div class="ticket st-${estEf}">
+    <div class="t-row1">
+      <div>
+        <div class="t-name" onclick="openFichaChofer('${ch.id}')" style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;">${escapeHtml(ch.nombre)}</div>
+        <div class="t-sub">${ch.telefono||'Sin teléfono'}</div>
+      </div>
+      <span class="pill st-${estEf}">${ESTADOS_CHOFER[estEf]}</span>
+    </div>
+    <div class="t-meta">🚚 ${camionInfo ? camionInfo.patente+(camionInfo.planificado?' (planificado)':'') : 'Sin camión esta semana'}</div>
+    <div class="t-actions admin-only">
+      <button onclick="openChoferModal('${ch.id}')">Editar</button>
+      <button class="del" onclick="borrarChofer('${ch.id}')">Eliminar</button>
+    </div>
+  </div>`;
+}
+function renderChoferes(){
+  const q = (document.getElementById('search-choferes').value||'').toLowerCase();
+  const cont = document.getElementById('lista-choferes');
+  const filtered = STATE.choferes.filter(ch=>{
+    const camionInfo = camionDeChofer(ch);
+    const blob = [ch.nombre, ch.telefono, camionInfo?camionInfo.patente:''].join(' ').toLowerCase();
+    return blob.includes(q);
+  });
+  document.getElementById('count-choferes').textContent = STATE.choferes.length;
+  let html = '';
+  ORDEN_CHOFER.forEach(est=>{
+    const items = filtered.filter(c=>estadoEfectivoChofer(c)===est);
+    if(items.length===0) return;
+    html += `<div class="group-head st-${est}">${ESTADOS_CHOFER[est]} <span class="g-count">${items.length}</span></div>`;
+    html += `<div class="ticket-list">${items.map(cardChoferHtml).join('')}</div>`;
+  });
+  cont.innerHTML = html || '<div class="empty-msg">No hay choferes que coincidan.</div>';
+}
+function cardUbicHtml(u){
+  return `
+  <div class="ticket" style="border-left-color:${ubicColor(u.tipo)}">
+    <div class="t-row1"><div class="t-name">${escapeHtml(u.nombre)}</div></div>
+    <div class="t-meta">${TIPO_UBIC[u.tipo]}</div>
+    <div class="t-actions admin-only">
+      <button onclick="editarUbicacion('${u.id}')">Editar</button>
+      <button class="del" onclick="borrarUbicacion('${u.id}')">Eliminar</button>
+    </div>
+  </div>`;
+}
+function renderUbicacionesColumn(){
+  const q = (document.getElementById('search-ubicaciones').value||'').toLowerCase();
+  const cont = document.getElementById('lista-ubicaciones-col');
+  const filtered = STATE.ubicaciones.filter(u=>{
+    const blob = [u.nombre, TIPO_UBIC[u.tipo]].join(' ').toLowerCase();
+    return blob.includes(q);
+  });
+  document.getElementById('count-ubicaciones').textContent = STATE.ubicaciones.length;
+  let html = '';
+  ['frigorifico','carniceria','deposito','taller','oficina'].forEach(tipo=>{
+    const items = filtered.filter(u=>u.tipo===tipo);
+    if(items.length===0) return;
+    const color = ubicColor(tipo);
+    html += `<div class="group-head" style="color:${color};border-color:${color}55">${TIPO_UBIC[tipo]} <span class="g-count">${items.length}</span></div>`;
+    html += `<div class="ticket-list">${items.map(cardUbicHtml).join('')}</div>`;
+  });
+  cont.innerHTML = html || '<div class="empty-msg">No hay ubicaciones que coincidan.</div>';
+}
+
+/* ---------------- mapa ---------------- */
+function initMap(){
+  map = L.map('map', {zoomControl:true}).setView([-34.65,-59.2], 6);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution:'© OpenStreetMap contributors © CARTO', subdomains:'abcd', maxZoom:19
+  }).addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
+  routesLayer = L.layerGroup().addTo(map);
+
+  setTimeout(()=>map.invalidateSize(), 150);
+  setTimeout(()=>map.invalidateSize(), 600);
+  window.addEventListener('resize', ()=>map.invalidateSize());
+  if(window.ResizeObserver){
+    new ResizeObserver(()=>map.invalidateSize()).observe(document.getElementById('map'));
+  }
+}
+function fitMapToData(){
+  const pts = [];
+  STATE.ubicaciones.forEach(u=>pts.push([u.lat,u.lng]));
+  STATE.camiones.forEach(c=>{ const u=ubic(c.ubicacionId); if(u) pts.push([u.lat,u.lng]); });
+  if(pts.length===0) return;
+  if(pts.length===1){ map.setView(pts[0], 11); return; }
+  map.fitBounds(L.latLngBounds(pts), {padding:[50,50]});
+  setTimeout(()=>map.invalidateSize(), 200);
+}
+
+/* ---------------- ruteo real ---------------- */
+function fetchConTimeout(url, options, ms){
+  ms = ms || 9000;
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error('Se agotó el tiempo de espera ('+ms+'ms)')), ms))
+  ]);
+}
+async function fetchRoadRoute(origen, destino){
+  if(STATE.config.orsApiKey){
+    try{
+      const res = await fetchConTimeout('https://api.openrouteservice.org/v2/directions/driving-hgv/geojson', {
+        method:'POST',
+        headers:{'Authorization':STATE.config.orsApiKey, 'Content-Type':'application/json'},
+        body: JSON.stringify({coordinates:[[origen.lng,origen.lat],[destino.lng,destino.lat]]})
+      });
+      if(res.ok){
+        const data = await res.json();
+        const f = data.features && data.features[0];
+        if(f){
+          const coords = f.geometry.coordinates.map(([lng,lat])=>[lat,lng]);
+          const km = f.properties.summary.distance/1000;
+          return {ok:true, coords, km, metodo:'camion'};
+        }
+        console.warn('[ruteo] OpenRouteService respondió sin ruta utilizable', data);
+      }else{
+        console.warn('[ruteo] OpenRouteService status', res.status, await res.text().catch(()=>''));
+      }
+    }catch(e){ console.warn('[ruteo] Falló OpenRouteService, sigo con OSRM:', e.message); }
+  }
+  try{
+    const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`;
+    const res = await fetchConTimeout(url);
+    if(!res.ok) throw new Error('OSRM status '+res.status);
+    const data = await res.json();
+    if(!data.routes || !data.routes[0]) throw new Error('OSRM respondió sin rutas');
+    const coords = data.routes[0].geometry.coordinates.map(([lng,lat])=>[lat,lng]);
+    const km = data.routes[0].distance/1000;
+    return {ok:true, coords, km, metodo:'auto'};
+  }catch(e){
+    console.warn('[ruteo] Falló OSRM, uso estimación en línea recta:', e.message, '— revisá la consola del navegador (F12) para más detalle. Si esto pasa siempre, probablemente tu red esté bloqueando estos servicios.');
+    return {ok:false, error: e.message};
+  }
+}
+async function actualizarRutaCamion(c){
+  if(!c || c.estado!=='en_ruta' || !c.destinoId){ if(c){ c.rutaGeom=null; c.rutaEstado=null; } return; }
+  const o = ubic(c.ubicacionId), d = ubic(c.destinoId);
+  if(!o || !d){ c.rutaGeom = null; c.rutaEstado = null; return; }
+  c.rutaEstado = 'buscando';
+  const r = await fetchRoadRoute(o, d);
+  if(r.ok){
+    c.rutaGeom = r.coords;
+    c.rutaEstado = r.metodo==='camion' ? 'real-camion' : 'real-auto';
+  }else{
+    c.rutaGeom = null;
+    c.rutaEstado = 'estimado';
+  }
+  await saveState();
+  renderMap();
+}
+async function recalcularRutaCamion(camionId){
+  const c = camion(camionId);
+  if(!c){ return; }
+  await actualizarRutaCamion(c);
+  if(selectedId===camionId) showInfoCard(c);
+  if(fichaCamionId===camionId) renderRutaFicha(camionId);
+}
+
+function statusColor(estado){
+  return estado==='disponible' ? '#3F7D4C' : estado==='en_ruta' ? '#C97C1F' : '#B23A2A';
+}
+function truckIcon(estado){
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:30px;height:30px;border-radius:50%;background:${statusColor(estado)};
+           border:2px solid #FFFFFF;box-shadow:0 2px 8px var(--shadow);display:flex;
+           align-items:center;justify-content:center;font-size:14px;">🚚</div>`,
+    iconSize:[30,30], iconAnchor:[15,15]
+  });
+}
+function puntoIcon(tipo){
+  const color = ubicColor(tipo);
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:14px;height:14px;background:${color};border:2px solid #FFFFFF;
+           box-shadow:0 1px 5px rgba(51,40,34,.5);transform:rotate(45deg);"></div>`,
+    iconSize:[14,14], iconAnchor:[7,7]
+  });
+}
+function renderMap(){
+  markersLayer.clearLayers();
+  routesLayer.clearLayers();
+  STATE.ubicaciones.forEach(u=>{
+    const m = L.marker([u.lat,u.lng], {icon:puntoIcon(u.tipo)}).addTo(markersLayer);
+    m.bindTooltip(`${TIPO_UBIC[u.tipo]}: ${u.nombre}`, {direction:'top', className:'map-tooltip'});
+  });
+  STATE.camiones.forEach(c=>{
+    const from = ubic(c.ubicacionId);
+    if(!from) return;
+    const marker = L.marker([from.lat, from.lng], {icon:truckIcon(c.estado)}).addTo(markersLayer);
+    marker.on('click', ()=> selectCamion(c.id));
+    if(c.estado==='en_ruta' && c.destinoId){
+      const to = ubic(c.destinoId);
+      if(to){
+        marker.bindTooltip(`→ ${to.nombre}`, {permanent:true, direction:'top', offset:[0,-16], className:'map-tooltip'});
+        if(c.rutaGeom && c.rutaGeom.length>1){
+          L.polyline(c.rutaGeom, {color:'#A63A2A', weight:4, opacity:.85}).addTo(routesLayer);
+        }else{
+          L.polyline([[from.lat,from.lng],[to.lat,to.lng]], {color:'#A63A2A', weight:3, opacity:.6, dashArray:'7,7'}).addTo(routesLayer);
+        }
+      }
+    }
+  });
+}
+function selectCamion(id){
+  selectedId = id;
+  renderCamiones();
+  const c = camion(id);
+  const from = ubic(c.ubicacionId);
+  if(from) map.panTo([from.lat, from.lng]);
+  showInfoCard(c);
+}
+function etiquetaRuta(c){
+  const map = {
+    'real-camion': {texto:'✓ Ruta real de camión', color:'var(--ok)'},
+    'real-auto':   {texto:'✓ Ruta real por calles', color:'var(--ok)'},
+    'buscando':    {texto:'Buscando ruta real…', color:'var(--muted)'},
+    'estimado':    {texto:'△ Estimada (línea recta)', color:'var(--warn)'},
+  };
+  return map[c.rutaEstado] || {texto:'Sin calcular', color:'var(--muted)'};
+}
+function showInfoCard(c){
+  const conductor = conductorDeCamion(c);
+  const from = ubic(c.ubicacionId);
+  const to = c.destinoId ? ubic(c.destinoId) : null;
+  const card = document.getElementById('info-card');
+  card.classList.remove('hidden');
+  const ruta = etiquetaRuta(c);
+  const mostrarReintentar = c.estado==='en_ruta' && to && c.rutaEstado!=='real-camion' && c.rutaEstado!=='buscando';
+  card.innerHTML = `
+    <button class="close" onclick="document.getElementById('info-card').classList.add('hidden')">✕</button>
+    <h3>${c.patente}</h3>
+    <span class="pill st-${c.estado}">${ESTADOS_CAMION[c.estado]}</span>
+    <div class="row"><b>Chofer</b>${conductor?conductor.nombre+(conductor.planificado?' (planificado)':''):'Sin asignar'}</div>
+    <div class="row"><b>Ubicación actual</b>${from?from.nombre:'–'}</div>
+    ${to?`<div class="row"><b>Destino</b>${to.nombre}</div>`:''}
+    ${c.estado==='en_ruta' && to ? `<div class="row"><b>Ruta</b><span style="color:${ruta.color};">${ruta.texto}</span>${mostrarReintentar?` · <button onclick="recalcularRutaCamion('${c.id}')" style="background:none;border:none;color:var(--burgundy);font-weight:700;cursor:pointer;font-size:11px;text-decoration:underline;">🔄 Reintentar</button>`:''}</div>`:''}
+    <div class="row"><b>Comentario</b>${c.comentario?escapeHtml(c.comentario):'–'}</div>
+    <div class="row"><b>Actualizado</b>${new Date(c.actualizado).toLocaleString('es-AR')}</div>
+  `;
+}
+
+/* ---------------- modo admin (contraseña compartida) / reloj / sync ---------------- */
+function aplicarModoAdmin(usuario){
+  adminMode = !!usuario;
+  document.body.classList.toggle('admin-mode', adminMode);
+  document.getElementById('btn-edit-toggle').textContent = adminMode ? `🔓 ${usuario.email} (salir)` : '🔒 Ingresar';
+  ['cb-precio','plan-notas'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.readOnly = !adminMode;
+  });
+}
+function toggleAdminMode(){
+  if(adminMode){ window.FB.signOut(window.FB.auth); }
+  else{ abrirLogin(); }
+}
+function abrirLogin(){
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  openModal('modal-login');
+  setTimeout(()=>document.getElementById('login-email').focus(), 30);
+}
+async function hacerLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if(!email || !pass){ errEl.textContent = 'Completá email y contraseña.'; errEl.style.display = 'block'; return; }
+  try{
+    await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pass);
+    closeModal('modal-login');
+  }catch(e){
+    errEl.textContent = 'Email o contraseña incorrectos.';
+    errEl.style.display = 'block';
+  }
+}
+function tickClock(){
+  const now = new Date();
+  const dias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const fecha = `${dias[now.getDay()]} ${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('clock-time').textContent = `${fecha} · ${now.toLocaleTimeString('es-AR')}`;
+}
+
+/* ---------------- modales genéricos ---------------- */
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+function fillSelect(sel, options, current, placeholder){
+  sel.innerHTML = (placeholder?`<option value="">${placeholder}</option>`:'') +
+    options.map(o=>`<option value="${o.id}" ${o.id===current?'selected':''}>${o.nombre}</option>`).join('');
+}
+
+/* ---------------- diálogos propios (confirm/alert/prompt nativos no son confiables acá) ---------------- */
+let _confirmResolve = null;
+function confirmDialog(message, title){
+  document.getElementById('confirm-title').textContent = title || 'Confirmar';
+  document.getElementById('confirm-message').textContent = message;
+  document.getElementById('confirm-cancel-btn').style.display = 'inline-block';
+  document.getElementById('confirm-ok-btn').textContent = 'Eliminar';
+  openModal('modal-confirm');
+  return new Promise(resolve=>{ _confirmResolve = resolve; });
+}
+function alertDialog(message, title){
+  document.getElementById('confirm-title').textContent = title || 'Atención';
+  document.getElementById('confirm-message').textContent = message;
+  document.getElementById('confirm-cancel-btn').style.display = 'none';
+  document.getElementById('confirm-ok-btn').textContent = 'Aceptar';
+  openModal('modal-confirm');
+  return new Promise(resolve=>{ _confirmResolve = ()=>resolve(true); });
+}
+function _resolveConfirm(val){
+  closeModal('modal-confirm');
+  if(_confirmResolve){ const r=_confirmResolve; _confirmResolve=null; r(val); }
+}
+let _promptResolve = null;
+function promptDialog(message, defaultValue, title, esPassword){
+  document.getElementById('prompt-title').textContent = title || message || 'Ingresar dato';
+  const inp = document.getElementById('prompt-input');
+  inp.type = esPassword ? 'password' : 'text';
+  inp.value = defaultValue || '';
+  openModal('modal-prompt');
+  setTimeout(()=>{ inp.focus(); inp.select(); }, 30);
+  return new Promise(resolve=>{ _promptResolve = resolve; });
+}
+function _resolvePrompt(val){
+  closeModal('modal-prompt');
+  if(_promptResolve){ const r=_promptResolve; _promptResolve=null; r(val); }
+}
+
+/* ---------------- CRUD camión ---------------- */
+function openCamionModal(id){
+  const c = id ? camion(id) : null;
+  document.getElementById('mc-title').textContent = c ? 'Editar camión' : 'Nuevo camión';
+  document.getElementById('mc-id').value = c ? c.id : '';
+  document.getElementById('mc-patente').value = c ? c.patente : '';
+  document.getElementById('mc-modelo').value = c ? c.modelo : '';
+  document.getElementById('mc-tipo').value = c ? c.tipoCarga : 'cuero';
+  document.getElementById('mc-estado').value = c ? c.estado : 'disponible';
+  document.getElementById('mc-consumo').value = c ? c.consumoL100km : '';
+  document.getElementById('mc-comentario').value = c ? c.comentario : '';
+  fillSelect(document.getElementById('mc-ubicacion'), STATE.ubicaciones, c?c.ubicacionId:'u-quilmes');
+  fillSelect(document.getElementById('mc-destino'), STATE.ubicaciones, c?c.destinoId:'', 'Sin destino');
+  openModal('modal-camion');
+}
+async function guardarCamion(){
+  const id = document.getElementById('mc-id').value;
+  const patente = document.getElementById('mc-patente').value.trim();
+  if(!patente){ await alertDialog('Ingresá la patente.'); return; }
+  const data = {
+    patente,
+    modelo: document.getElementById('mc-modelo').value.trim(),
+    tipoCarga: document.getElementById('mc-tipo').value,
+    estado: document.getElementById('mc-estado').value,
+    consumoL100km: parseFloat(document.getElementById('mc-consumo').value) || 35,
+    comentario: document.getElementById('mc-comentario').value.trim(),
+    ubicacionId: document.getElementById('mc-ubicacion').value,
+    destinoId: document.getElementById('mc-destino').value || null,
+    actualizado: Date.now()
+  };
+  let camionId = id;
+  if(id){ Object.assign(camion(id), data); }
+  else{ camionId = uid('c'); STATE.camiones.push({id:camionId, choferActualId:null, rutaGeom:null, ...data}); }
+  await saveState();
+  closeModal('modal-camion');
+  renderAll();
+  actualizarRutaCamion(camion(camionId));
+}
+async function borrarCamion(id){
+  if(!(await confirmDialog('¿Eliminar este camión? Esta acción no se puede deshacer.'))) return;
+  STATE.camiones = STATE.camiones.filter(c=>c.id!==id);
+  STATE.planCeldas.forEach(pc=>{ if(pc.camionId===id) pc.camionId=null; });
+  await saveState(); renderAll();
+}
+async function finalizarViaje(id){
+  const c = camion(id);
+  if(c.destinoId){ c.ubicacionId = c.destinoId; }
+  const choferId = c.choferActualId;
+  c.destinoId = null;
+  c.rutaGeom = null;
+  c.rutaEstado = null;
+  c.choferActualId = null;
+  c.estado = 'disponible';
+  c.actualizado = Date.now();
+  if(choferId){ const ch = chofer(choferId); if(ch) ch.estado = 'disponible'; }
+  await saveState(); renderAll();
+}
+
+/* ---------------- CRUD chofer (alta rápida) ---------------- */
+function openChoferModal(id){
+  const c = id ? chofer(id) : null;
+  document.getElementById('mch-title').textContent = c ? 'Editar chofer' : 'Nuevo chofer';
+  document.getElementById('mch-id').value = c ? c.id : '';
+  document.getElementById('mch-nombre').value = c ? c.nombre : '';
+  document.getElementById('mch-telefono').value = c ? c.telefono : '';
+  document.getElementById('mch-estado').value = c ? c.estado : 'disponible';
+  openModal('modal-chofer');
+}
+async function guardarChofer(){
+  const id = document.getElementById('mch-id').value;
+  const nombre = document.getElementById('mch-nombre').value.trim();
+  if(!nombre){ await alertDialog('Ingresá el nombre.'); return; }
+  const data = { nombre, telefono: document.getElementById('mch-telefono').value.trim(), estado: document.getElementById('mch-estado').value };
+  if(id){ Object.assign(chofer(id), data); }
+  else{ STATE.choferes.push({id:uid('ch'), dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:'', ...data}); }
+  await saveState(); closeModal('modal-chofer'); renderAll();
+}
+async function borrarChofer(id){
+  if(!(await confirmDialog('¿Eliminar este chofer? Esta acción no se puede deshacer.'))) return;
+  STATE.choferes = STATE.choferes.filter(c=>c.id!==id);
+  STATE.planCeldas.forEach(pc=>{ if(pc.choferId===id) pc.choferId=null; });
+  STATE.camiones.forEach(c=>{ if(c.choferActualId===id) c.choferActualId=null; });
+  await saveState(); renderAll();
+}
+
+/* ---------------- ficha del chofer ---------------- */
+function openFichaChofer(choferId){
+  const ch = chofer(choferId); if(!ch) return;
+  fichaChoferId = choferId;
+  document.getElementById('fc-nombre').textContent = ch.nombre;
+  document.getElementById('fc-telefono').value = ch.telefono||'';
+  document.getElementById('fc-dni').value = ch.dni||'';
+  document.getElementById('fc-licencia').value = ch.licencia||'';
+  document.getElementById('fc-ingreso').value = ch.fechaIngreso||'';
+  document.getElementById('fc-direccion').value = ch.direccion||'';
+  document.getElementById('fc-emergencia').value = ch.contactoEmergencia||'';
+  renderHistorialChofer(choferId, 'fc-historial', 'fc-total');
+  openModal('modal-ficha-chofer');
+}
+async function guardarFichaChofer(){
+  const ch = chofer(fichaChoferId); if(!ch) return;
+  ch.telefono = document.getElementById('fc-telefono').value.trim();
+  ch.dni = document.getElementById('fc-dni').value.trim();
+  ch.licencia = document.getElementById('fc-licencia').value.trim();
+  ch.fechaIngreso = document.getElementById('fc-ingreso').value;
+  ch.direccion = document.getElementById('fc-direccion').value.trim();
+  ch.contactoEmergencia = document.getElementById('fc-emergencia').value.trim();
+  await saveState();
+  renderAll();
+}
+function renderHistorialChofer(choferId, listEl, totalEl){
+  listEl = listEl || 'fc-historial'; totalEl = totalEl || 'fc-total';
+  const items = STATE.historialChoferes.filter(h=>h.choferId===choferId).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const total = items.reduce((s,h)=>s+(h.monto||0),0);
+  document.getElementById(totalEl).textContent = fmtMoney(total);
+  const cont = document.getElementById(listEl);
+  if(items.length===0){ cont.innerHTML = '<div class="empty-msg">Sin novedades registradas.</div>'; return; }
+  cont.innerHTML = items.map(h=>`
+    <div class="ticket" style="border-left-color:${colorIncidenteChofer(h.tipo)};cursor:default;">
+      <div class="t-row1"><div class="t-name" style="font-size:13.5px;">${TIPO_INCIDENTE_CHOFER[h.tipo]||h.tipo}</div><span class="t-sub">${fmtDateLarga(h.fecha)}</span></div>
+      <div class="t-meta">${escapeHtml(h.descripcion||'')}</div>
+      ${h.monto?`<div class="t-meta"><b>${fmtMoney(h.monto)}</b></div>`:''}
+      <div class="t-actions admin-only"><button onclick="editarIncidenteChofer('${h.id}')">Editar</button><button class="del" onclick="borrarIncidenteChofer('${h.id}')">Eliminar</button></div>
+    </div>`).join('');
+}
+function openIncidenteChoferModal(choferId, entry){
+  document.getElementById('ic-title').textContent = entry ? 'Editar novedad' : 'Registrar novedad';
+  document.getElementById('ic-chofer-id').value = choferId;
+  document.getElementById('ic-id').value = entry ? entry.id : '';
+  document.getElementById('ic-fecha').value = entry ? entry.fecha : new Date().toISOString().slice(0,10);
+  document.getElementById('ic-tipo').value = entry ? entry.tipo : 'otro';
+  document.getElementById('ic-descripcion').value = entry ? entry.descripcion : '';
+  setMilesValue('ic-monto', (entry && entry.monto) ? entry.monto : null);
+  openModal('modal-incidente-chofer');
+}
+function editarIncidenteChofer(id){
+  const entry = STATE.historialChoferes.find(h=>h.id===id); if(!entry) return;
+  openIncidenteChoferModal(entry.choferId, entry);
+}
+async function guardarIncidenteChofer(){
+  const choferId = document.getElementById('ic-chofer-id').value;
+  const id = document.getElementById('ic-id').value;
+  const fecha = document.getElementById('ic-fecha').value || new Date().toISOString().slice(0,10);
+  const tipo = document.getElementById('ic-tipo').value;
+  const descripcion = document.getElementById('ic-descripcion').value.trim();
+  const monto = numFromMiles('ic-monto');
+  if(id){ Object.assign(STATE.historialChoferes.find(h=>h.id===id), {fecha,tipo,descripcion,monto}); }
+  else{ STATE.historialChoferes.push({id:uid('hc'), choferId, fecha, tipo, descripcion, monto}); }
+  await saveState();
+  closeModal('modal-incidente-chofer');
+  refrescarHistorialesChofer(choferId);
+}
+async function borrarIncidenteChofer(id){
+  const entry = STATE.historialChoferes.find(h=>h.id===id); if(!entry) return;
+  if(!(await confirmDialog('¿Eliminar este registro? Esta acción no se puede deshacer.'))) return;
+  const choferId = entry.choferId;
+  STATE.historialChoferes = STATE.historialChoferes.filter(h=>h.id!==id);
+  await saveState();
+  refrescarHistorialesChofer(choferId);
+}
+function refrescarHistorialesChofer(choferId){
+  if(fichaChoferId===choferId) renderHistorialChofer(choferId, 'fc-historial', 'fc-total');
+  if(gastoVistaChoferId===choferId) renderHistorialChofer(choferId, 'gvc-historial', 'gvc-total');
+  if(currentView==='finanzas') renderFinanzas();
+}
+
+/* ---------------- ficha del camión + pestaña de gastos (comparten historial) ---------------- */
+function renderRutaFicha(camionId){
+  const c = camion(camionId); if(!c) return;
+  const box = document.getElementById('fk-ruta-box');
+  if(c.estado!=='en_ruta' || !c.destinoId){ box.style.display = 'none'; return; }
+  const to = ubic(c.destinoId);
+  const ruta = etiquetaRuta(c);
+  const mostrarReintentar = c.rutaEstado!=='real-camion' && c.rutaEstado!=='buscando';
+  box.style.display = 'block';
+  box.innerHTML = `<b>En ruta a ${to?to.nombre:'?'}</b><br>Estado del camino: <span style="color:${ruta.color};font-weight:600;">${ruta.texto}</span>
+    ${mostrarReintentar?` <button onclick="recalcularRutaCamion('${c.id}')" style="background:none;border:none;color:var(--burgundy);font-weight:700;cursor:pointer;font-size:11.5px;text-decoration:underline;">🔄 Reintentar</button>`:''}`;
+}
+function openFichaCamion(camionId){
+  const c = camion(camionId); if(!c) return;
+  fichaCamionId = camionId;
+  document.getElementById('fk-camion-id').value = camionId;
+  document.getElementById('fk-patente').textContent = c.patente;
+  document.getElementById('fk-modelo').value = c.modelo||'';
+  document.getElementById('fk-consumo').value = c.consumoL100km||'';
+  renderRutaFicha(camionId);
+  renderHistorialCamion(camionId, 'fk-historial', 'fk-total');
+  openModal('modal-ficha-camion');
+}
+async function guardarFichaCamion(){
+  const c = camion(fichaCamionId); if(!c) return;
+  c.modelo = document.getElementById('fk-modelo').value.trim();
+  c.consumoL100km = parseFloat(document.getElementById('fk-consumo').value) || c.consumoL100km;
+  await saveState();
+  renderAll();
+}
+function renderHistorialCamion(camionId, listEl, totalEl){
+  listEl = listEl || 'fk-historial'; totalEl = totalEl || 'fk-total';
+  const items = STATE.historialCamiones.filter(h=>h.camionId===camionId).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const total = items.reduce((s,h)=>s+(h.monto||0),0);
+  document.getElementById(totalEl).textContent = fmtMoney(total);
+  const cont = document.getElementById(listEl);
+  if(items.length===0){ cont.innerHTML = '<div class="empty-msg">Sin gastos ni novedades registradas.</div>'; return; }
+  cont.innerHTML = items.map(h=>{
+    let montoHtml = h.monto ? `<div class="t-meta"><b>${fmtMoney(h.monto)}</b></div>` : '';
+    let accionExtra = '';
+    if(h.esEstimadoCombustible){
+      if(h.montoReal==null){
+        montoHtml = `<div class="t-meta" style="color:var(--warn);">⏳ Estimado: <b>${fmtMoney(h.montoEstimado)}</b> — falta cargar el gasto real</div>`;
+        accionExtra = `<button onclick="abrirGastoReal('${h.id}')">💰 Cargar gasto real</button>`;
+      }else{
+        const diff = h.montoReal - h.montoEstimado;
+        const diffTxt = diff>0
+          ? `<span style="color:var(--warn);">+${fmtMoney(diff)} más de lo estimado</span>`
+          : (diff<0 ? `<span style="color:var(--ok);">${fmtMoney(Math.abs(diff))} menos de lo estimado</span>` : '<span style="color:var(--ok);">justo lo estimado</span>');
+        montoHtml = `<div class="t-meta">Estimado: ${fmtMoney(h.montoEstimado)} · Real: <b>${fmtMoney(h.montoReal)}</b><br>${diffTxt}</div>`;
+      }
+    }
+    return `
+    <div class="ticket" style="border-left-color:${colorGastoCamion(h.tipo)};cursor:default;">
+      <div class="t-row1"><div class="t-name" style="font-size:13.5px;">${TIPO_GASTO_CAMION[h.tipo]||h.tipo}</div><span class="t-sub">${fmtDateLarga(h.fecha)}</span></div>
+      <div class="t-meta">${escapeHtml(h.descripcion||'')}</div>
+      ${montoHtml}
+      <div class="t-actions admin-only">${accionExtra}<button onclick="editarGastoCamion('${h.id}')">Editar</button><button class="del" onclick="borrarGastoCamion('${h.id}')">Eliminar</button></div>
+    </div>`;
+  }).join('');
+}
+let gastoRealActualId = null;
+function abrirGastoReal(id){
+  const h = STATE.historialCamiones.find(x=>x.id===id); if(!h) return;
+  gastoRealActualId = id;
+  const c = camion(h.camionId);
+  document.getElementById('gr-sub').textContent = `${c?c.patente:''} — estimado: ${fmtMoney(h.montoEstimado)}`;
+  setMilesValue('gr-monto', h.montoEstimado);
+  openModal('modal-gasto-real');
+}
+async function guardarGastoReal(){
+  const h = STATE.historialCamiones.find(x=>x.id===gastoRealActualId); if(!h) return;
+  const real = numFromMiles('gr-monto');
+  if(real<=0){ await alertDialog('Ingresá el monto real gastado.'); return; }
+  h.montoReal = real;
+  h.monto = real;
+  await saveState();
+  closeModal('modal-gasto-real');
+  refrescarHistorialesCamion(h.camionId);
+}
+function openGastoCamionModal(camionId, entry){
+  document.getElementById('gc-title').textContent = entry ? 'Editar registro' : 'Registrar en la ficha del camión';
+  document.getElementById('gc-camion-id').value = camionId;
+  document.getElementById('gc-id').value = entry ? entry.id : '';
+  document.getElementById('gc-fecha').value = entry ? entry.fecha : new Date().toISOString().slice(0,10);
+  document.getElementById('gc-tipo').value = entry ? entry.tipo : 'gasto';
+  document.getElementById('gc-descripcion').value = entry ? entry.descripcion : '';
+  setMilesValue('gc-monto', (entry && entry.monto) ? entry.monto : null);
+  openModal('modal-gasto-camion');
+}
+function editarGastoCamion(id){
+  const entry = STATE.historialCamiones.find(h=>h.id===id); if(!entry) return;
+  openGastoCamionModal(entry.camionId, entry);
+}
+async function guardarGastoCamion(){
+  const camionId = document.getElementById('gc-camion-id').value;
+  const id = document.getElementById('gc-id').value;
+  const fecha = document.getElementById('gc-fecha').value || new Date().toISOString().slice(0,10);
+  const tipo = document.getElementById('gc-tipo').value;
+  const descripcion = document.getElementById('gc-descripcion').value.trim();
+  const monto = numFromMiles('gc-monto');
+  if(id){ Object.assign(STATE.historialCamiones.find(h=>h.id===id), {fecha,tipo,descripcion,monto}); }
+  else{ STATE.historialCamiones.push({id:uid('hk'), camionId, fecha, tipo, descripcion, monto}); }
+  await saveState();
+  closeModal('modal-gasto-camion');
+  refrescarHistorialesCamion(camionId);
+}
+async function borrarGastoCamion(id){
+  const entry = STATE.historialCamiones.find(h=>h.id===id); if(!entry) return;
+  if(!(await confirmDialog('¿Eliminar este registro? Esta acción no se puede deshacer.'))) return;
+  const camionId = entry.camionId;
+  STATE.historialCamiones = STATE.historialCamiones.filter(h=>h.id!==id);
+  await saveState();
+  refrescarHistorialesCamion(camionId);
+}
+function refrescarHistorialesCamion(camionId){
+  if(fichaCamionId===camionId) renderHistorialCamion(camionId, 'fk-historial', 'fk-total');
+  if(gastoVistaCamionId===camionId) renderHistorialCamion(camionId, 'gv-historial', 'gv-total');
+  if(currentView==='finanzas') renderFinanzas();
+}
+
+/* ---------------- pestaña: Gastos y modificaciones ---------------- */
+function onGastoCamionChange(){
+  const id = document.getElementById('gv-camion').value;
+  gastoVistaCamionId = id || null;
+  document.getElementById('gv-body').style.display = id ? 'block' : 'none';
+  if(id) renderHistorialCamion(id, 'gv-historial', 'gv-total');
+}
+function onGastoChoferChange(){
+  const id = document.getElementById('gvc-chofer').value;
+  gastoVistaChoferId = id || null;
+  document.getElementById('gvc-body').style.display = id ? 'block' : 'none';
+  if(id) renderHistorialChofer(id, 'gvc-historial', 'gvc-total');
+}
+
+/* ---------------- pestaña: Combustible ---------------- */
+function onCombustibleCamionChange(){
+  const c = camion(document.getElementById('cb-camion').value);
+  if(c) document.getElementById('cb-consumo').value = c.consumoL100km || '';
+  calcularCombustible();
+}
+function calcularCombustible(){
+  const precio = numFromMiles('cb-precio');
+  const consumo = parseFloat(document.getElementById('cb-consumo').value)||0;
+  const km = numFromMiles('cb-km');
+  const litros = consumo>0 ? (km*consumo)/100 : 0;
+  const total = litros*precio;
+  document.getElementById('cb-litros').textContent = consumo>0 ? litros.toFixed(1)+' L' : '–';
+  document.getElementById('cb-total').textContent = fmtMoney(total);
+}
+function renderTicker(){
+  const el = document.getElementById('ticker-track');
+  if(!el) return;
+  const precio = numFromMiles('cb-precio') || STATE.config.precioCombustible || 2431;
+  const item = `<span class="ticker-item">⛽ GASOIL YPF (Infinia) · Buenos Aires <span class="tick-sep">·</span> <b>${fmtMoney(precio)}</b>/l <span class="tick-sep">·</span> referencia 10/08/2026, ajustable abajo</span>`;
+  el.innerHTML = item.repeat(6) + item.repeat(6);
+}
+async function guardarPrecioCombustibleRef(){
+  if(!adminMode) return;
+  const precio = numFromMiles('cb-precio');
+  if(precio>0){ STATE.config.precioCombustible = precio; await saveState(); }
+  renderTicker();
+}
+async function agregarGastoCombustible(){
+  const camionId = document.getElementById('cb-camion').value;
+  if(!camionId){ await alertDialog('Elegí un camión arriba para poder cargarle el gasto.'); return; }
+  const precio = numFromMiles('cb-precio');
+  const consumo = parseFloat(document.getElementById('cb-consumo').value)||0;
+  const km = numFromMiles('cb-km');
+  if(km<=0){ await alertDialog('Ingresá los km a recorrer.'); return; }
+  const litros = consumo>0 ? (km*consumo)/100 : 0;
+  const total = Math.round(litros*precio);
+  STATE.historialCamiones.push({
+    id: uid('hk'), camionId, fecha: new Date().toISOString().slice(0,10), tipo:'gasto',
+    descripcion: `Combustible — ${km} km a ${consumo} L/100km ($${precio}/l, ${litros.toFixed(1)} L estimados)`,
+    monto: total, montoEstimado: total, montoReal: null, esEstimadoCombustible: true
+  });
+  await saveState();
+  await alertDialog('Gasto estimado cargado a la ficha del camión. Cuando el camión llegue a destino, cargale el gasto real desde ahí para comparar.', 'Listo');
+  refrescarHistorialesCamion(camionId);
+  document.getElementById('cb-km').value = '';
+  calcularCombustible();
+}
+
+/* ---------------- autorizaciones de carga de combustible ---------------- */
+function generarCodigoAuth(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin 0/O ni 1/I, para que no se confundan al leerlo
+  let s = '';
+  for(let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+function estadoAutorizacion(a){
+  if(a.aprobacion==='rechazada') return 'rechazada';
+  if(a.aprobacion==='pendiente') return 'pendiente';
+  if(a.estadoManual==='cancelada') return 'cancelada';
+  if(a.estadoManual==='usada') return 'usada';
+  return a.fecha===new Date().toISOString().slice(0,10) ? 'vigente' : 'vencida';
+}
+const ETIQUETA_ESTADO_AUTH = {pendiente:'Pendiente de aprobación', vigente:'Vigente hoy', usada:'Usada', vencida:'Vencida', cancelada:'Cancelada', rechazada:'Rechazada'};
+function colorEstadoAuth(est){
+  if(est==='vigente') return '#3F7D4C';
+  if(est==='usada') return '#8B7D70';
+  if(est==='cancelada' || est==='rechazada') return '#B23A2A';
+  if(est==='pendiente') return '#C97C1F';
+  return '#C97C1F'; // vencida
+}
+
+function setLitrosAuth(n){
+  setMilesValue('auth-litros', n);
+  actualizarMontoAuth();
+}
+function actualizarMontoAuth(){
+  const litros = numFromMiles('auth-litros');
+  const precio = numFromMiles('auth-precio');
+  document.getElementById('auth-monto-preview').textContent = fmtMoney(litros*precio);
+}
+function abrirNuevaAutorizacion(){
+  fillSelect(document.getElementById('auth-chofer'), STATE.choferes, '', 'Elegí chofer');
+  fillSelect(document.getElementById('auth-camion'), STATE.camiones.map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+c.modelo:'')})), document.getElementById('cb-camion').value, 'Elegí camión');
+  const precioSugerido = numFromMiles('cb-precio') || STATE.config.precioCombustible || null;
+  setMilesValue('auth-precio', precioSugerido);
+  // sugerimos litros según lo que ya se haya calculado arriba en la calculadora, si hay algo cargado
+  const kmv = numFromMiles('cb-km')||0, consv = parseFloat(document.getElementById('cb-consumo').value)||0;
+  const litrosSugeridos = (consv>0 && kmv>0) ? Math.round((kmv*consv)/100) : null;
+  setMilesValue('auth-litros', litrosSugeridos);
+  document.getElementById('auth-notas').value = '';
+  actualizarMontoAuth();
+  openModal('modal-autorizacion');
+}
+async function guardarAutorizacion(){
+  const choferId = document.getElementById('auth-chofer').value;
+  const camionId = document.getElementById('auth-camion').value;
+  if(!choferId || !camionId){ await alertDialog('Elegí chofer y camión.'); return; }
+  const litros = numFromMiles('auth-litros');
+  if(litros<=0){ await alertDialog('Ingresá la cantidad de litros.'); return; }
+  const precioLitro = numFromMiles('auth-precio');
+  const monto = Math.round(litros*precioLitro);
+  const nueva = {
+    id: uid('auth'),
+    codigo: generarCodigoAuth(),
+    fecha: new Date().toISOString().slice(0,10),
+    choferId, camionId, litros, precioLitro, monto,
+    notas: document.getElementById('auth-notas').value.trim(),
+    autorizadoPor: (window.FB.auth.currentUser && window.FB.auth.currentUser.email) || 'admin',
+    creadoEn: Date.now(),
+    estadoManual: null,
+    aprobacion: 'pendiente'
+  };
+  if(!STATE.autorizaciones) STATE.autorizaciones = [];
+  STATE.autorizaciones.unshift(nueva);
+  await saveState();
+  closeModal('modal-autorizacion');
+  renderAutorizaciones();
+  verVoucher(nueva.id);
+}
+function renderAutorizaciones(){
+  const q = (document.getElementById('search-autorizaciones').value||'').toLowerCase();
+  const lista = (STATE.autorizaciones||[]).filter(a=>{
+    const ch = chofer(a.choferId);
+    return [ch?ch.nombre:'', a.codigo].join(' ').toLowerCase().includes(q);
+  });
+  document.getElementById('auth-tabla').innerHTML = lista.map(a=>{
+    const ch = chofer(a.choferId), cm = camion(a.camionId);
+    const est = estadoAutorizacion(a), color = colorEstadoAuth(est);
+    return `<tr>
+      <td>${a.codigo}</td>
+      <td style="font-family:var(--body);">${ch?escapeHtml(ch.nombre):'(eliminado)'}</td>
+      <td>${cm?cm.patente:'(eliminado)'}</td>
+      <td>${fmtDateLarga(a.fecha)}</td>
+      <td>${fmtMoney(a.monto)}</td>
+      <td><span class="pill" style="background:${color}22;color:${color};">${ETIQUETA_ESTADO_AUTH[est]}</span></td>
+      <td><button class="mae-link" onclick="verVoucher('${a.id}')">Ver</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin autorizaciones generadas.</td></tr>';
+}
+let voucherActualId = null;
+function verVoucher(id){
+  const a = (STATE.autorizaciones||[]).find(x=>x.id===id); if(!a) return;
+  voucherActualId = id;
+  const ch = chofer(a.choferId), cm = camion(a.camionId);
+  const est = estadoAutorizacion(a), color = colorEstadoAuth(est);
+  document.getElementById('voucher-body').innerHTML = `
+    <div style="text-align:center;padding:14px 0 18px;border-bottom:2px dashed var(--line);margin-bottom:14px;">
+      <div style="font-family:var(--display);text-transform:uppercase;letter-spacing:2px;font-size:12px;color:var(--muted);">Liand S.A. — Autorización de carga</div>
+      <div style="font-family:var(--mono);font-size:34px;font-weight:700;color:var(--burgundy);letter-spacing:5px;margin-top:8px;">${a.codigo}</div>
+      <span class="pill" style="background:${color}22;color:${color};margin-top:10px;display:inline-block;">${ETIQUETA_ESTADO_AUTH[est]}</span>
+    </div>
+    <div class="voucher-row"><b>Chofer</b>${ch?escapeHtml(ch.nombre):'(eliminado)'}</div>
+    <div class="voucher-row"><b>Camión</b>${cm?cm.patente+(cm.modelo?' — '+escapeHtml(cm.modelo):''):'(eliminado)'}</div>
+    <div class="voucher-row"><b>Fecha</b>${fmtDateLarga(a.fecha)} — válida solo hoy</div>
+    <div class="voucher-row"><b>Litros autorizados</b><span style="font-size:21px;font-weight:700;color:var(--burgundy);font-family:var(--mono);">${a.litros} L</span></div>
+    <div class="voucher-row"><b>Costo estimado</b>${fmtMoney(a.monto)} (a ${fmtMoney(a.precioLitro)}/l)</div>
+    ${a.notas?`<div class="voucher-row"><b>Descripción</b>${escapeHtml(a.notas)}</div>`:''}
+    <div class="voucher-row"><b>Autorizado por</b>${escapeHtml(a.autorizadoPor)} — ${new Date(a.creadoEn).toLocaleString('es-AR')}</div>
+    ${a.aprobacion==='aprobada' && a.aprobadoPor?`<div class="voucher-row"><b>Aprobada por</b>${escapeHtml(a.aprobadoPor)} — ${new Date(a.aprobadoEn).toLocaleString('es-AR')}</div>`:''}
+  `;
+
+  // acciones que cambian según el estado
+  const contAprob = document.getElementById('voucher-acciones-aprobacion');
+  if(est==='pendiente'){
+    contAprob.innerHTML = `
+      <button class="btn btn-primary admin-only" style="flex:1;" onclick="aprobarAutorizacion()">✅ Aprobar</button>
+      <button class="btn btn-outline admin-only" style="color:var(--off);" onclick="rechazarAutorizacion()">❌ Rechazar</button>
+      <button class="btn btn-outline" onclick="avisarPorWhatsapp()">📱 Avisar a Javier</button>`;
+  }else if(est==='vigente'){
+    contAprob.innerHTML = `<button class="btn btn-primary admin-only" style="width:100%;" onclick="enviarPorMailRedPetrol()">📧 Enviar por mail a Red Petrol</button>`;
+  }else{
+    contAprob.innerHTML = '';
+  }
+
+  const mostrarAcciones = est==='vigente';
+  document.getElementById('voucher-btn-usada').style.display = mostrarAcciones ? 'inline-block' : 'none';
+  document.getElementById('voucher-btn-cancelar').style.display = mostrarAcciones ? 'inline-block' : 'none';
+  openModal('modal-voucher');
+}
+async function aprobarAutorizacion(){
+  const a = (STATE.autorizaciones||[]).find(x=>x.id===voucherActualId); if(!a) return;
+  a.aprobacion = 'aprobada';
+  a.aprobadoPor = (window.FB.auth.currentUser && window.FB.auth.currentUser.email) || 'admin';
+  a.aprobadoEn = Date.now();
+  await saveState();
+  verVoucher(a.id);
+  renderAutorizaciones();
+}
+async function rechazarAutorizacion(){
+  const a = (STATE.autorizaciones||[]).find(x=>x.id===voucherActualId); if(!a) return;
+  if(!(await confirmDialog('¿Rechazar esta autorización?'))) return;
+  a.aprobacion = 'rechazada';
+  await saveState();
+  verVoucher(a.id);
+  renderAutorizaciones();
+}
+function avisarPorWhatsapp(){
+  const a = (STATE.autorizaciones||[]).find(x=>x.id===voucherActualId); if(!a) return;
+  const tel = (STATE.config.telefonoJavier||'').replace(/\D/g,'');
+  if(!tel){ alertDialog('Todavía no cargaste el teléfono de Javier. Andá a Configuración y cargalo.'); return; }
+  const ch = chofer(a.choferId), cm = camion(a.camionId);
+  const msg = 'Hola! Necesito que apruebes esta autorización de carga:\n\n'
+    + `Chofer: ${ch?ch.nombre:''}\n`
+    + `Camión: ${cm?cm.patente:''}\n`
+    + `Litros: ${a.litros} L (${fmtMoney(a.monto)})\n`
+    + (a.notas?`Descripción: ${a.notas}\n`:'')
+    + `Código: ${a.codigo}\n\n`
+    + '¿La autorizás? Entrá a la app para aprobarla, o avisame por acá.';
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+function enviarPorMailRedPetrol(){
+  const a = (STATE.autorizaciones||[]).find(x=>x.id===voucherActualId); if(!a) return;
+  const destinatario = (STATE.config.emailRedPetrol||'').trim();
+  if(!destinatario){ alertDialog('Todavía no cargaste el email de Red Petrol. Andá a Configuración y cargalo.'); return; }
+  const ch = chofer(a.choferId), cm = camion(a.camionId);
+  const asunto = `Autorización de carga — ${ch?ch.nombre:''} — ${a.litros} L`;
+  const cuerpo = 'Hola, les escribo para autorizar la siguiente carga de combustible:\n\n'
+    + `Chofer: ${ch?ch.nombre:''}\n`
+    + `Camión: ${cm?cm.patente:''}${cm&&cm.modelo?' — '+cm.modelo:''}\n`
+    + `Litros autorizados: ${a.litros} L\n`
+    + (a.notas ? `Descripción: ${a.notas}\n` : '')
+    + `\nCódigo interno: ${a.codigo}\n`
+    + `Autorizado por: ${a.autorizadoPor}\n`
+    + `Fecha: ${fmtDateLarga(a.fecha)}\n\n`
+    + 'Saludos,\nLiand S.A.';
+  window.location.href = `mailto:${destinatario}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+}
+async function marcarAutorizacionUsada(){
+  const a = (STATE.autorizaciones||[]).find(x=>x.id===voucherActualId); if(!a) return;
+  a.estadoManual = 'usada';
+  await saveState();
+  closeModal('modal-voucher');
+  renderAutorizaciones();
+}
+async function cancelarAutorizacion(){
+  const a = (STATE.autorizaciones||[]).find(x=>x.id===voucherActualId); if(!a) return;
+  if(!(await confirmDialog('¿Cancelar esta autorización?'))) return;
+  a.estadoManual = 'cancelada';
+  await saveState();
+  closeModal('modal-voucher');
+  renderAutorizaciones();
+}
+
+/* ---------------- CRUD ubicaciones ---------------- */
+function openUbicacionModal(){
+  resetUbicForm();
+  openModal('modal-ubicacion');
+}
+function resetUbicForm(){
+  document.getElementById('mu-title').textContent = 'Nueva ubicación';
+  document.getElementById('mu-id').value = '';
+  document.getElementById('mu-nombre').value = '';
+  document.getElementById('mu-tipo').value = 'frigorifico';
+  document.getElementById('mu-lat').value = '';
+  document.getElementById('mu-lng').value = '';
+  document.getElementById('mu-cancel-edit').style.display = 'none';
+}
+function editarUbicacion(id){
+  const u = ubic(id); if(!u) return;
+  document.getElementById('mu-title').textContent = 'Editar ubicación';
+  document.getElementById('mu-id').value = u.id;
+  document.getElementById('mu-nombre').value = u.nombre;
+  document.getElementById('mu-tipo').value = u.tipo;
+  document.getElementById('mu-lat').value = u.lat;
+  document.getElementById('mu-lng').value = u.lng;
+  document.getElementById('mu-cancel-edit').style.display = 'inline-block';
+  openModal('modal-ubicacion');
+}
+async function guardarUbicacion(){
+  const id = document.getElementById('mu-id').value;
+  const nombre = document.getElementById('mu-nombre').value.trim();
+  const lat = parseFloat(document.getElementById('mu-lat').value);
+  const lng = parseFloat(document.getElementById('mu-lng').value);
+  const tipo = document.getElementById('mu-tipo').value;
+  if(!nombre || isNaN(lat) || isNaN(lng)){ await alertDialog('Completá nombre, latitud y longitud.'); return; }
+  if(id){ Object.assign(ubic(id), {nombre, tipo, lat, lng}); }
+  else{ STATE.ubicaciones.push({id:uid('u'), nombre, tipo, lat, lng}); }
+  await saveState();
+  resetUbicForm();
+  closeModal('modal-ubicacion');
+  renderAll();
+}
+async function borrarUbicacion(id){
+  const enUso = STATE.camiones.some(c=>c.ubicacionId===id || c.destinoId===id);
+  const msg = enUso ? 'Esta ubicación está en uso por algún camión. ¿Eliminarla igual?' : '¿Eliminar esta ubicación?';
+  if(!(await confirmDialog(msg))) return;
+  STATE.ubicaciones = STATE.ubicaciones.filter(u=>u.id!==id);
+  STATE.camiones.forEach(c=>{ if(c.ubicacionId===id) c.ubicacionId=null; if(c.destinoId===id) c.destinoId=null; });
+  await saveState();
+  renderAll();
+}
+function activarPickMode(){
+  closeModal('modal-ubicacion');
+  document.getElementById('pick-hint').classList.remove('hidden');
+  map.once('click', onMapPick);
+}
+function onMapPick(e){
+  document.getElementById('mu-lat').value = e.latlng.lat.toFixed(5);
+  document.getElementById('mu-lng').value = e.latlng.lng.toFixed(5);
+  document.getElementById('pick-hint').classList.add('hidden');
+  openModal('modal-ubicacion');
+}
+
+/* ---------------- planificación semanal (planilla real, edición directa) ---------------- */
+function cambiarSemana(delta){
+  const d = new Date(semanaActualPlan+'T00:00:00');
+  d.setDate(d.getDate()+delta*7);
+  semanaActualPlan = mondayOf(d);
+  editingPlanCell = null;
+  renderPlanificacion();
+}
+function irSemanaActual(){ semanaActualPlan = mondayOf(new Date()); editingPlanCell = null; renderPlanificacion(); }
+
+function planFieldKey(destinoPlanId, dia, campo){ return destinoPlanId+'|'+dia+'|'+campo; }
+function celdaPlan(destinoPlanId, dia){
+  return STATE.planCeldas.find(c=>c.semana===semanaActualPlan && c.destinoPlanId===destinoPlanId && c.dia===dia);
+}
+async function guardarCampoCelda(destinoPlanId, dia, campo, valor){
+  let c = STATE.planCeldas.find(x=>x.semana===semanaActualPlan && x.destinoPlanId===destinoPlanId && x.dia===dia);
+  if(!c){
+    c = {id:uid('pc'), semana:semanaActualPlan, destinoPlanId, dia, choferId:null, camionId:null, destinoId:null, productoId:null};
+    STATE.planCeldas.push(c);
+  }
+  c[campo] = valor;
+  await saveState();
+}
+function iniciarEdicionCampo(destinoPlanId, dia, campo){
+  if(!adminMode) return;
+  editingPlanCell = planFieldKey(destinoPlanId,dia,campo);
+  renderPlanificacion();
+}
+function cerrarEdicionCelda(){ editingPlanCell = null; renderPlanificacion(); }
+async function onSeleccionCampo(destinoPlanId, dia, campoDB, val){
+  await guardarCampoCelda(destinoPlanId, dia, campoDB, val||null);
+  editingPlanCell = null;
+  renderPlanificacion();
+  renderAll();
+}
+function planNotaActual(){ return (STATE.planNotas && STATE.planNotas[semanaActualPlan]) || ''; }
+async function guardarNotaSemana(valor){
+  if(!adminMode) return;
+  if(!STATE.planNotas) STATE.planNotas = {};
+  STATE.planNotas[semanaActualPlan] = valor;
+  await saveState();
+}
+
+async function agregarDestinoPlan(){
+  const nombre = await promptDialog('Nombre del nuevo origen (ej: "La Purilla 710km"):', '', 'Nuevo origen');
+  if(nombre===null || !nombre.trim()) return;
+  STATE.destinosPlan.push({id:uid('dp'), nombre:nombre.trim()});
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+async function editarDestinoPlan(id){
+  const dp = STATE.destinosPlan.find(x=>x.id===id); if(!dp) return;
+  const nuevo = await promptDialog('Nombre del origen:', dp.nombre, 'Editar origen');
+  if(nuevo===null || !nuevo.trim()) return;
+  dp.nombre = nuevo.trim();
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+async function borrarDestinoPlan(id){
+  if(!(await confirmDialog('¿Eliminar esta fila? Se pierden sus datos cargados en todas las semanas.'))) return;
+  STATE.destinosPlan = STATE.destinosPlan.filter(d=>d.id!==id);
+  STATE.planCeldas = STATE.planCeldas.filter(c=>c.destinoPlanId!==id);
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+
+async function agregarDestinoCelda(){
+  const nombre = await promptDialog('Nombre del nuevo destino (ej: "Salados"):', '', 'Nuevo destino');
+  if(nombre===null || !nombre.trim()) return;
+  STATE.destinosCelda.push({id:uid('dc'), nombre:nombre.trim()});
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+async function editarDestinoCelda(id){
+  const d = STATE.destinosCelda.find(x=>x.id===id); if(!d) return;
+  const nuevo = await promptDialog('Nombre del destino:', d.nombre, 'Editar destino');
+  if(nuevo===null || !nuevo.trim()) return;
+  d.nombre = nuevo.trim();
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+async function borrarDestinoCelda(id){
+  if(!(await confirmDialog('¿Eliminar este destino? Las celdas que lo tengan cargado van a quedar sin destino.'))) return;
+  STATE.destinosCelda = STATE.destinosCelda.filter(d=>d.id!==id);
+  STATE.planCeldas.forEach(c=>{ if(c.destinoId===id) c.destinoId=null; });
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+
+async function agregarProducto(){
+  const nombre = await promptDialog('Nombre del nuevo producto/carga (ej: "Cueros"):', '', 'Nuevo producto');
+  if(nombre===null || !nombre.trim()) return;
+  STATE.productos.push({id:uid('pr'), nombre:nombre.trim()});
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+async function editarProducto(id){
+  const p = STATE.productos.find(x=>x.id===id); if(!p) return;
+  const nuevo = await promptDialog('Nombre del producto/carga:', p.nombre, 'Editar producto');
+  if(nuevo===null || !nuevo.trim()) return;
+  p.nombre = nuevo.trim();
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+async function borrarProducto(id){
+  if(!(await confirmDialog('¿Eliminar este producto? Las celdas que lo tengan cargado van a quedar sin producto.'))) return;
+  STATE.productos = STATE.productos.filter(p=>p.id!==id);
+  STATE.planCeldas.forEach(c=>{ if(c.productoId===id) c.productoId=null; });
+  await saveState();
+  renderPlanificacion();
+  renderMaestros();
+}
+
+/* Cada casillero día×origen tiene 4 campos independientes, cada uno se edita y guarda por separado */
+function campoPlanHtml(destinoPlanId, dia, campo, campoDB, valorActual, icono){
+  const key = planFieldKey(destinoPlanId,dia,campo);
+  const editing = editingPlanCell === key;
+  if(campo==='camion' || campo==='chofer'){
+    const lista = campo==='camion' ? STATE.camiones : STATE.choferes;
+    const getLabel = campo==='camion' ? (x=>x.patente) : (x=>x.nombre);
+    if(editing){
+      const opts = lista.map(x=>`<option value="${x.id}" ${valorActual===x.id?'selected':''}>${escapeHtml(getLabel(x))}</option>`).join('');
+      return `<div class="plan-field editing"><select id="plan-field-live" onchange="onSeleccionCampo('${destinoPlanId}','${dia}','${campoDB}',this.value)" onblur="cerrarEdicionCelda()"><option value="">—</option>${opts}</select></div>`;
+    }
+    const obj = valorActual ? lista.find(x=>x.id===valorActual) : null;
+    return `<div class="plan-field" onclick="iniciarEdicionCampo('${destinoPlanId}','${dia}','${campo}')"><span class="plan-field-ico">${icono}</span>${obj?escapeHtml(getLabel(obj)):'<span class="plan-empty">—</span>'}</div>`;
+  }
+  // destino / producto (carga): ahora también son listas guardadas, con opción de agregar uno nuevo al toque
+  const lista = campo==='destino' ? STATE.destinosCelda : STATE.productos;
+  if(editing){
+    const opts = lista.map(x=>`<option value="${x.id}" ${valorActual===x.id?'selected':''}>${escapeHtml(x.nombre)}</option>`).join('');
+    return `<div class="plan-field editing"><select id="plan-field-live" onchange="onSeleccionCampoLista('${destinoPlanId}','${dia}','${campo}',this.value)" onblur="cerrarEdicionCelda()">
+      <option value="">—</option>${opts}<option value="__nuevo__">+ Agregar nuevo…</option>
+    </select></div>`;
+  }
+  const obj = valorActual ? lista.find(x=>x.id===valorActual) : null;
+  return `<div class="plan-field" onclick="iniciarEdicionCampo('${destinoPlanId}','${dia}','${campo}')"><span class="plan-field-ico">${icono}</span>${obj?escapeHtml(obj.nombre):'<span class="plan-empty">—</span>'}</div>`;
+}
+async function onSeleccionCampoLista(destinoPlanId, dia, campo, val){
+  const campoDB = campo==='destino' ? 'destinoId' : 'productoId';
+  const lista = campo==='destino' ? STATE.destinosCelda : STATE.productos;
+  if(val==='__nuevo__'){
+    const etiqueta = campo==='destino' ? 'destino' : 'producto / lo que lleva';
+    const nombre = await promptDialog(`Nombre del nuevo ${etiqueta}:`, '', 'Agregar');
+    if(nombre===null || !nombre.trim()){ renderPlanificacion(); return; }
+    const nuevo = {id: uid(campo==='destino'?'dc':'pr'), nombre: nombre.trim()};
+    lista.push(nuevo);
+    await saveState();
+    renderMaestros();
+    val = nuevo.id;
+  }
+  await guardarCampoCelda(destinoPlanId, dia, campoDB, val||null);
+  editingPlanCell = null;
+  renderPlanificacion();
+}
+
+function renderPlanificacion(){
+  const start = new Date(semanaActualPlan+'T00:00:00');
+  const end = new Date(start); end.setDate(end.getDate()+6);
+  document.getElementById('plan-semana-label').textContent = `Semana del ${fmtDateCorta(semanaActualPlan)} al ${fmtDateCorta(end.toISOString().slice(0,10))}`;
+  document.getElementById('plan-notas').value = planNotaActual();
+
+  let html = '<div class="plan-table">';
+  html += '<div class="plan-row plan-header-row"><div class="plan-h" style="text-align:left;padding-left:12px;">Origen</div>';
+  DIAS.forEach(d=> html += `<div class="plan-h">${DIAS_LABEL[d]}</div>`);
+  html += '</div>';
+
+  STATE.destinosPlan.forEach(dp=>{
+    html += '<div class="plan-row plan-origen-row">';
+    html += `<div class="plan-label">${escapeHtml(dp.nombre)}
+      <span class="plan-label-actions admin-only">
+        <button onclick="editarDestinoPlan('${dp.id}')" title="Editar nombre">✎</button>
+        <button onclick="borrarDestinoPlan('${dp.id}')" title="Eliminar fila">✕</button>
+      </span>
+    </div>`;
+    DIAS.forEach(d=>{
+      const c = celdaPlan(dp.id,d);
+      html += '<div class="plan-daycell">';
+      html += campoPlanHtml(dp.id, d, 'camion',  'camionId',   c?c.camionId:null,   '🚚');
+      html += campoPlanHtml(dp.id, d, 'destino', 'destinoId',  c?c.destinoId:null,  '📍');
+      html += campoPlanHtml(dp.id, d, 'carga',   'productoId', c?c.productoId:null, '📦');
+      html += campoPlanHtml(dp.id, d, 'chofer',  'choferId',   c?c.choferId:null,   '👤');
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  html += '</div>'; // plan-table
+  document.getElementById('plan-grid-wrap').innerHTML = html;
+
+  if(editingPlanCell){
+    const el = document.getElementById('plan-field-live');
+    if(el){
+      el.focus();
+      if(el.tagName==='INPUT') el.setSelectionRange(el.value.length, el.value.length);
+    }
+  }
+}
+
+/* ---------------- finanzas del taller ---------------- */
+let chartPorCamion = null, chartPorChofer = null;
+
+function dibujarBarChart(canvasId, labels, data, color, prevChart, onBarClick){
+  const el = document.getElementById(canvasId);
+  if(!el || typeof Chart==='undefined') return prevChart||null;
+  if(prevChart) prevChart.destroy();
+  if(labels.length===0){ labels=['Sin datos']; data=[0]; }
+  return new Chart(el, {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: color, borderRadius: 4, maxBarThickness: 46 }] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      onClick: (evt, elements)=>{ if(elements && elements[0] && onBarClick) onBarClick(elements[0].index); },
+      onHover: (evt, elements)=>{ evt.native.target.style.cursor = (elements && elements[0] && onBarClick) ? 'pointer' : 'default'; },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx)=> fmtMoney(ctx.parsed.y) } }
+      },
+      scales: {
+        y: { beginAtZero:true, ticks: { callback: (v)=> '$'+Number(v).toLocaleString('es-AR') }, grid:{color:'#EEE6DA'} },
+        x: { grid:{display:false} }
+      }
+    }
+  });
+}
+function renderDetalleLista(items){
+  const cont = document.getElementById('fin-detalle-lista');
+  if(items.length===0){ cont.innerHTML = '<div class="empty-msg">Sin movimientos registrados.</div>'; return; }
+  cont.innerHTML = items.map(it=>`
+    <div class="ticket" style="cursor:default;">
+      <div class="t-row1"><div class="t-name" style="font-size:13.5px;">${escapeHtml(it.tipo)}</div><span class="t-sub">${fmtDateLarga(it.fecha)}</span></div>
+      <div class="t-meta">${escapeHtml(it.descripcion||'(sin descripción)')}</div>
+      <div class="t-meta"><b>${fmtMoney(it.monto)}</b></div>
+    </div>`).join('');
+}
+function mostrarDetalleCamion(camionId){
+  const c = camion(camionId);
+  const items = [];
+  STATE.historialCamiones.filter(h=>h.camionId===camionId).forEach(h=>{
+    items.push({fecha:h.fecha, tipo:TIPO_GASTO_CAMION[h.tipo]||h.tipo, descripcion:h.descripcion, monto:h.monto||0});
+  });
+  STATE.viajes.filter(v=>v.camionId===camionId).forEach(v=>{
+    items.push({fecha:new Date(v.fecha).toISOString().slice(0,10), tipo:'Viaje (combustible/peajes)', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
+  });
+  items.sort((a,b)=> a.fecha<b.fecha?1:(a.fecha>b.fecha?-1:0));
+  document.getElementById('fin-detalle-titulo').textContent = `Detalle — ${c?c.patente:'(camión eliminado)'}${c&&c.modelo?' · '+c.modelo:''}`;
+  renderDetalleLista(items);
+  const wrap = document.getElementById('fin-detalle-wrap');
+  wrap.style.display = 'block';
+  wrap.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function mostrarDetalleChofer(choferId){
+  const ch = chofer(choferId);
+  const items = [];
+  STATE.historialChoferes.filter(h=>h.choferId===choferId).forEach(h=>{
+    items.push({fecha:h.fecha, tipo:TIPO_INCIDENTE_CHOFER[h.tipo]||h.tipo, descripcion:h.descripcion, monto:h.monto||0});
+  });
+  STATE.viajes.filter(v=>v.choferId===choferId).forEach(v=>{
+    items.push({fecha:new Date(v.fecha).toISOString().slice(0,10), tipo:'Viaje (combustible/peajes)', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
+  });
+  items.sort((a,b)=> a.fecha<b.fecha?1:(a.fecha>b.fecha?-1:0));
+  document.getElementById('fin-detalle-titulo').textContent = `Detalle — ${ch?escapeHtml(ch.nombre):'(chofer eliminado)'}`;
+  renderDetalleLista(items);
+  const wrap = document.getElementById('fin-detalle-wrap');
+  wrap.style.display = 'block';
+  wrap.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ---------------- resumen mensual (como un resumen de banco) ---------------- */
+const NOMBRES_MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let mesActualResumen = new Date().toISOString().slice(0,7); // 'YYYY-MM'
+
+function etiquetaMes(mesStr){
+  const [y,m] = mesStr.split('-').map(Number);
+  return `${NOMBRES_MES[m-1]} ${y}`;
+}
+function cambiarMes(delta){
+  const [y,m] = mesActualResumen.split('-').map(Number);
+  const d = new Date(y, (m-1)+delta, 1);
+  mesActualResumen = d.toISOString().slice(0,7);
+  renderResumenMensual();
+}
+function irMesActual(){ mesActualResumen = new Date().toISOString().slice(0,7); renderResumenMensual(); }
+
+/* Junta en una sola lista todo lo que tiene fecha y monto: gastos de camión, novedades de
+   chofer, gastos generales del taller y viajes despachados. Es el "libro mayor" del mes. */
+function movimientosDelMes(mesStr){
+  const movs = [];
+  STATE.historialCamiones.forEach(h=>{
+    if(h.fecha && h.fecha.startsWith(mesStr)){
+      const c = camion(h.camionId);
+      movs.push({fecha:h.fecha, tipo:'Camión', categoria:TIPO_GASTO_CAMION[h.tipo]||h.tipo, camion:c?c.patente:'(eliminado)', chofer:'', descripcion:h.descripcion||'', monto:h.monto||0});
+    }
+  });
+  STATE.historialChoferes.forEach(h=>{
+    if(h.fecha && h.fecha.startsWith(mesStr)){
+      const ch = chofer(h.choferId);
+      movs.push({fecha:h.fecha, tipo:'Chofer', categoria:TIPO_INCIDENTE_CHOFER[h.tipo]||h.tipo, camion:'', chofer:ch?ch.nombre:'(eliminado)', descripcion:h.descripcion||'', monto:h.monto||0});
+    }
+  });
+  STATE.gastosTaller.forEach(g=>{
+    if(g.fecha && g.fecha.startsWith(mesStr)){
+      movs.push({fecha:g.fecha, tipo:'Taller', categoria:g.categoria||'General', camion:'', chofer:'', descripcion:g.descripcion||'', monto:g.monto||0});
+    }
+  });
+  STATE.viajes.forEach(v=>{
+    const fechaStr = new Date(v.fecha).toISOString().slice(0,10);
+    if(fechaStr.startsWith(mesStr)){
+      const c = camion(v.camionId), ch = chofer(v.choferId);
+      movs.push({fecha:fechaStr, tipo:'Viaje', categoria:'Combustible / peajes', camion:c?c.patente:'(eliminado)', chofer:ch?ch.nombre:'', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
+    }
+  });
+  movs.sort((a,b)=> a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:0));
+  return movs;
+}
+
+function renderResumenMensual(){
+  document.getElementById('rm-mes-label').textContent = etiquetaMes(mesActualResumen);
+  const movs = movimientosDelMes(mesActualResumen);
+
+  const totalGeneral = movs.reduce((s,m)=>s+m.monto,0);
+  const totalCamiones = movs.filter(m=>m.camion).reduce((s,m)=>s+m.monto,0);
+  const totalChoferes = movs.filter(m=>m.tipo==='Chofer').reduce((s,m)=>s+m.monto,0);
+  const totalTaller = movs.filter(m=>m.tipo==='Taller').reduce((s,m)=>s+m.monto,0);
+  document.getElementById('rm-total-general').textContent = fmtMoney(totalGeneral);
+  document.getElementById('rm-total-camiones').textContent = fmtMoney(totalCamiones);
+  document.getElementById('rm-total-choferes').textContent = fmtMoney(totalChoferes);
+  document.getElementById('rm-total-taller').textContent = fmtMoney(totalTaller);
+  document.getElementById('rm-count-movs').textContent = movs.length;
+
+  const porCamion = {};
+  movs.forEach(m=>{ if(m.camion){ porCamion[m.camion] = (porCamion[m.camion]||0) + m.monto; } });
+  const filasCamion = Object.entries(porCamion).sort((a,b)=>b[1]-a[1])
+    .map(([patente,total])=>`<tr><td>${patente}</td><td>${fmtMoney(total)}</td></tr>`).join('');
+  document.getElementById('rm-tabla-camiones').innerHTML = filasCamion || '<tr><td colspan="2" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin movimientos de camiones este mes.</td></tr>';
+
+  const porChofer = {};
+  movs.forEach(m=>{ if(m.chofer){ porChofer[m.chofer] = (porChofer[m.chofer]||0) + m.monto; } });
+  const filasChofer = Object.entries(porChofer).sort((a,b)=>b[1]-a[1])
+    .map(([nombre,total])=>`<tr><td style="font-family:var(--body);">${escapeHtml(nombre)}</td><td>${fmtMoney(total)}</td></tr>`).join('');
+  document.getElementById('rm-tabla-choferes').innerHTML = filasChofer || '<tr><td colspan="2" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin movimientos de choferes este mes.</td></tr>';
+
+  const filasMovs = movs.map(m=>`
+    <tr>
+      <td>${fmtDateLarga(m.fecha)}</td>
+      <td style="font-family:var(--body);">${m.tipo}</td>
+      <td style="font-family:var(--body);">${escapeHtml(m.categoria)}</td>
+      <td>${m.camion||'–'}</td>
+      <td style="font-family:var(--body);">${escapeHtml(m.chofer||'–')}</td>
+      <td style="font-family:var(--body);">${escapeHtml(m.descripcion)}</td>
+      <td>${fmtMoney(m.monto)}</td>
+    </tr>`).join('');
+  document.getElementById('rm-tabla-movimientos').innerHTML = filasMovs || '<tr><td colspan="7" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin movimientos cargados este mes.</td></tr>';
+}
+
+function exportarResumenExcel(){
+  if(typeof XLSX==='undefined'){ alertDialog('No se pudo cargar la librería de Excel. Revisá tu conexión a internet e intentá de nuevo.'); return; }
+  const movs = movimientosDelMes(mesActualResumen);
+  const totalGeneral = movs.reduce((s,m)=>s+m.monto,0);
+  const totalCamiones = movs.filter(m=>m.camion).reduce((s,m)=>s+m.monto,0);
+  const totalChoferes = movs.filter(m=>m.tipo==='Chofer').reduce((s,m)=>s+m.monto,0);
+  const totalTaller = movs.filter(m=>m.tipo==='Taller').reduce((s,m)=>s+m.monto,0);
+
+  const wb = XLSX.utils.book_new();
+  const wsResumen = XLSX.utils.aoa_to_sheet([
+    ['Liand S.A. — Resumen mensual'],
+    [etiquetaMes(mesActualResumen)],
+    [],
+    ['Total del mes', totalGeneral],
+    ['Camiones (gastos + viajes)', totalCamiones],
+    ['Choferes (novedades)', totalChoferes],
+    ['Taller (general)', totalTaller],
+    ['Cantidad de movimientos', movs.length],
+  ]);
+  XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
+
+  const porCamion = {};
+  movs.forEach(m=>{ if(m.camion){ porCamion[m.camion] = (porCamion[m.camion]||0) + m.monto; } });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Camión','Total del mes'], ...Object.entries(porCamion)]), 'Por camion');
+
+  const porChofer = {};
+  movs.forEach(m=>{ if(m.chofer){ porChofer[m.chofer] = (porChofer[m.chofer]||0) + m.monto; } });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Chofer','Total del mes'], ...Object.entries(porChofer)]), 'Por chofer');
+
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['Fecha','Tipo','Categoría','Camión','Chofer','Descripción','Monto'],
+    ...movs.map(m=>[m.fecha, m.tipo, m.categoria, m.camion, m.chofer, m.descripcion, m.monto])
+  ]), 'Movimientos');
+
+  XLSX.writeFile(wb, `Liand_Resumen_${mesActualResumen}.xlsx`);
+}
+
+function exportarResumenPDF(){
+  if(typeof window.jspdf==='undefined'){ alertDialog('No se pudo cargar la librería de PDF. Revisá tu conexión a internet e intentá de nuevo.'); return; }
+  const { jsPDF } = window.jspdf;
+  const movs = movimientosDelMes(mesActualResumen);
+  const totalGeneral = movs.reduce((s,m)=>s+m.monto,0);
+  const totalCamiones = movs.filter(m=>m.camion).reduce((s,m)=>s+m.monto,0);
+  const totalChoferes = movs.filter(m=>m.tipo==='Chofer').reduce((s,m)=>s+m.monto,0);
+  const totalTaller = movs.filter(m=>m.tipo==='Taller').reduce((s,m)=>s+m.monto,0);
+
+  const docPdf = new jsPDF();
+  docPdf.setFontSize(16);
+  docPdf.text('Liand S.A. — Resumen mensual', 14, 16);
+  docPdf.setFontSize(11);
+  docPdf.text(etiquetaMes(mesActualResumen), 14, 24);
+  docPdf.setFontSize(10);
+  docPdf.text(`Total del mes: ${fmtMoney(totalGeneral)}`, 14, 33);
+  docPdf.text(`Camiones (gastos + viajes): ${fmtMoney(totalCamiones)}`, 14, 39);
+  docPdf.text(`Choferes (novedades): ${fmtMoney(totalChoferes)}`, 14, 45);
+  docPdf.text(`Taller (general): ${fmtMoney(totalTaller)}`, 14, 51);
+
+  docPdf.autoTable({
+    startY: 58,
+    head: [['Fecha','Tipo','Categoría','Camión','Chofer','Descripción','Monto']],
+    body: movs.map(m=>[fmtDateLarga(m.fecha), m.tipo, m.categoria, m.camion||'–', m.chofer||'–', m.descripcion, fmtMoney(m.monto)]),
+    styles: { fontSize: 7.5 },
+    headStyles: { fillColor: [166,58,42] }
+  });
+
+  docPdf.save(`Liand_Resumen_${mesActualResumen}.pdf`);
+}
+
+/* ---------------- datos maestros (listas centrales, edición/borrado permanente) ---------------- */
+function renderMaestros(){
+  document.getElementById('mae-count-camiones').textContent = STATE.camiones.length;
+  document.getElementById('mae-tabla-camiones').innerHTML = STATE.camiones.map(c=>`
+    <tr>
+      <td>${c.patente}</td>
+      <td style="font-family:var(--body);">${escapeHtml(c.modelo||'–')}</td>
+      <td style="font-family:var(--body);">${TIPO_CARGA[c.tipoCarga]||'–'}</td>
+      <td><span class="pill st-${c.estado}">${ESTADOS_CAMION[c.estado]}</span></td>
+      <td style="white-space:nowrap;"><button class="mae-link admin-only" onclick="openCamionModal('${c.id}')">Editar</button> <button class="mae-link del admin-only" onclick="borrarCamion('${c.id}')">Eliminar</button></td>
+    </tr>`).join('') || '<tr><td colspan="5" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin camiones cargados.</td></tr>';
+
+  document.getElementById('mae-count-choferes').textContent = STATE.choferes.length;
+  document.getElementById('mae-tabla-choferes').innerHTML = STATE.choferes.map(ch=>`
+    <tr>
+      <td style="font-family:var(--body);font-weight:700;">${escapeHtml(ch.nombre)}</td>
+      <td style="font-family:var(--body);">${ch.telefono||'–'}</td>
+      <td><span class="pill st-${ch.estado}">${ESTADOS_CHOFER[ch.estado]}</span></td>
+      <td style="white-space:nowrap;"><button class="mae-link admin-only" onclick="openChoferModal('${ch.id}')">Editar</button> <button class="mae-link del admin-only" onclick="borrarChofer('${ch.id}')">Eliminar</button></td>
+    </tr>`).join('') || '<tr><td colspan="4" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin choferes cargados.</td></tr>';
+
+  document.getElementById('mae-count-ubicaciones').textContent = STATE.ubicaciones.length;
+  document.getElementById('mae-tabla-ubicaciones').innerHTML = STATE.ubicaciones.map(u=>`
+    <tr>
+      <td style="font-family:var(--body);font-weight:700;">${escapeHtml(u.nombre)}</td>
+      <td style="font-family:var(--body);"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${ubicColor(u.tipo)};margin-right:6px;"></span>${TIPO_UBIC[u.tipo]}</td>
+      <td style="white-space:nowrap;"><button class="mae-link admin-only" onclick="editarUbicacion('${u.id}')">Editar</button> <button class="mae-link del admin-only" onclick="borrarUbicacion('${u.id}')">Eliminar</button></td>
+    </tr>`).join('') || '<tr><td colspan="3" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin ubicaciones cargadas.</td></tr>';
+
+  document.getElementById('mae-count-destinos').textContent = STATE.destinosPlan.length;
+  document.getElementById('mae-tabla-destinos').innerHTML = STATE.destinosPlan.map(dp=>`
+    <tr>
+      <td style="font-family:var(--body);font-weight:700;">${escapeHtml(dp.nombre)}</td>
+      <td style="white-space:nowrap;"><button class="mae-link admin-only" onclick="editarDestinoPlan('${dp.id}')">Editar</button> <button class="mae-link del admin-only" onclick="borrarDestinoPlan('${dp.id}')">Eliminar</button></td>
+    </tr>`).join('') || '<tr><td colspan="2" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin orígenes cargados.</td></tr>';
+
+  document.getElementById('mae-count-destinoscelda').textContent = STATE.destinosCelda.length;
+  document.getElementById('mae-tabla-destinoscelda').innerHTML = STATE.destinosCelda.map(d=>`
+    <tr>
+      <td style="font-family:var(--body);font-weight:700;">${escapeHtml(d.nombre)}</td>
+      <td style="white-space:nowrap;"><button class="mae-link admin-only" onclick="editarDestinoCelda('${d.id}')">Editar</button> <button class="mae-link del admin-only" onclick="borrarDestinoCelda('${d.id}')">Eliminar</button></td>
+    </tr>`).join('') || '<tr><td colspan="2" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin destinos cargados.</td></tr>';
+
+  document.getElementById('mae-count-productos').textContent = STATE.productos.length;
+  document.getElementById('mae-tabla-productos').innerHTML = STATE.productos.map(p=>`
+    <tr>
+      <td style="font-family:var(--body);font-weight:700;">${escapeHtml(p.nombre)}</td>
+      <td style="white-space:nowrap;"><button class="mae-link admin-only" onclick="editarProducto('${p.id}')">Editar</button> <button class="mae-link del admin-only" onclick="borrarProducto('${p.id}')">Eliminar</button></td>
+    </tr>`).join('') || '<tr><td colspan="2" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin productos cargados.</td></tr>';
+}
+
+function renderFinanzas(){
+  const totalCamiones = STATE.historialCamiones.reduce((s,h)=>s+(h.monto||0),0);
+  const totalViajes = STATE.viajes.reduce((s,v)=>s+(v.total||0),0);
+  const totalTaller = STATE.gastosTaller.reduce((s,g)=>s+(g.monto||0),0);
+  document.getElementById('fin-total-general').textContent = fmtMoney(totalCamiones+totalViajes+totalTaller);
+  document.getElementById('fin-total-camiones').textContent = fmtMoney(totalCamiones);
+  document.getElementById('fin-total-viajes').textContent = fmtMoney(totalViajes);
+  document.getElementById('fin-total-taller').textContent = fmtMoney(totalTaller);
+
+  // ---- gasto por camión: gastos/service de su ficha + combustible/peajes de sus viajes ----
+  const porCamion = {};
+  STATE.historialCamiones.forEach(h=>{
+    if(!porCamion[h.camionId]) porCamion[h.camionId] = {gastos:0, viajes:0};
+    porCamion[h.camionId].gastos += (h.monto||0);
+  });
+  STATE.viajes.forEach(v=>{
+    if(!v.camionId) return;
+    if(!porCamion[v.camionId]) porCamion[v.camionId] = {gastos:0, viajes:0};
+    porCamion[v.camionId].viajes += (v.total||0);
+  });
+  const camionIds = Object.keys(porCamion).sort((a,b)=>(porCamion[b].gastos+porCamion[b].viajes)-(porCamion[a].gastos+porCamion[a].viajes));
+
+  const filasCamiones = camionIds.map(camionId=>{
+    const c = camion(camionId);
+    const g = porCamion[camionId];
+    return `<tr><td>${c?c.patente:'(camión eliminado)'}</td><td style="font-family:var(--body);">${c&&c.modelo?escapeHtml(c.modelo):'–'}</td><td>${fmtMoney(g.gastos)}</td><td>${fmtMoney(g.viajes)}</td><td><b>${fmtMoney(g.gastos+g.viajes)}</b></td></tr>`;
+  });
+  document.getElementById('fin-tabla-camiones').innerHTML = filasCamiones.join('') || '<tr><td colspan="5" style="font-family:Inter;color:var(--muted);font-style:italic;">Todavía no hay gastos cargados por camión.</td></tr>';
+
+  chartPorCamion = dibujarBarChart(
+    'chart-por-camion',
+    camionIds.map(id=>{ const c=camion(id); return c?c.patente:'(eliminado)'; }),
+    camionIds.map(id=>porCamion[id].gastos+porCamion[id].viajes),
+    '#A63A2A',
+    chartPorCamion
+  );
+
+  // ---- gasto por chofer: novedades con costo + combustible/peajes de los viajes que manejó ----
+  const porChofer = {};
+  STATE.historialChoferes.forEach(h=>{
+    if(!h.monto) return;
+    if(!porChofer[h.choferId]) porChofer[h.choferId] = 0;
+    porChofer[h.choferId] += h.monto;
+  });
+  STATE.viajes.forEach(v=>{
+    if(!v.choferId) return;
+    if(!porChofer[v.choferId]) porChofer[v.choferId] = 0;
+    porChofer[v.choferId] += (v.total||0);
+  });
+  const choferIds = Object.keys(porChofer).sort((a,b)=>porChofer[b]-porChofer[a]);
+
+  chartPorChofer = dibujarBarChart(
+    'chart-por-chofer',
+    choferIds.map(id=>{ const ch=chofer(id); return ch?ch.nombre:'(eliminado)'; }),
+    choferIds.map(id=>porChofer[id]),
+    '#3E5C8A',
+    chartPorChofer
+  );
+
+  const filasTaller = STATE.gastosTaller.slice().sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(g=>`
+    <tr><td>${fmtDateLarga(g.fecha)}</td><td style="font-family:var(--body);">${escapeHtml(g.categoria)}</td><td style="font-family:var(--body);">${escapeHtml(g.descripcion||'')}</td><td>${fmtMoney(g.monto)}</td>
+    <td class="admin-only"><button class="btn-danger-text" onclick="borrarGastoTaller('${g.id}')">✕</button></td></tr>`).join('');
+  document.getElementById('fin-tabla-taller').innerHTML = filasTaller || '<tr><td colspan="5" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin gastos generales cargados.</td></tr>';
+}
+function openGastoTallerModal(){
+  document.getElementById('gt-fecha').value = new Date().toISOString().slice(0,10);
+  document.getElementById('gt-categoria').value = '';
+  document.getElementById('gt-descripcion').value = '';
+  document.getElementById('gt-monto').value = '';
+  openModal('modal-gasto-taller');
+}
+async function guardarGastoTaller(){
+  const fecha = document.getElementById('gt-fecha').value || new Date().toISOString().slice(0,10);
+  const categoria = document.getElementById('gt-categoria').value.trim() || 'General';
+  const descripcion = document.getElementById('gt-descripcion').value.trim();
+  const monto = numFromMiles('gt-monto');
+  STATE.gastosTaller.push({id:uid('gt'), fecha, categoria, descripcion, monto});
+  await saveState();
+  closeModal('modal-gasto-taller');
+  renderFinanzas();
+}
+async function borrarGastoTaller(id){
+  if(!(await confirmDialog('¿Eliminar este gasto?'))) return;
+  STATE.gastosTaller = STATE.gastosTaller.filter(g=>g.id!==id);
+  await saveState();
+  renderFinanzas();
+}
+
+/* ---------------- nuevo viaje / calculadora ---------------- */
+function openViajeModal(){
+  const camionOptions = STATE.camiones.map(c=>({id:c.id, nombre:`${c.patente} — ${TIPO_CARGA[c.tipoCarga]}`}));
+  fillSelect(document.getElementById('mv-camion'), camionOptions, '', 'Elegí un camión');
+  fillSelect(document.getElementById('mv-origen'), STATE.ubicaciones, '', 'Elegí origen');
+  fillSelect(document.getElementById('mv-destino'), STATE.ubicaciones, '', 'Elegí destino');
+  document.getElementById('mv-chofer').innerHTML = '<option value="">–</option>';
+  document.getElementById('mv-km').value = '';
+  document.getElementById('mv-consumo').value = '';
+  setMilesValue('mv-precio', STATE.config.precioCombustible || null);
+  document.getElementById('mv-peajes').value = '';
+  document.getElementById('mv-viaticos').value = '';
+  document.getElementById('mv-notas').value = '';
+  ['calc-litros','calc-combustible','calc-total'].forEach(id=>document.getElementById(id).textContent='–');
+  document.getElementById('calc-metodo').textContent = '–';
+  pendingRouteGeom = null; pendingRouteKey = '';
+  openModal('modal-viaje');
+}
+function onCamionViajeChange(){
+  const c = camion(document.getElementById('mv-camion').value);
+  if(!c) return;
+  document.getElementById('mv-consumo').value = c.consumoL100km;
+  document.getElementById('mv-origen').value = c.ubicacionId;
+  const a = asignacionDeCamion(c.id);
+  document.getElementById('mv-chofer').innerHTML =
+    `<option value="">Elegí un chofer${a?' (sugerido: '+(chofer(a.choferId)?.nombre||'')+')':''}</option>` +
+    STATE.choferes.map(x=>`<option value="${x.id}" ${a&&a.choferId===x.id?'selected':''}>${x.nombre}</option>`).join('');
+  calcularViaje();
+}
+async function calcularViaje(){
+  const origenId = document.getElementById('mv-origen').value;
+  const destinoId = document.getElementById('mv-destino').value;
+  const o = ubic(origenId), d = ubic(destinoId);
+  if(!o || !d){ recalcularCostos(); return; }
+  const estimadoKm = haversineKm(o.lat,o.lng,d.lat,d.lng) * (STATE.config.factorRuta||1.3);
+  setMilesValue('mv-km', Math.round(estimadoKm));
+  document.getElementById('calc-metodo').textContent = 'Buscando ruta por calles…';
+  recalcularCostos();
+
+  const r = await fetchRoadRoute(o,d);
+  if(document.getElementById('mv-origen').value!==origenId || document.getElementById('mv-destino').value!==destinoId) return;
+
+  if(r.ok){
+    pendingRouteGeom = r.coords;
+    pendingRouteKey = origenId+'|'+destinoId;
+    pendingRouteMetodo = r.metodo;
+    setMilesValue('mv-km', Math.round(r.km));
+    document.getElementById('calc-metodo').textContent = r.metodo==='camion' ? '✓ Ruta real de camión (OpenRouteService)' : '✓ Ruta real por calles (auto)';
+  }else{
+    pendingRouteGeom = null; pendingRouteKey = ''; pendingRouteMetodo = '';
+    document.getElementById('calc-metodo').textContent = `Estimado (línea recta ×${STATE.config.factorRuta||1.3})`;
+  }
+  recalcularCostos();
+}
+function recalcularCostos(){
+  const km = numFromMiles('mv-km');
+  const consumo = parseFloat(document.getElementById('mv-consumo').value)||0;
+  const precio = numFromMiles('mv-precio');
+  const peajes = numFromMiles('mv-peajes');
+  const viaticos = numFromMiles('mv-viaticos');
+  const litros = consumo>0 ? (km*consumo)/100 : 0;
+  const costoComb = litros*precio;
+  const total = costoComb+peajes+viaticos;
+  document.getElementById('calc-litros').textContent = consumo>0 ? litros.toFixed(1)+' L' : '–';
+  document.getElementById('calc-combustible').textContent = precio>0 ? fmtMoney(costoComb) : '–';
+  document.getElementById('calc-total').textContent = fmtMoney(total);
+}
+async function confirmarViaje(){
+  const camionId = document.getElementById('mv-camion').value;
+  const choferId = document.getElementById('mv-chofer').value;
+  const origenId = document.getElementById('mv-origen').value;
+  const destinoId = document.getElementById('mv-destino').value;
+  if(!camionId || !origenId || !destinoId){ await alertDialog('Elegí camión, origen y destino.'); return; }
+
+  const km = numFromMiles('mv-km');
+  const consumo = parseFloat(document.getElementById('mv-consumo').value)||0;
+  const precio = numFromMiles('mv-precio');
+  const peajes = numFromMiles('mv-peajes');
+  const viaticos = numFromMiles('mv-viaticos');
+  const litros = consumo>0 ? (km*consumo)/100 : 0;
+  const costoComb = litros*precio;
+  const total = costoComb+peajes+viaticos;
+
+  const c = camion(camionId);
+  c.estado = 'en_ruta';
+  c.ubicacionId = origenId;
+  c.destinoId = destinoId;
+  c.choferActualId = choferId || null;
+  c.actualizado = Date.now();
+  if(document.getElementById('mv-notas').value.trim()) c.comentario = document.getElementById('mv-notas').value.trim();
+
+  if(pendingRouteGeom && pendingRouteKey===origenId+'|'+destinoId){
+    c.rutaGeom = pendingRouteGeom;
+    c.rutaEstado = pendingRouteMetodo==='camion' ? 'real-camion' : 'real-auto';
+  }else{
+    c.rutaEstado = 'buscando';
+    const r = await fetchRoadRoute(ubic(origenId), ubic(destinoId));
+    c.rutaGeom = r.ok ? r.coords : null;
+    c.rutaEstado = r.ok ? (r.metodo==='camion'?'real-camion':'real-auto') : 'estimado';
+  }
+  if(choferId){ chofer(choferId).estado = 'en_ruta'; }
+
+  STATE.viajes.unshift({
+    id: uid('v'), camionId, choferId, origenId, destinoId,
+    km: Math.round(km), litros: +litros.toFixed(1), costoCombustible: costoComb,
+    peajes, viaticos, total, fecha: Date.now(),
+    notas: document.getElementById('mv-notas').value.trim()
+  });
+  if(!STATE.config.precioCombustible && precio) STATE.config.precioCombustible = precio;
+
+  await saveState();
+  closeModal('modal-viaje');
+  renderAll();
+}
+
+/* ---------------- config ---------------- */
+function openConfigModal(){
+  setMilesValue('cfg-precio', STATE.config.precioCombustible || null);
+  document.getElementById('cfg-factor').value = STATE.config.factorRuta || 1.3;
+  document.getElementById('cfg-ors-key').value = STATE.config.orsApiKey || '';
+  document.getElementById('cfg-email-redpetrol').value = STATE.config.emailRedPetrol || '';
+  document.getElementById('cfg-tel-javier').value = STATE.config.telefonoJavier || '';
+  openModal('modal-config');
+}
+async function guardarConfig(){
+  const claveAnterior = STATE.config.orsApiKey;
+  STATE.config.precioCombustible = numFromMiles('cfg-precio') || null;
+  STATE.config.factorRuta = parseFloat(document.getElementById('cfg-factor').value) || 1.3;
+  STATE.config.orsApiKey = document.getElementById('cfg-ors-key').value.trim() || null;
+  STATE.config.emailRedPetrol = document.getElementById('cfg-email-redpetrol').value.trim() || null;
+  STATE.config.telefonoJavier = document.getElementById('cfg-tel-javier').value.replace(/\D/g,'') || null;
+  await saveState();
+  closeModal('modal-config');
+  // si la clave de ruteo cambió, recalculamos todas las rutas en curso con la clave nueva
+  if(STATE.config.orsApiKey !== claveAnterior){
+    const enRuta = STATE.camiones.filter(c=>c.estado==='en_ruta' && c.destinoId);
+    if(enRuta.length>0){
+      await alertDialog(`Recalculando ${enRuta.length} ruta(s) en curso con la clave nueva… puede tardar unos segundos. Fijate el resultado en la ficha de cada camión ("Estado del camino").`, 'Actualizando rutas');
+      for(const c of enRuta){ await actualizarRutaCamion(c); }
+    }
+  }
+}
+
+/* ---------------- historial de viajes ---------------- */
+function openHistorial(){
+  const tbody = document.getElementById('tabla-viajes');
+  document.getElementById('count-viajes').textContent = STATE.viajes.length + ' registrados';
+  if(STATE.viajes.length===0){
+    tbody.innerHTML = '<tr><td colspan="6" style="font-family:Inter;color:var(--muted);font-style:italic;">Todavía no hay viajes registrados.</td></tr>';
+  }else{
+    tbody.innerHTML = STATE.viajes.map(v=>{
+      const c = camion(v.camionId);
+      const o = ubic(v.origenId), d = ubic(v.destinoId);
+      return `<tr>
+        <td>${new Date(v.fecha).toLocaleDateString('es-AR')}</td>
+        <td>${c?c.patente:'–'}</td>
+        <td>${o?o.nombre.split(' ')[0]:'?'} → ${d?d.nombre.split(' ')[0]:'?'}</td>
+        <td>${v.km} km</td>
+        <td>${fmtMoney(v.total)}</td>
+        <td class="admin-only"><button class="btn-danger-text" onclick="borrarViaje('${v.id}')">✕</button></td>
+      </tr>`;
+    }).join('');
+  }
+  openModal('modal-historial');
+}
+async function borrarViaje(id){
+  if(!(await confirmDialog('¿Eliminar este viaje del historial?'))) return;
+  STATE.viajes = STATE.viajes.filter(v=>v.id!==id);
+  await saveState(); openHistorial();
+}
+
+/* ---------------- init ---------------- */
+function waitForFirebase(){
+  if(window.firebaseReady) return Promise.resolve();
+  return new Promise(resolve=>document.addEventListener('firebase-ready', resolve, {once:true}));
+}
+async function init(){
+  await waitForFirebase();
+  window.FB.onAuthStateChanged(window.FB.auth, aplicarModoAdmin);
+  await loadState();
+  initMap();
+  renderAll();
+  fitMapToData();
+  tickClock();
+  document.getElementById('count-viajes').textContent = STATE.viajes.length + ' registrados';
+  document.getElementById('clock-sync').textContent = 'Sincronizado ' + new Date().toLocaleTimeString('es-AR');
+
+  document.getElementById('add-camion').onclick = ()=>openCamionModal(null);
+  document.getElementById('add-chofer').onclick = ()=>openChoferModal(null);
+  document.getElementById('btn-nuevo-viaje').onclick = openViajeModal;
+  document.getElementById('btn-config').onclick = openConfigModal;
+  document.getElementById('btn-ubicacion').onclick = openUbicacionModal;
+  document.getElementById('add-ubicacion-col').onclick = openUbicacionModal;
+  document.getElementById('btn-historial').onclick = openHistorial;
+  document.getElementById('btn-edit-toggle').onclick = toggleAdminMode;
+  document.getElementById('search-camiones').oninput = renderCamiones;
+  document.getElementById('search-choferes').oninput = renderChoferes;
+  document.getElementById('search-ubicaciones').oninput = renderUbicacionesColumn;
+  document.getElementById('search-autorizaciones').oninput = renderAutorizaciones;
+  document.getElementById('fk-add-btn').onclick = ()=>openGastoCamionModal(fichaCamionId);
+  document.getElementById('gv-add-btn').onclick = ()=>openGastoCamionModal(gastoVistaCamionId);
+  document.getElementById('fc-add-btn').onclick = ()=>openIncidenteChoferModal(fichaChoferId);
+  document.getElementById('gvc-add-btn').onclick = ()=>openIncidenteChoferModal(gastoVistaChoferId);
+  document.getElementById('confirm-cancel-btn').onclick = ()=>_resolveConfirm(false);
+  document.getElementById('confirm-ok-btn').onclick = ()=>_resolveConfirm(true);
+  document.getElementById('prompt-cancel-btn').onclick = ()=>_resolvePrompt(null);
+  document.getElementById('prompt-ok-btn').onclick = ()=>_resolvePrompt(document.getElementById('prompt-input').value);
+  document.getElementById('prompt-input').onkeydown = (e)=>{
+    if(e.key==='Enter'){ _resolvePrompt(document.getElementById('prompt-input').value); }
+    if(e.key==='Escape'){ _resolvePrompt(null); }
+  };
+
+  setInterval(tickClock, 1000);
+
+  STATE.camiones.filter(c=>c.estado==='en_ruta' && c.destinoId && !c.rutaGeom).forEach(actualizarRutaCamion);
+}
+init();
+</script>
+</body>
+</html>
