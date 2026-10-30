@@ -52,6 +52,19 @@
   #gate-error{display:none;color:var(--off);font-size:12.5px;font-weight:600;margin:-4px 0 12px;text-align:left;}
   #gate-form{display:none;}
   #gate-cargando{font-size:12.5px;color:var(--muted);}
+  .eng-section{margin-top:22px;padding-top:12px;border-top:2px solid var(--line);}
+  .eng-card{padding:8px 11px 7px;}
+  .eng-card .t-id{font-size:15px;}
+  .eng-id{cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+  .vto-alertas{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+  .vto-chip{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:9px;}
+  .vto-chip.vto-mal{background:var(--off-bg);color:var(--off);}
+  .vto-chip.vto-pronto{background:var(--warn-bg);color:var(--warn);}
+  .vto-badge{font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:9px;display:inline-block;}
+  .vto-badge.vto-ok{background:var(--ok-bg);color:var(--ok);}
+  .vto-badge.vto-pronto{background:var(--warn-bg);color:var(--warn);}
+  .vto-badge.vto-mal{background:var(--off-bg);color:var(--off);}
+  .vto-badge.vto-sin,.vto-badge.vto-na{background:var(--panel-alt);color:var(--muted);}
   .gate-olvido{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;margin-top:12px;cursor:pointer;}
   #gate-ok{display:none;color:var(--ok);font-size:12.5px;font-weight:600;margin-top:10px;}
   .gate-pie{font-size:11px;color:var(--muted);margin-top:22px;}
@@ -212,6 +225,34 @@
   .calc-line b{font-family:var(--mono);}
   .calc-total{border-top:1px solid var(--line);margin-top:6px;padding-top:9px;font-size:16px;font-weight:700;}
   .calc-total b{font-family:var(--mono);color:var(--burgundy);}
+  .fila-click{cursor:pointer;} .fila-click:hover td{background:var(--panel-alt);}
+  .td-desc{font-family:var(--body);font-size:12.5px;max-width:320px;}
+  .td-vacio{font-family:var(--body);color:var(--muted);font-style:italic;}
+  .rm-duo{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;margin-bottom:22px;align-items:start;}
+  .rm-duo td:last-child{white-space:nowrap;}
+  .rm-mayor{font-family:var(--body);font-size:11.5px;color:var(--muted);margin-top:2px;max-width:340px;}
+  .fila-sel td{background:#FBEDEA !important;}
+  @media (max-width:980px){ .rm-duo{grid-template-columns:1fr;} }
+  .cb-duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:980px;margin-top:14px;}
+  .cb-col{margin:0;border-style:solid;}
+  .cb-col-real{background:#fff;border-color:var(--burgundy);}
+  .cb-col-tit{font-family:var(--display);text-transform:uppercase;font-size:15px;letter-spacing:.4px;margin-bottom:12px;color:var(--ink);}
+  .cb-compara{font-size:13px;margin-top:4px;}
+  .cb-compara .calc-line{padding:2px 0;}
+  .cb-listas{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1180px;margin-top:26px;}
+  .cb-listas table{font-size:12.5px;}
+  .file-in{font-size:12.5px;width:100%;}
+  .dif-mas{color:var(--warn);font-weight:700;} .dif-menos{color:var(--ok);font-weight:700;}
+  .tk-thumb{width:42px;height:42px;object-fit:cover;border-radius:3px;border:1px solid var(--line);cursor:zoom-in;vertical-align:middle;}
+  .fk-sec{border-top:1px solid var(--line);margin-top:16px;padding-top:12px;}
+  .fk-sec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
+  .fk-sec-tit{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.4px;}
+  .fk-doc{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;background:var(--panel-alt);border:1px solid var(--line);border-radius:4px;padding:9px 11px;}
+  .fk-vtos{display:flex;gap:8px;flex-wrap:wrap;}
+  .fk-tk{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:7px 0;border-bottom:1px dashed var(--line);}
+  .fk-tk:last-child{border-bottom:none;}
+  .fk-tk .grow{flex:1;}
+  @media (max-width:820px){ .cb-duo,.cb-listas{grid-template-columns:1fr;} }
   .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
   .hint{font-size:11.5px;color:var(--muted);margin-top:-6px;margin-bottom:12px;}
 
@@ -227,13 +268,6 @@
   .fin-h2{font-family:var(--display);font-size:20px;text-transform:uppercase;margin:0 0 6px;letter-spacing:.3px;}
   .mae-link{background:none;border:none;font-size:11.5px;font-weight:600;text-decoration:underline;cursor:pointer;color:var(--ink);padding:0;}
   .mae-link.del{color:var(--off);}
-  .ticker-wrap{background:var(--ink);border-radius:5px;overflow:hidden;white-space:nowrap;height:36px;display:flex;align-items:center;margin-bottom:14px;}
-  .ticker-track{display:inline-flex;white-space:nowrap;animation:ticker-scroll 26s linear infinite;}
-  .ticker-wrap:hover .ticker-track{animation-play-state:paused;}
-  .ticker-item{padding:0 42px;font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.3px;color:#fff;display:inline-flex;align-items:center;gap:6px;}
-  .ticker-item b{color:#8FD19E;font-size:13px;}
-  .ticker-item .tick-sep{color:#6b6055;}
-  @keyframes ticker-scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
   /* planilla semanal — origen en filas, días en columnas, 4 campos independientes por casillero */
   #plan-notas{width:100%;max-width:640px;min-height:40px;margin-bottom:14px;border:1px solid var(--line);border-radius:3px;padding:8px 10px;font-size:12.5px;background:var(--panel-alt);color:var(--ink);resize:vertical;}
@@ -322,7 +356,7 @@
       <section class="col col-camiones">
         <div class="col-header">
           <h2>Camiones <span class="count-pill" id="count-camiones">0</span></h2>
-          <button class="btn btn-outline btn-sm admin-only" id="add-camion">+ camión</button>
+          <button class="btn btn-outline btn-sm admin-only" id="add-camion">+ unidad</button>
         </div>
         <div class="search-row"><input id="search-camiones" placeholder="Buscar patente, chofer, destino…"></div>
         <div id="lista-camiones"></div>
@@ -406,9 +440,9 @@
       <h2 style="font-family:var(--display);font-size:22px;text-transform:uppercase;margin:0 0 6px;">Gastos y modificaciones</h2>
 
       <div class="hint">Elegí un camión para ver su historial y cargarle gastos, arreglos o modificaciones. Es la misma información que aparece en su ficha (clic en la patente, en el Panel).</div>
-      <h3 class="fin-h2" style="font-size:16px;margin:16px 0 8px;">Por camión</h3>
+      <h3 class="fin-h2" style="font-size:16px;margin:16px 0 8px;">Por unidad (camiones y enganches)</h3>
       <div class="field" style="max-width:340px;">
-        <label>Camión</label>
+        <label>Unidad</label>
         <select id="gv-camion" onchange="onGastoCamionChange()"></select>
       </div>
       <div id="gv-body" style="display:none;margin-top:22px;">
@@ -444,29 +478,66 @@
 
     <!-- ================= COMBUSTIBLE ================= -->
     <div class="view-page" id="view-combustible" style="display:none;">
-      <h2 style="font-family:var(--display);font-size:22px;text-transform:uppercase;margin:0 0 6px;">Calculadora de combustible</h2>
+      <h2 style="font-family:var(--display);font-size:22px;text-transform:uppercase;margin:0 0 6px;">Combustible</h2>
+      <div class="hint">A la izquierda calculás cuánto debería gastar el camión en un tramo. A la derecha cargás lo que consumió de verdad, con el ticket. Si el ticket corresponde a un tramo estimado, elegilo y queda la comparación en la ficha de la unidad.</div>
 
-      <div class="ticker-wrap"><div class="ticker-track" id="ticker-track"></div></div>
+      <div class="cb-duo">
+        <div class="calc-box cb-col">
+          <div class="cb-col-tit">Gasto estimado</div>
+          <div class="field">
+            <label>Precio del gasoil ($/l)</label>
+            <div class="money-input"><span class="money-prefix">$</span><input id="cb-precio" type="text" inputmode="numeric" placeholder="Cargalo a mano" oninput="formatMilesLive(this);calcularCombustible()" onblur="guardarPrecioCombustibleRef()"></div>
+          </div>
+          <div class="field">
+            <label>Camión</label>
+            <select id="cb-camion" onchange="onCombustibleCamionChange()"></select>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Consumo (L/100km)</label><input id="cb-consumo" type="number" step="0.1" placeholder="35" oninput="calcularCombustible()"></div>
+            <div class="field"><label>Km a recorrer</label><input id="cb-km" type="text" inputmode="numeric" placeholder="350" oninput="formatMilesLive(this);calcularCombustible()"></div>
+          </div>
+          <div class="field"><label>Tramo / destino (opcional)</label><input id="cb-tramo" placeholder="Ej: Quilmes → Rosario"></div>
+          <div class="calc-line"><span>Litros necesarios</span><b id="cb-litros">–</b></div>
+          <div class="calc-line calc-total"><span>Costo estimado</span><b id="cb-total">–</b></div>
+          <button class="btn btn-primary admin-only" style="margin-top:14px;width:100%;" onclick="agregarGastoCombustible()">Guardar estimado</button>
+        </div>
 
-      <div class="hint">Precio de referencia: Diesel Infinia YPF, Buenos Aires — $2.431/l al 10/08/2026 (combustibles.ar). No hay forma de traerlo automático en tiempo real desde acá (ninguna app puede sin un servicio pago atrás), así que el cartel de arriba y el precio de abajo muestran esta referencia: ajustala vos cuando cambie o si usás Diesel 500 común, que suele salir un poco menos — se actualiza sola en el cartel apenas la cambiás.</div>
+        <div class="calc-box cb-col cb-col-real">
+          <div class="cb-col-tit">Consumo real (ticket)</div>
+          <div class="field">
+            <label>Camión</label>
+            <select id="tk-camion" onchange="onTicketCamionChange()"></select>
+          </div>
+          <div class="field">
+            <label>Tramo estimado al que corresponde</label>
+            <select id="tk-estimado" onchange="actualizarComparacionTicket()"></select>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Fecha</label><input id="tk-fecha" type="date"></div>
+            <div class="field"><label>Litros cargados</label><input id="tk-litros" type="text" inputmode="numeric" placeholder="120" oninput="formatMilesLive(this);actualizarComparacionTicket()"></div>
+          </div>
+          <div class="field">
+            <label>Costo total del ticket</label>
+            <div class="money-input"><span class="money-prefix">$</span><input id="tk-costo" type="text" inputmode="numeric" placeholder="0" oninput="formatMilesLive(this);actualizarComparacionTicket()"></div>
+          </div>
+          <div class="field">
+            <label>Foto del ticket</label>
+            <input id="tk-foto" type="file" accept="image/*" capture="environment" class="file-in">
+          </div>
+          <div id="tk-comparacion" class="cb-compara"></div>
+          <button class="btn btn-primary admin-only" id="tk-btn" style="margin-top:14px;width:100%;" onclick="guardarTicketDesdeCombustible()">Guardar ticket</button>
+        </div>
+      </div>
 
-      <div class="calc-box" style="max-width:460px;margin-top:16px;">
-        <div class="field">
-          <label>Precio combustible ($/l)</label>
-          <div class="money-input"><span class="money-prefix">$</span><input id="cb-precio" type="text" inputmode="numeric" placeholder="2.431" oninput="formatMilesLive(this);calcularCombustible();renderTicker()" onblur="guardarPrecioCombustibleRef()"></div>
+      <div class="cb-listas">
+        <div>
+          <h3 class="fin-h2" style="font-size:16px;">Tramos estimados sin ticket</h3>
+          <table class="trips"><thead><tr><th>Fecha</th><th>Camión</th><th>Tramo</th><th>Litros</th><th>Estimado</th><th></th></tr></thead><tbody id="cb-pendientes"></tbody></table>
         </div>
-        <div class="field">
-          <label>Camión (opcional — autocompleta el consumo)</label>
-          <select id="cb-camion" onchange="onCombustibleCamionChange()"></select>
+        <div>
+          <h3 class="fin-h2" style="font-size:16px;">Últimos tickets</h3>
+          <table class="trips"><thead><tr><th>Fecha</th><th>Camión</th><th>Litros</th><th>Costo</th><th>vs. estimado</th><th></th></tr></thead><tbody id="cb-tickets"></tbody></table>
         </div>
-        <div class="field-row">
-          <div class="field" style="margin-bottom:0;"><label>Consumo (L/100km)</label><input id="cb-consumo" type="number" step="0.1" placeholder="35" oninput="calcularCombustible()"></div>
-          <div class="field" style="margin-bottom:0;"><label>Km a recorrer</label><input id="cb-km" type="text" inputmode="numeric" placeholder="350" oninput="formatMilesLive(this);calcularCombustible()"></div>
-        </div>
-        <div class="calc-line" style="margin-top:10px;"><span>Litros necesarios</span><b id="cb-litros">–</b></div>
-        <div class="calc-line calc-total"><span>Costo total</span><b id="cb-total">–</b></div>
-        <button class="btn btn-primary admin-only" style="margin-top:16px;width:100%;" onclick="agregarGastoCombustible()">+ Cargar este gasto al camión</button>
-        <div class="hint" style="margin-top:10px;margin-bottom:0;">Necesitás elegir un camión arriba para poder cargarlo — queda registrado directo en su ficha, en "Gastos y modificaciones".</div>
       </div>
 
       <h3 class="fin-h2" style="font-size:18px;margin-top:34px;">Autorizaciones de carga</h3>
@@ -474,7 +545,7 @@
       <button class="btn btn-primary btn-sm admin-only" style="margin:10px 0 16px;" onclick="abrirNuevaAutorizacion()">🔒 Generar autorización</button>
       <div class="search-row" style="max-width:360px;"><input id="search-autorizaciones" placeholder="Buscar por chofer o código…"></div>
       <table class="trips">
-        <thead><tr><th>Código</th><th>Chofer</th><th>Camión</th><th>Fecha</th><th>Monto</th><th>Estado</th><th></th></tr></thead>
+        <thead><tr><th>Código</th><th>Chofer</th><th>Camión</th><th>Fecha</th><th>Litros</th><th>Descripción</th><th>Estado</th><th></th></tr></thead>
         <tbody id="auth-tabla"></tbody>
       </table>
     </div>
@@ -501,16 +572,16 @@
       </div>
 
       <h2 class="fin-h2">Detalle por camión</h2>
-      <div class="hint">Tocá un camión para ver la descripción de cada gasto, abajo del todo.</div>
+      <div class="hint">Tocá una fila (o una barra del gráfico) para ver la descripción de cada gasto, abajo del todo.</div>
       <table class="trips" style="margin-bottom:32px;">
-        <thead><tr><th>Camión</th><th>Modelo</th><th>Gastos/service</th><th>Combustible / peajes</th><th>Total</th></tr></thead>
+        <thead><tr><th>Unidad</th><th>Último movimiento</th><th>Service / gastos</th><th>Combustible</th><th>Viajes / peajes</th><th>Total</th></tr></thead>
         <tbody id="fin-tabla-camiones"></tbody>
       </table>
 
       <h2 class="fin-h2">Detalle por chofer</h2>
-      <div class="hint">Tocá un chofer para ver la descripción de cada novedad, abajo del todo.</div>
+      <div class="hint">Tocá una fila (o una barra del gráfico) para ver la descripción de cada novedad y viaje, abajo del todo.</div>
       <table class="trips" style="margin-bottom:32px;">
-        <thead><tr><th>Chofer</th><th>Novedades</th><th>Combustible / peajes</th><th>Total</th></tr></thead>
+        <thead><tr><th>Chofer</th><th>Último movimiento</th><th>Novedades</th><th>Viajes</th><th>Total</th></tr></thead>
         <tbody id="fin-tabla-choferes"></tbody>
       </table>
 
@@ -553,18 +624,25 @@
         <div class="finanzas-card"><div class="fc-label">Taller (general)</div><div class="fc-value" id="rm-total-taller">$ 0</div></div>
       </div>
 
-      <h3 class="fin-h2" style="font-size:16px;">Por camión</h3>
-      <table class="trips" style="margin-bottom:26px;">
-        <thead><tr><th>Camión</th><th>Total del mes</th></tr></thead>
-        <tbody id="rm-tabla-camiones"></tbody>
-      </table>
+      <div class="rm-duo">
+        <div>
+          <h3 class="fin-h2" style="font-size:16px;">Por camión</h3>
+          <table class="trips">
+            <thead><tr><th>Unidad</th><th>Service / gastos</th><th>Combustible</th><th>Viajes / peajes</th><th>Total</th></tr></thead>
+            <tbody id="rm-tabla-camiones"></tbody>
+          </table>
+        </div>
+        <div>
+          <h3 class="fin-h2" style="font-size:16px;">Por chofer</h3>
+          <table class="trips">
+            <thead><tr><th>Chofer</th><th>Viajes</th><th>Novedades</th><th>Total</th></tr></thead>
+            <tbody id="rm-tabla-choferes"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="hint" style="margin-top:8px;">Tocá un camión o un chofer para ver solo sus movimientos abajo.</div>
 
-      <h3 class="fin-h2" style="font-size:16px;">Por chofer</h3>
-      <table class="trips" style="margin-bottom:26px;">
-        <thead><tr><th>Chofer</th><th>Total del mes</th></tr></thead>
-        <tbody id="rm-tabla-choferes"></tbody>
-      </table>
-
+      <div id="rm-filtro" style="display:none;margin:8px 0 6px;"></div>
       <h3 class="fin-h2" style="font-size:16px;">Todos los movimientos <span class="count-pill" id="rm-count-movs">0</span></h3>
       <table class="trips">
         <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Camión</th><th>Chofer</th><th>Descripción</th><th>Monto</th></tr></thead>
@@ -578,13 +656,16 @@
       <div class="hint" style="margin-bottom:22px;">Acá vive la lista de base de toda la app: camiones, choferes, ubicaciones y orígenes/destinos. Lo que edites o elimines acá queda guardado (o borrado) para siempre, para todos.</div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <h3 class="fin-h2" style="font-size:16px;margin:0;">Camiones <span class="count-pill" id="mae-count-camiones">0</span></h3>
-        <button class="btn btn-primary btn-sm admin-only" onclick="openCamionModal(null)">+ Camión</button>
+        <h3 class="fin-h2" style="font-size:16px;margin:0;">Unidades (camiones y enganches) <span class="count-pill" id="mae-count-camiones">0</span></h3>
+        <button class="btn btn-primary btn-sm admin-only" onclick="openCamionModal(null)">+ Unidad</button>
       </div>
-      <table class="trips" style="margin-bottom:30px;">
-        <thead><tr><th>Patente</th><th>Modelo</th><th>Carga</th><th>Estado</th><th></th></tr></thead>
+      <div class="hint">El tipo (camión, batea, semirremolque, acoplado o chasis volquete) se cambia con "Editar". Tocá la patente para abrir la ficha.</div>
+      <div style="overflow-x:auto;margin-bottom:30px;">
+      <table class="trips">
+        <thead><tr><th>Patente</th><th>Tipo</th><th>Modelo</th><th>VTV</th><th>SENASA</th><th>Seguro</th><th>Estado</th><th></th></tr></thead>
         <tbody id="mae-tabla-camiones"></tbody>
       </table>
+      </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <h3 class="fin-h2" style="font-size:16px;margin:0;">Choferes <span class="count-pill" id="mae-count-choferes">0</span></h3>
@@ -641,13 +722,16 @@
 <!-- MODAL: nuevo/editar camión -->
 <div class="modal-backdrop hidden" id="modal-camion">
   <div class="modal">
-    <h2 id="mc-title">Nuevo camión</h2>
-    <div class="modal-sub">Datos del vehículo y su estado actual.</div>
+    <h2 id="mc-title">Nueva unidad</h2>
+    <div class="modal-sub">Datos de la unidad y su estado actual.</div>
     <input type="hidden" id="mc-id">
     <div class="field-row">
       <div class="field"><label>Patente</label><input id="mc-patente" placeholder="AB123CD"></div>
-      <div class="field"><label>Modelo</label><input id="mc-modelo" placeholder="Ej: Scania P280"></div>
+      <div class="field"><label>Tipo de unidad</label>
+        <select id="mc-tipo-unidad"><option value="camion">Camión</option><option value="batea">Batea</option><option value="semirremolque">Semirremolque</option><option value="acoplado">Acoplado</option><option value="chasis_volquete">Chasis volquete</option></select>
+      </div>
     </div>
+    <div class="field"><label>Modelo</label><input id="mc-modelo" placeholder="Ej: M. Benz ATEGO 1726 (2017)"></div>
     <div class="field-row">
       <div class="field"><label>Tipo de carga</label>
         <select id="mc-tipo"><option value="cuero">Cuero</option><option value="grasa_hueso">Grasa / Hueso</option></select>
@@ -661,8 +745,14 @@
       <div class="field"><label>Ubicación actual</label><select id="mc-ubicacion"></select></div>
     </div>
     <div class="field"><label>Destino (si está en ruta)</label><select id="mc-destino"></select></div>
+    <div class="field-row">
+      <div class="field"><label>Vence VTV</label><input id="mc-vto-vtv" type="date"></div>
+      <div class="field"><label>Vence SENASA</label><input id="mc-vto-senasa" type="date"></div>
+      <div class="field"><label>Vence seguro</label><input id="mc-vto-seguro" type="date"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;margin:-4px 0 12px;"><input type="checkbox" id="mc-senasa-na"> No necesita SENASA</label>
     <div class="field"><label>Comentario</label><textarea id="mc-comentario" placeholder="Notas para el equipo…"></textarea></div>
-    <div class="hint">El chofer que lo maneja se asigna desde "Planificación semanal" o al despachar un viaje — ya no queda fijo al camión.</div>
+    <div class="hint">El chofer y el enganche se asignan desde "Planificación semanal" o al despachar un viaje, no quedan fijos a la unidad.</div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal('modal-camion')">Cancelar</button>
       <button class="btn btn-primary" onclick="guardarCamion()">Guardar</button>
@@ -752,13 +842,32 @@
 <div class="modal-backdrop hidden" id="modal-ficha-camion">
   <div class="modal" style="max-width:600px;">
     <h2 id="fk-patente">Camión</h2>
-    <div class="modal-sub">Ficha, mantenimiento y gastos.</div>
+    <div class="modal-sub" id="fk-sub">Ficha, documentación, combustible y gastos.</div>
     <input type="hidden" id="fk-camion-id">
     <div class="field-row">
       <div class="field"><label>Modelo</label><input id="fk-modelo" placeholder="Ej: Scania P280"></div>
       <div class="field"><label>Consumo (L/100km)</label><input id="fk-consumo" type="number" step="0.1" placeholder="35"></div>
     </div>
     <div class="modal-actions admin-only" style="margin-top:0;"><button class="btn btn-outline" onclick="guardarFichaCamion()">Guardar datos</button></div>
+
+    <div class="fk-sec">
+      <div class="fk-sec-head"><div class="fk-sec-tit">Vencimientos</div></div>
+      <div class="fk-vtos" id="fk-vtos"></div>
+    </div>
+
+    <div class="fk-sec">
+      <div class="fk-sec-head"><div class="fk-sec-tit">Documentación (SENASA, cédula, seguro y VTV en un PDF)</div></div>
+      <div id="fk-doc"></div>
+      <input type="file" id="fk-doc-file" accept="application/pdf" style="display:none;" onchange="subirDocumentacion(this)">
+    </div>
+
+    <div class="fk-sec" id="fk-tickets-sec">
+      <div class="fk-sec-head">
+        <div class="fk-sec-tit">Tickets de combustible</div>
+        <button class="btn btn-outline btn-sm admin-only" onclick="abrirTicket(fichaCamionId, null)">+ Cargar ticket</button>
+      </div>
+      <div id="fk-tickets" style="max-height:220px;overflow-y:auto;"></div>
+    </div>
 
     <div id="fk-ruta-box" style="display:none;background:var(--panel-alt);border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-top:14px;font-size:12.5px;"></div>
 
@@ -795,15 +904,21 @@
 </div>
 
 <!-- MODAL: cargar el gasto real de combustible (comparar contra lo estimado) -->
-<div class="modal-backdrop hidden" id="modal-gasto-real">
-  <div class="modal">
-    <h2>Cargar gasto real</h2>
-    <div class="modal-sub" id="gr-sub">Lo que realmente se gastó cuando el camión llegó a destino.</div>
-    <div class="field"><label>Monto real gastado</label><div class="money-input"><span class="money-prefix">$</span><input id="gr-monto" type="text" inputmode="numeric" oninput="formatMilesLive(this)"></div></div>
-    <div class="hint">Se compara con lo estimado para ver si el camión gastó más, menos, o justo lo calculado.</div>
+<div class="modal-backdrop hidden" id="modal-ticket">
+  <div class="modal" style="max-width:460px;">
+    <h2>Cargar ticket de combustible</h2>
+    <div class="modal-sub" id="mt-sub">Lo que el camión cargó de verdad.</div>
+    <input type="hidden" id="mt-camion">
+    <div class="field"><label>Tramo estimado al que corresponde</label><select id="mt-estimado"></select></div>
+    <div class="field-row">
+      <div class="field"><label>Fecha</label><input id="mt-fecha" type="date"></div>
+      <div class="field"><label>Litros cargados</label><input id="mt-litros" type="text" inputmode="numeric" oninput="formatMilesLive(this)"></div>
+    </div>
+    <div class="field"><label>Costo total</label><div class="money-input"><span class="money-prefix">$</span><input id="mt-costo" type="text" inputmode="numeric" oninput="formatMilesLive(this)"></div></div>
+    <div class="field"><label>Foto del ticket</label><input id="mt-foto" type="file" accept="image/*" capture="environment" class="file-in"></div>
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('modal-gasto-real')">Cancelar</button>
-      <button class="btn btn-primary" onclick="guardarGastoReal()">Guardar</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-ticket')">Cancelar</button>
+      <button class="btn btn-primary" id="mt-btn" onclick="guardarTicketModal()">Guardar ticket</button>
     </div>
   </div>
 </div>
@@ -895,7 +1010,7 @@
 <div class="modal-backdrop hidden" id="modal-autorizacion">
   <div class="modal">
     <h2>Generar autorización de carga</h2>
-    <div class="modal-sub">Se sugieren litros según lo que ya calculaste arriba — podés ajustarlo.</div>
+    <div class="modal-sub">Solo lo que autorizás: cantidad, camión, chofer y descripción. Si calculaste un tramo arriba, se sugieren esos litros.</div>
     <div class="field"><label>Chofer</label><select id="auth-chofer"></select></div>
     <div class="field"><label>Camión</label><select id="auth-camion"></select></div>
     <div class="field">
@@ -905,11 +1020,7 @@
         <button type="button" class="btn btn-outline btn-sm" onclick="setLitrosAuth(200)">200 L</button>
         <button type="button" class="btn btn-outline btn-sm" onclick="setLitrosAuth(300)">300 L</button>
       </div>
-      <input id="auth-litros" type="text" inputmode="numeric" placeholder="Otra cantidad…" oninput="formatMilesLive(this);actualizarMontoAuth()">
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Precio ($/l)</label><div class="money-input"><span class="money-prefix">$</span><input id="auth-precio" type="text" inputmode="numeric" oninput="formatMilesLive(this);actualizarMontoAuth()"></div></div>
-      <div class="field"><label>Costo estimado</label><div style="padding:9px 10px;border:1px solid var(--line);border-radius:3px;background:var(--panel-alt);font-family:var(--mono);font-weight:700;color:var(--burgundy);" id="auth-monto-preview">$ 0</div></div>
+      <input id="auth-litros" type="text" inputmode="numeric" placeholder="Otra cantidad…" oninput="formatMilesLive(this)">
     </div>
     <div class="field"><label>Descripción (opcional)</label><textarea id="auth-notas" placeholder="Ej: también tiene que cargar urea"></textarea></div>
     <div class="hint">Válida solo para hoy. Queda con un código único y registrado quién la autorizó.</div>
@@ -1059,6 +1170,9 @@
   import {
     getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail
   } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+  import {
+    getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject
+  } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBPOlsNBt5TMZht4O4SK-nN4L8MJM7Aels",
@@ -1071,8 +1185,10 @@
   const fbApp = initializeApp(firebaseConfig);
   const db = getFirestore(fbApp);
   const auth = getAuth(fbApp);
+  const storage = getStorage(fbApp);
 
-  window.FB = { db, auth, doc, onSnapshot, setDoc, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail };
+  window.FB = { db, auth, doc, onSnapshot, setDoc, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail,
+                storage, sRef, uploadBytes, getDownloadURL, deleteObject };
   window.firebaseReady = true;
   document.dispatchEvent(new CustomEvent('firebase-ready'));
 </script>
@@ -1211,6 +1327,56 @@ const CAMIONES_SEED = [
   {id:'c-ai282gh', patente:'AI282GH', modelo:'M. Benz E56-ATEGO 1732/42 (2026)', tipoCarga:'cuero', estado:'disponible', choferActualId:'ch-julio-fernandez', ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, consumoL100km:35, comentario:'', actualizado:Date.now()},
 ];
 
+/* Flota actualizada (DETALLE_CAMIONES_Y_VENCIMIENTOS.xlsx, oct 2026). Tipo inferido del modelo:
+   ACOPLADO → acoplado; SCV/SCBV → chasis volquete; SRBV → batea; SRV/SEMIRREMOLQUE/SR.CG → semirremolque. */
+const FLOTA_202610 = [
+  {"p": "BQZ165", "t": "acoplado", "a": 1997, "m": "Pettinari", "mod": "Pettinari ACOPLADO (1997)", "ch": "", "mo": "168A54027462072001770097", "vtv": "2027-02-10", "sen": "2026-05-15", "ns": "2-45947", "rs": "LIAND SA"},
+  {"p": "FRU411", "t": "acoplado", "a": 2006, "m": "Pettinari", "mod": "Pettinari ACOPLADO (2006)", "ch": "", "mo": "8A9AG392360080341", "vtv": "2027-03-12", "sen": "2027-03-10", "ns": "2-310402", "rs": "LIAND SA"},
+  {"p": "XDN659", "t": "semirremolque", "a": 1965, "m": "Helvetica", "mod": "Helvetica SEMIRREMOLQUE (1965)", "ch": "", "mo": "25905", "vtv": null, "sen": null, "ns": "", "rs": "LIAND SA"},
+  {"p": "OKM410", "t": "semirremolque", "a": 2014, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2014)", "ch": "8AAB0903SE0016434", "mo": "", "vtv": null, "sen": null, "ns": "", "rs": "LIAND SA"},
+  {"p": "CRI794", "t": "semirremolque", "a": 1999, "m": "Pettinari", "mod": "Pettinari SEMIRREMOLQUE (1999)", "ch": "DOBLECERO698", "mo": "", "vtv": "2027-03-11", "sen": "2027-07-24", "ns": "2-473511", "rs": "LIAND SA"},
+  {"p": "OZE349", "t": "semirremolque", "a": 2015, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2015)", "ch": "8AAB0903SF0016878", "mo": "", "vtv": "2027-10-02", "sen": "2026-10-01", "ns": "2-370945", "rs": "LIAND SA"},
+  {"p": "AG107BN", "t": "semirremolque", "a": 2023, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2023)", "ch": "8AAB0993SP0020846", "mo": "", "vtv": "2026-12-13", "sen": "2027-09-25", "ns": "2-427527", "rs": "LIAND SA"},
+  {"p": "AG107BM", "t": "semirremolque", "a": 2023, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2023)", "ch": "8AAB0993SP0020847", "mo": "", "vtv": "2026-10-16", "sen": "2027-09-25", "ns": "2-427646", "rs": "LIAND SA"},
+  {"p": "OKT127", "t": "semirremolque", "a": 2014, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2014)", "ch": "8AAB0903SE0016502", "mo": "", "vtv": "2027-03-25", "sen": "2027-02-24", "ns": "2-463281", "rs": "LIAND SA"},
+  {"p": "AF488FN", "t": "semirremolque", "a": 2022, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2022)", "ch": "8AAB0993SN0020277", "mo": "", "vtv": "2026-12-13", "sen": "2027-09-23", "ns": "2-395161", "rs": "LIAND SA"},
+  {"p": "OTN387", "t": "semirremolque", "a": 2015, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2015)", "ch": "8AAB0903SF0016782", "mo": "", "vtv": "2027-06-23", "sen": "2027-02-24", "ns": "2-463282", "rs": "LIAND SA"},
+  {"p": "OTN386", "t": "semirremolque", "a": 2015, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2015)", "ch": "8AAB0903SF0016780", "mo": "", "vtv": "2027-04-13", "sen": "2027-02-27", "ns": "2-463200", "rs": "LIAND SA"},
+  {"p": "AH046SK", "t": "chasis_volquete", "a": 2025, "m": "Salto", "mod": "Salto BA-SCV3E (2025)", "ch": "8AAB0993CR0021398", "mo": "", "vtv": "2026-12-12", "sen": "2027-02-24", "ns": "2-463283", "rs": "LIAND SA"},
+  {"p": "UUG317", "t": "camion", "a": null, "m": "", "mod": "", "ch": "", "mo": "", "vtv": null, "sen": null, "ns": "", "rs": "CASINI"},
+  {"p": "AF587OF", "t": "semirremolque", "a": 2022, "m": "Salto", "mod": "Salto 48-SRV3E SEMIRREMOQUE (2022)", "ch": "8AAB0993SN0020423", "mo": "", "vtv": "2026-12-13", "sen": "2027-02-24", "ns": "2-409987", "rs": "LIAND SA"},
+  {"p": "AA245XO", "t": "semirremolque", "a": 2016, "m": "Randon", "mod": "Randon 07 SR.CG. 2+1 14,50 MTS LARGO (2016)", "ch": "8B8GSRA3FGM006828", "mo": "", "vtv": null, "sen": null, "ns": "2-348949", "rs": "LIAND SA"},
+  {"p": "OKB826", "t": "batea", "a": 2015, "m": "Salto", "mod": "Salto 45-SRBV3E (2015)", "ch": "8AAG1363SE0016645", "mo": "", "vtv": "2027-04-01", "sen": "2027-04-21", "ns": "2-409323", "rs": "LIAND SA"},
+  {"p": "HZS177", "t": "batea", "a": 2009, "m": "Salto", "mod": "Salto 05-SRBV (2009)", "ch": "8AAG1463S90013484", "mo": "", "vtv": "2027-09-26", "sen": "2027-09-25", "ns": "2-480016", "rs": "LIAND SA"},
+  {"p": "AH833KA", "t": "chasis_volquete", "a": 2025, "m": "Salto", "mod": "Salto BE-SCBV3E (2025)", "ch": "8AAG1463CS0021708", "mo": "", "vtv": null, "sen": null, "ns": "", "rs": "LIAND SA"},
+  {"p": "MGX719", "t": "batea", "a": 2013, "m": "Salto", "mod": "Salto 05-SRBV-2013 (2013)", "ch": "8AAG1363SC0015569", "mo": "", "vtv": "2027-03-25", "sen": "2027-02-02", "ns": "2-405426", "rs": "LIAND SA"},
+  {"p": "PEM835", "t": "camion", "a": 2015, "m": "M. Benz", "mod": "M. Benz 893-AXOR 2035 S (2015)", "ch": "9BM958433GB016305", "mo": "457918U1003627", "vtv": "2027-04-04", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AA320VH", "t": "camion", "a": 2016, "m": "Scania", "mod": "Scania 480-R360 A4X2 (2016)", "ch": "9BSR4X200H3890083", "mo": "8278822", "vtv": "2027-08-20", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AB366TC", "t": "camion", "a": 2017, "m": "Ford", "mod": "Ford B06-CARGO 1729-37 CD MT (2017)", "ch": "9BFYEA8E5HBL61112", "mo": "36546754", "vtv": "2027-09-26", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AB120KV", "t": "camion", "a": 2017, "m": "M. Benz", "mod": "M. Benz B51-ATEGO 1726 S (2017)", "ch": "9BM958077HB052484", "mo": "926991U1195874", "vtv": "2027-04-27", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AB167RD", "t": "camion", "a": 2017, "m": "M. Benz", "mod": "M. Benz B51-ATEGO 1726 S (2017)", "ch": "9BM958077HB055199", "mo": "926991U1198434", "vtv": "2027-03-25", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AB743YM", "t": "camion", "a": 2017, "m": "M. Benz", "mod": "M. Benz B51-ATEGO 1726 S (2017)", "ch": "9BM958077JB066374", "mo": "926991U1209022", "vtv": "2026-12-13", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AB045SJ", "t": "camion", "a": 2017, "m": "M. Benz", "mod": "M. Benz AXOR 2036-36 S TB (2017)", "ch": "9BM958433HB04299", "mo": "457910U1011377", "vtv": "2027-01-31", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AG235XU", "t": "camion", "a": 2023, "m": "M. Benz", "mod": "M. Benz D32-AXOR 2544 LS (2023)", "ch": "9BM958441RB337281", "mo": "457910U1146931", "vtv": "2027-04-25", "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AF136JM", "t": "camion", "a": 2021, "m": "M. Benz", "mod": "M. Benz D01-ATEGO 1729 S (2021)", "ch": "9BM958077NB222790", "mo": "926994U1346175", "vtv": "2026-12-12", "sen": "no_aplica", "ns": "", "rs": "BALCAT SA"},
+  {"p": "AA606LI", "t": "camion", "a": 2016, "m": "M. Benz", "mod": "M. Benz ATEGO 1726 (2016)", "ch": "8AB958077HA800096", "mo": "926991U1178802", "vtv": "2027-05-19", "sen": "no_aplica", "ns": "", "rs": "BALCAT SA"},
+  {"p": "AI159JA", "t": "camion", "a": 2013, "m": "Scania", "mod": "Scania 693-R620 (2013)", "ch": "YS2R8X40005319221", "mo": "", "vtv": null, "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AI294SA", "t": "camion", "a": 2026, "m": "Volkswagen", "mod": "Volkswagen 719-CONSTELLATION 25360V-TRONIC (2026)", "ch": "9536R8273TR016391", "mo": "", "vtv": null, "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "AI294SZ", "t": "camion", "a": 2026, "m": "Volkswagen", "mod": "Volkswagen 719-CONSTELLATION 25360 V-TRONIC (2026)", "ch": "9536R8275RT021617", "mo": "", "vtv": null, "sen": "no_aplica", "ns": "", "rs": "LIAND SA"},
+  {"p": "LKF057", "t": "camion", "a": 2012, "m": "M. Benz", "mod": "M. Benz 693 VERSION 1720/36 (2012)", "ch": "9BM693185CF140594", "mo": "904.980-UO-992897", "vtv": "2027-08-15", "sen": "2027-03-06", "ns": "2-409991", "rs": "LIAND SA"},
+  {"p": "AE502FR", "t": "camion", "a": 2020, "m": "M. Benz", "mod": "M. Benz GH-ACCELO 815 (2020)", "ch": "8AB979026MA900733", "mo": "924991U1308616", "vtv": "2027-04-13", "sen": "2027-05-18", "ns": "2-356691", "rs": "LIAND SA"},
+  {"p": "AA290NR", "t": "camion", "a": 2016, "m": "Iveco", "mod": "Iveco 20-170E22 (2016)", "ch": "8ATA1NFH0GX100066", "mo": "F4AE0681D8025296", "vtv": "2027-08-03", "sen": "2027-07-02", "ns": "2-420081", "rs": "LIAND SA"},
+  {"p": "UXY533", "t": "camion", "a": 1979, "m": "M. Benz", "mod": "M. Benz 08-L1114/48 (1979)", "ch": "341,036-15-042619", "mo": "B011462", "vtv": null, "sen": null, "ns": "2-234200", "rs": "LIAND SA"},
+  {"p": "AA590QW", "t": "camion", "a": 2016, "m": "M. Benz", "mod": "M. Benz FP-693 VERSION 1720 48 (2016)", "ch": "8AB693186GA601704", "mo": "924985U1173396", "vtv": "2026-11-26", "sen": "2027-04-30", "ns": "2-351837", "rs": "BALCAT SA"},
+  {"p": "IEB942", "t": "camion", "a": 2009, "m": "M. Benz", "mod": "M. Benz 848-L-1318 (2009)", "ch": "9BM694000AB651266", "mo": "904976U0822945", "vtv": "2026-10-29", "sen": "2027-05-18", "ns": "2-312931", "rs": "BALCAT SA"},
+  {"p": "JQM296", "t": "camion", "a": 2011, "m": "M. Benz", "mod": "M. Benz 848-L-1318 (2011)", "ch": "9BM694000BB758215", "mo": "904976U0915292", "vtv": "2026-12-16", "sen": "2027-07-24", "ns": "2-364725", "rs": "BALCAT SA"},
+  {"p": "AF466PE", "t": "camion", "a": 2022, "m": "M. Benz", "mod": "M. Benz ATEGO 1721 48 (2022)", "ch": "8AB958154PA803625", "mo": "924989U1388402", "vtv": "2027-09-29", "sen": null, "ns": "", "rs": ""},
+  {"p": "AG369LK", "t": "camion", "a": 2023, "m": "M. Benz", "mod": "M. Benz ATEGO 1721 48 (2023)", "ch": "8AB958154RA805927", "mo": "9249989U1455699", "vtv": "2027-07-11", "sen": "2027-07-01", "ns": "", "rs": ""},
+  {"p": "AE387FB", "t": "camion", "a": 2020, "m": "M. Benz", "mod": "M. Benz B63-ATEGO 1726 (2020)", "ch": "9BM958152LB151517", "mo": "926991U1284961", "vtv": "2027-05-11", "sen": "2027-05-14", "ns": "2-345499", "rs": "BALCAT SA"},
+  {"p": "AI282GH", "t": "camion", "a": 2025, "m": "M. Benz", "mod": "M. Benz E56-ATEGO 1732/42 (2025)", "ch": "9BM951501TB439698", "mo": "", "vtv": null, "sen": "2027-06-16", "ns": "2-500254", "rs": "LIAND SA"},
+];
+const CHOFERES_NUEVOS_202610 = ['Jorge Casal','Mauricio Pintos','Gastón Ojeda','Carlos Utrilla'];
+
 function buildDestinosPlanSeed(){
   return [
     {id:'dp-subpga-chivilcoy', nombre:'Subpga y Chivilcoy'},
@@ -1251,12 +1417,43 @@ const DEFAULT_STATE = {
   historialCamiones: [],
   gastosTaller: [],
   autorizaciones: [],
+  ticketsCombustible: [],
+  migraciones: {},
   config: { precioCombustible: 2431, factorRuta: 1.3, orsApiKey: null, emailRedPetrol: null, telefonoJavier: null }
 };
 
 const ESTADOS_CAMION = {disponible:'Disponible', asignado_hoy:'Asignado hoy', en_ruta:'En ruta', mantenimiento:'Mantenimiento'};
 const ESTADOS_CHOFER = {disponible:'Disponible', asignado_hoy:'Asignado hoy', en_ruta:'En ruta', descanso:'Descanso'};
 const TIPO_CARGA = {cuero:'Cueros', grasa_hueso:'Grasa / Hueso'};
+const TIPOS_UNIDAD = {camion:'Camión', batea:'Batea', acoplado:'Acoplado', semirremolque:'Semirremolque', chasis_volquete:'Chasis volquete'};
+const ORDEN_ENGANCHES = ['batea','semirremolque','acoplado','chasis_volquete'];
+function esMotriz(c){ return !c.tipo || c.tipo==='camion'; }
+function motrices(){ return STATE.camiones.filter(esMotriz); }
+function enganches(){ return STATE.camiones.filter(c=>!esMotriz(c)); }
+function etiquetaUnidad(c){ return c.patente + (esMotriz(c) ? '' : ' · '+(TIPOS_UNIDAD[c.tipo]||c.tipo)); }
+function normPatente(p){ return String(p||'').replace(/\s+/g,'').toUpperCase(); }
+
+/* Carga única de la flota del Excel de octubre 2026 sobre los datos ya guardados: actualiza por patente,
+   agrega las unidades nuevas y los choferes nuevos. No borra nada. */
+function aplicarFlota202610(){
+  FLOTA_202610.forEach(f=>{
+    let c = STATE.camiones.find(x=>normPatente(x.patente)===f.p);
+    if(!c && f.p==='AI294SZ') c = STATE.camiones.find(x=>normPatente(x.patente)==='AI294RZ');
+    if(!c){
+      let id = 'c-'+f.p.toLowerCase();
+      if(STATE.camiones.some(x=>x.id===id)) id = uid('c');
+      c = {id, tipoCarga:'cuero', estado:'disponible', choferActualId:null, ubicacionId:'u-quilmes', destinoId:null, rutaGeom:null, rutaEstado:null, consumoL100km:35, comentario:'', actualizado:Date.now()};
+      STATE.camiones.push(c);
+    }
+    c.patente = f.p; c.tipo = f.t; c.anio = f.a; c.marca = f.m; c.modelo = f.mod;
+    c.nChasis = f.ch; c.nMotor = f.mo; c.vtoVtv = f.vtv; c.vtoSenasa = f.sen; c.nSenasa = f.ns; c.razonSocial = f.rs;
+  });
+  const sinTilde = s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  CHOFERES_NUEVOS_202610.forEach(nombre=>{
+    if(STATE.choferes.some(ch=>sinTilde(ch.nombre)===sinTilde(nombre))) return;
+    STATE.choferes.push({id:uid('ch'), nombre, telefono:'', estado:'disponible', dni:'', licencia:'', fechaIngreso:'', direccion:'', contactoEmergencia:''});
+  });
+}
 const TIPO_UBIC = {deposito:'Depósito / salador', taller:'Taller', oficina:'Oficina', frigorifico:'Frigorífico', carniceria:'Carnicería'};
 const TIPO_INCIDENTE_CHOFER = {choque:'Choque / siniestro', multa:'Multa', llegada_tarde:'Llegada tarde', reconocimiento:'Reconocimiento', otro:'Otro'};
 const TIPO_GASTO_CAMION = {gasto:'Gasto / service', modificacion:'Modificación', choque:'Choque / siniestro', otro:'Otro'};
@@ -1331,6 +1528,15 @@ async function aplicarMigraciones(){
     if(ch.direccion===undefined) ch.direccion='';
     if(ch.contactoEmergencia===undefined) ch.contactoEmergencia='';
   });
+  if(!STATE.migraciones) STATE.migraciones = {};
+  if(!STATE.migraciones.flota202610){ aplicarFlota202610(); STATE.migraciones.flota202610 = true; _huboLimpieza = true; }
+  if(!STATE.ticketsCombustible){ STATE.ticketsCombustible = []; _huboLimpieza = true; }
+  STATE.camiones.forEach(c=>{
+    if(!c.tipo){ c.tipo = 'camion'; _huboLimpieza = true; }
+    if(c.vtoSeguro===undefined){ c.vtoSeguro = null; _huboLimpieza = true; }
+    if(c.documentacion===undefined){ c.documentacion = null; _huboLimpieza = true; }
+  });
+  STATE.planCeldas.forEach(pc=>{ if(pc.remolqueId===undefined){ pc.remolqueId = null; _huboLimpieza = true; } });
   return _huboLimpieza;
 }
 
@@ -1375,6 +1581,7 @@ function loadState(){
           if(currentView==='planificacion') renderPlanificacion();
           if(currentView==='finanzas') renderFinanzas();
           if(currentView==='resumen') renderResumenMensual();
+          if(currentView==='combustible'){ refrescarCombustible(); renderAutorizaciones(); }
           if(currentView==='gastos'){
             if(gastoVistaCamionId) renderHistorialCamion(gastoVistaCamionId,'gv-historial','gv-total');
             if(gastoVistaChoferId) renderHistorialChofer(gastoVistaChoferId,'gvc-historial','gvc-total');
@@ -1476,7 +1683,16 @@ function conductorDeCamion(c){
 }
 /* ¿Está este camión/chofer asignado en la planilla de HOY (semana y día actuales)? */
 function asignadoHoyCamion(camionId){
-  return STATE.planCeldas.some(pc=>pc.semana===mondayOf(new Date()) && pc.dia===diaDeHoy() && pc.camionId===camionId);
+  return STATE.planCeldas.some(pc=>pc.semana===mondayOf(new Date()) && pc.dia===diaDeHoy() && (pc.camionId===camionId || pc.remolqueId===camionId));
+}
+/* Con qué camión anda hoy este enganche, según la planilla */
+function tractorDeEngancheHoy(engId){
+  const pc = STATE.planCeldas.find(x=>x.semana===mondayOf(new Date()) && x.dia===diaDeHoy() && x.remolqueId===engId);
+  return pc && pc.camionId ? camion(pc.camionId) : null;
+}
+function engancheDeCamionHoy(camId){
+  const pc = STATE.planCeldas.find(x=>x.semana===mondayOf(new Date()) && x.dia===diaDeHoy() && x.camionId===camId);
+  return pc && pc.remolqueId ? camion(pc.remolqueId) : null;
 }
 function asignadoHoyChofer(choferId){
   return STATE.planCeldas.some(pc=>pc.semana===mondayOf(new Date()) && pc.dia===diaDeHoy() && pc.choferId===choferId);
@@ -1531,7 +1747,7 @@ function switchView(name){
   if(name==='gastos'){
     const sel = document.getElementById('gv-camion');
     const prev = sel.value;
-    fillSelect(sel, STATE.camiones.map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+c.modelo:'')})), prev, 'Elegí un camión');
+    fillSelect(sel, STATE.camiones.map(c=>({id:c.id, nombre:etiquetaUnidad(c)+(c.modelo?' — '+c.modelo:'')})), prev, 'Elegí una unidad');
     if(prev && STATE.camiones.some(c=>c.id===prev)){
       gastoVistaCamionId = prev;
       document.getElementById('gv-body').style.display = 'block';
@@ -1554,15 +1770,18 @@ function switchView(name){
     }
   }
   if(name==='combustible'){
-    const sel = document.getElementById('cb-camion');
-    const prev = sel.value;
-    fillSelect(sel, STATE.camiones.map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+c.modelo:'')})), prev, 'Sin camión (solo calcular)');
-    setMilesValue('cb-precio', STATE.config.precioCombustible || 2431);
-    if(prev && STATE.camiones.some(c=>c.id===prev)){
-      document.getElementById('cb-consumo').value = camion(prev).consumoL100km || '';
-    }
+    const opts = motrices().map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+escapeHtml(c.modelo):'')}));
+    const sel = document.getElementById('cb-camion'), prev = sel.value;
+    fillSelect(sel, opts, prev, 'Sin camión (solo calcular)');
+    const tsel = document.getElementById('tk-camion'), tprev = tsel.value;
+    fillSelect(tsel, opts, tprev, 'Elegí camión');
+    if(!numFromMiles('cb-precio')) setMilesValue('cb-precio', STATE.config.precioCombustible || null);
+    if(prev && camion(prev)) document.getElementById('cb-consumo').value = camion(prev).consumoL100km || '';
+    if(!document.getElementById('tk-fecha').value) document.getElementById('tk-fecha').value = hoyLocal();
+    opcionesEstimado(document.getElementById('tk-estimado'), tsel.value, document.getElementById('tk-estimado').value);
     calcularCombustible();
-    renderTicker();
+    actualizarComparacionTicket();
+    refrescarCombustible();
     renderAutorizaciones();
   }
 }
@@ -1593,7 +1812,9 @@ function cardCamionHtml(c){
     <div class="t-meta">
       <b>${conductor ? conductor.nombre+(conductor.planificado?' (planificado)':'') : 'Sin chofer asignado'}</b><br>
       📍 ${ubicacion?ubicacion.nombre:'Ubicación sin definir'}${destino?` → <b>${destino.nombre}</b>`:''}
+      ${engancheDeCamionHoy(c.id)?`<br>🔗 ${escapeHtml(etiquetaUnidad(engancheDeCamionHoy(c.id)))}`:''}
     </div>
+    ${alertaVencimientosHtml(c)}
     ${c.comentario?`<div class="t-comment">"${escapeHtml(c.comentario)}"</div>`:''}
     <div class="t-actions admin-only">
       <button onclick="event.stopPropagation();openCamionModal('${c.id}')">Editar</button>
@@ -1602,16 +1823,37 @@ function cardCamionHtml(c){
     </div>
   </div>`;
 }
+function cardEngancheHtml(e){
+  const estEf = estadoEfectivoCamion(e);
+  const tractor = tractorDeEngancheHoy(e.id);
+  return `
+  <div class="ticket eng-card st-${estEf}">
+    <div class="t-row1">
+      <div>
+        <div class="t-id eng-id" onclick="openFichaCamion('${e.id}')">${e.patente}</div>
+        <div class="t-sub">${TIPOS_UNIDAD[e.tipo]||''}${e.modelo?' · '+escapeHtml(e.modelo):''}</div>
+      </div>
+      <span class="pill st-${estEf}">${ESTADOS_CAMION[estEf]}</span>
+    </div>
+    ${tractor?`<div class="t-meta">🚚 Hoy con <b>${tractor.patente}</b></div>`:''}
+    ${alertaVencimientosHtml(e)}
+    <div class="t-actions admin-only">
+      <button onclick="openCamionModal('${e.id}')">Editar</button>
+      <button class="del" onclick="borrarCamion('${e.id}')">Eliminar</button>
+    </div>
+  </div>`;
+}
 function renderCamiones(){
   const q = (document.getElementById('search-camiones').value||'').toLowerCase();
   const cont = document.getElementById('lista-camiones');
-  const filtered = STATE.camiones.filter(c=>{
-    const conductor = conductorDeCamion(c);
+  const coincide = c=>{
+    const conductor = esMotriz(c) ? conductorDeCamion(c) : null;
     const dest = c.destinoId ? ubic(c.destinoId)?.nombre : '';
-    const blob = [c.patente, c.modelo, conductor?conductor.nombre:'', dest, c.comentario].join(' ').toLowerCase();
+    const blob = [c.patente, c.modelo, TIPOS_UNIDAD[c.tipo||'camion'], conductor?conductor.nombre:'', dest, c.comentario].join(' ').toLowerCase();
     return blob.includes(q);
-  });
-  document.getElementById('count-camiones').textContent = STATE.camiones.length;
+  };
+  const filtered = motrices().filter(coincide);
+  document.getElementById('count-camiones').textContent = motrices().length;
   let html = '';
   ORDEN_CAMION.forEach(est=>{
     const items = filtered.filter(c=>estadoEfectivoCamion(c)===est);
@@ -1619,7 +1861,49 @@ function renderCamiones(){
     html += `<div class="group-head st-${est}">${ESTADOS_CAMION[est]} <span class="g-count">${items.length}</span></div>`;
     html += `<div class="ticket-list">${items.map(cardCamionHtml).join('')}</div>`;
   });
-  cont.innerHTML = html || '<div class="empty-msg">No hay camiones que coincidan.</div>';
+  if(!html) html = '<div class="empty-msg">No hay camiones que coincidan.</div>';
+
+  const engs = enganches().filter(coincide);
+  html += `<div class="eng-section"><div class="col-header" style="margin-bottom:6px;"><h2 style="font-size:19px;">Enganches <span class="count-pill">${enganches().length}</span></h2></div>`;
+  ORDEN_ENGANCHES.forEach(t=>{
+    const items = engs.filter(e=>e.tipo===t);
+    if(items.length===0) return;
+    html += `<div class="group-head">${TIPOS_UNIDAD[t]} <span class="g-count">${items.length}</span></div>`;
+    html += `<div class="ticket-list">${items.map(cardEngancheHtml).join('')}</div>`;
+  });
+  if(engs.length===0) html += '<div class="empty-msg">No hay enganches que coincidan.</div>';
+  html += '</div>';
+  cont.innerHTML = html;
+}
+
+/* ---------------- vencimientos (VTV, SENASA, seguro) ---------------- */
+function diasHasta(iso){
+  if(!iso || iso==='no_aplica') return null;
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((new Date(iso+'T00:00:00') - hoy) / 86400000);
+}
+function estadoVto(iso){
+  if(iso==='no_aplica') return {cls:'vto-na', txt:'No aplica'};
+  if(!iso) return {cls:'vto-sin', txt:'Sin dato'};
+  const d = diasHasta(iso);
+  if(d<0) return {cls:'vto-mal', txt:`Vencido (${fmtDateLarga(iso)})`};
+  if(d<=30) return {cls:'vto-pronto', txt:`Vence en ${d} día${d===1?'':'s'} (${fmtDateLarga(iso)})`};
+  return {cls:'vto-ok', txt:`Al día, vence ${fmtDateLarga(iso)}`};
+}
+function alertasVencimiento(c){
+  const out = [];
+  [['VTV',c.vtoVtv],['SENASA',c.vtoSenasa],['Seguro',c.vtoSeguro]].forEach(([n,iso])=>{
+    const d = diasHasta(iso);
+    if(d===null) return;
+    if(d<0) out.push({nivel:'mal', txt:`${n} vencida`});
+    else if(d<=30) out.push({nivel:'pronto', txt:`${n} vence en ${d} d`});
+  });
+  return out;
+}
+function alertaVencimientosHtml(c){
+  const a = alertasVencimiento(c);
+  if(!a.length) return '';
+  return `<div class="vto-alertas">${a.map(x=>`<span class="vto-chip vto-${x.nivel}">⚠ ${x.txt}</span>`).join('')}</div>`;
 }
 function cardChoferHtml(ch){
   const camionInfo = camionDeChofer(ch);
@@ -1707,7 +1991,7 @@ function initMap(){
 function fitMapToData(){
   const pts = [];
   STATE.ubicaciones.forEach(u=>pts.push([u.lat,u.lng]));
-  STATE.camiones.forEach(c=>{ const u=ubic(c.ubicacionId); if(u) pts.push([u.lat,u.lng]); });
+  motrices().forEach(c=>{ const u=ubic(c.ubicacionId); if(u) pts.push([u.lat,u.lng]); });
   if(pts.length===0) return;
   if(pts.length===1){ map.setView(pts[0], 11); return; }
   map.fitBounds(L.latLngBounds(pts), {padding:[50,50]});
@@ -1810,7 +2094,7 @@ function renderMap(){
     const m = L.marker([u.lat,u.lng], {icon:puntoIcon(u.tipo)}).addTo(markersLayer);
     m.bindTooltip(`${TIPO_UBIC[u.tipo]}: ${u.nombre}`, {direction:'top', className:'map-tooltip'});
   });
-  STATE.camiones.forEach(c=>{
+  motrices().forEach(c=>{
     const from = ubic(c.ubicacionId);
     if(!from) return;
     const marker = L.marker([from.lat, from.lng], {icon:truckIcon(c.estado)}).addTo(markersLayer);
@@ -1966,7 +2250,12 @@ function _resolvePrompt(val){
 /* ---------------- CRUD camión ---------------- */
 function openCamionModal(id){
   const c = id ? camion(id) : null;
-  document.getElementById('mc-title').textContent = c ? 'Editar camión' : 'Nuevo camión';
+  document.getElementById('mc-title').textContent = c ? `Editar ${TIPOS_UNIDAD[c.tipo||'camion'].toLowerCase()}` : 'Nueva unidad';
+  document.getElementById('mc-tipo-unidad').value = c ? (c.tipo||'camion') : 'camion';
+  document.getElementById('mc-vto-vtv').value = c && c.vtoVtv && c.vtoVtv!=='no_aplica' ? c.vtoVtv : '';
+  document.getElementById('mc-vto-senasa').value = c && c.vtoSenasa && c.vtoSenasa!=='no_aplica' ? c.vtoSenasa : '';
+  document.getElementById('mc-senasa-na').checked = !!(c && c.vtoSenasa==='no_aplica');
+  document.getElementById('mc-vto-seguro').value = c && c.vtoSeguro ? c.vtoSeguro : '';
   document.getElementById('mc-id').value = c ? c.id : '';
   document.getElementById('mc-patente').value = c ? c.patente : '';
   document.getElementById('mc-modelo').value = c ? c.modelo : '';
@@ -1982,8 +2271,13 @@ async function guardarCamion(){
   const id = document.getElementById('mc-id').value;
   const patente = document.getElementById('mc-patente').value.trim();
   if(!patente){ await alertDialog('Ingresá la patente.'); return; }
+  const senasaNA = document.getElementById('mc-senasa-na').checked;
   const data = {
     patente,
+    tipo: document.getElementById('mc-tipo-unidad').value,
+    vtoVtv: document.getElementById('mc-vto-vtv').value || null,
+    vtoSenasa: senasaNA ? 'no_aplica' : (document.getElementById('mc-vto-senasa').value || null),
+    vtoSeguro: document.getElementById('mc-vto-seguro').value || null,
     modelo: document.getElementById('mc-modelo').value.trim(),
     tipoCarga: document.getElementById('mc-tipo').value,
     estado: document.getElementById('mc-estado').value,
@@ -1995,16 +2289,16 @@ async function guardarCamion(){
   };
   let camionId = id;
   if(id){ Object.assign(camion(id), data); }
-  else{ camionId = uid('c'); STATE.camiones.push({id:camionId, choferActualId:null, rutaGeom:null, ...data}); }
+  else{ camionId = uid('c'); STATE.camiones.push({id:camionId, choferActualId:null, rutaGeom:null, documentacion:null, ...data}); }
   await saveState();
   closeModal('modal-camion');
   renderAll();
   actualizarRutaCamion(camion(camionId));
 }
 async function borrarCamion(id){
-  if(!(await confirmDialog('¿Eliminar este camión? Esta acción no se puede deshacer.'))) return;
+  if(!(await confirmDialog('¿Eliminar esta unidad? Esta acción no se puede deshacer.'))) return;
   STATE.camiones = STATE.camiones.filter(c=>c.id!==id);
-  STATE.planCeldas.forEach(pc=>{ if(pc.camionId===id) pc.camionId=null; });
+  STATE.planCeldas.forEach(pc=>{ if(pc.camionId===id) pc.camionId=null; if(pc.remolqueId===id) pc.remolqueId=null; });
   await saveState(); renderAll();
 }
 async function finalizarViaje(id){
@@ -2146,8 +2440,13 @@ function openFichaCamion(camionId){
   fichaCamionId = camionId;
   document.getElementById('fk-camion-id').value = camionId;
   document.getElementById('fk-patente').textContent = c.patente;
+  document.getElementById('fk-sub').textContent = [TIPOS_UNIDAD[c.tipo||'camion'], c.marca, c.anio, c.razonSocial].filter(Boolean).join(' · ') || 'Ficha, documentación, combustible y gastos.';
   document.getElementById('fk-modelo').value = c.modelo||'';
   document.getElementById('fk-consumo').value = c.consumoL100km||'';
+  renderVtosFicha(c);
+  renderDocFicha(c);
+  document.getElementById('fk-tickets-sec').style.display = esMotriz(c) ? '' : 'none';
+  renderTicketsFicha(camionId);
   renderRutaFicha(camionId);
   renderHistorialCamion(camionId, 'fk-historial', 'fk-total');
   openModal('modal-ficha-camion');
@@ -2171,8 +2470,8 @@ function renderHistorialCamion(camionId, listEl, totalEl){
     let accionExtra = '';
     if(h.esEstimadoCombustible){
       if(h.montoReal==null){
-        montoHtml = `<div class="t-meta" style="color:var(--warn);">⏳ Estimado: <b>${fmtMoney(h.montoEstimado)}</b> — falta cargar el gasto real</div>`;
-        accionExtra = `<button onclick="abrirGastoReal('${h.id}')">💰 Cargar gasto real</button>`;
+        montoHtml = `<div class="t-meta" style="color:var(--warn);">⏳ Estimado: <b>${fmtMoney(h.montoEstimado)}</b> — falta cargar el ticket</div>`;
+        accionExtra = `<button onclick="abrirTicket('${h.camionId}','${h.id}')">🧾 Cargar ticket</button>`;
       }else{
         const diff = h.montoReal - h.montoEstimado;
         const diffTxt = diff>0
@@ -2183,31 +2482,273 @@ function renderHistorialCamion(camionId, listEl, totalEl){
     }
     return `
     <div class="ticket" style="border-left-color:${colorGastoCamion(h.tipo)};cursor:default;">
-      <div class="t-row1"><div class="t-name" style="font-size:13.5px;">${TIPO_GASTO_CAMION[h.tipo]||h.tipo}</div><span class="t-sub">${fmtDateLarga(h.fecha)}</span></div>
+      <div class="t-row1"><div class="t-name" style="font-size:13.5px;">${esGastoCombustible(h)?'⛽ Combustible':(TIPO_GASTO_CAMION[h.tipo]||h.tipo)}</div><span class="t-sub">${fmtDateLarga(h.fecha)}</span></div>
       <div class="t-meta">${escapeHtml(h.descripcion||'')}</div>
       ${montoHtml}
       <div class="t-actions admin-only">${accionExtra}<button onclick="editarGastoCamion('${h.id}')">Editar</button><button class="del" onclick="borrarGastoCamion('${h.id}')">Eliminar</button></div>
     </div>`;
   }).join('');
 }
-let gastoRealActualId = null;
-function abrirGastoReal(id){
-  const h = STATE.historialCamiones.find(x=>x.id===id); if(!h) return;
-  gastoRealActualId = id;
-  const c = camion(h.camionId);
-  document.getElementById('gr-sub').textContent = `${c?c.patente:''} — estimado: ${fmtMoney(h.montoEstimado)}`;
-  setMilesValue('gr-monto', h.montoEstimado);
-  openModal('modal-gasto-real');
+/* ---------------- archivos en Firebase Storage ---------------- */
+function hoyLocal(){ const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); }
+function emailUsuario(){ return (window.FB && window.FB.auth && window.FB.auth.currentUser && window.FB.auth.currentUser.email) || ''; }
+function conTimeout(promesa, ms){
+  return Promise.race([promesa, new Promise((_,rej)=>setTimeout(()=>rej({code:'timeout'}), ms||90000))]);
 }
-async function guardarGastoReal(){
-  const h = STATE.historialCamiones.find(x=>x.id===gastoRealActualId); if(!h) return;
-  const real = numFromMiles('gr-monto');
-  if(real<=0){ await alertDialog('Ingresá el monto real gastado.'); return; }
-  h.montoReal = real;
-  h.monto = real;
+async function subirArchivo(path, blob, contentType){
+  if(!window.FB || !window.FB.storage) throw {code:'sin-storage'};
+  const r = window.FB.sRef(window.FB.storage, path);
+  await conTimeout(window.FB.uploadBytes(r, blob, {contentType}));
+  return await window.FB.getDownloadURL(r);
+}
+async function borrarArchivo(path){
+  if(!path || !window.FB || !window.FB.storage) return;
+  try{ await window.FB.deleteObject(window.FB.sRef(window.FB.storage, path)); }catch(e){ console.warn('No se pudo borrar el archivo', e); }
+}
+function mensajeErrorStorage(e){
+  const code = (e && e.code) || '';
+  if(code==='timeout') return 'La subida tardó demasiado. Revisá la conexión y probá de nuevo.';
+  if(code.includes('unauthorized')) return 'Firebase no dio permiso para subir el archivo. Revisá las reglas de Storage.';
+  if(code.includes('quota')) return 'Se llegó al límite de almacenamiento de Firebase.';
+  return 'No se pudo subir el archivo. Si es la primera vez, puede que Storage todavía no esté activado en Firebase (plan Blaze + Storage).' + (code ? ' Código: '+code : '');
+}
+function comprimirImagen(file, max, calidad){
+  max = max || 1600; calidad = calidad || 0.75;
+  return new Promise(res=>{
+    if(!file.type || !file.type.startsWith('image/')){ res(file); return; }
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = ()=>{
+      const k = Math.min(1, max/Math.max(img.width, img.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(img.width*k); cv.height = Math.round(img.height*k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      cv.toBlob(b=>{ URL.revokeObjectURL(url); res(b||file); }, 'image/jpeg', calidad);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); res(file); };
+    img.src = url;
+  });
+}
+
+/* ---------------- ficha: vencimientos y documentación ---------------- */
+function renderVtosFicha(c){
+  const items = [['VTV', c.vtoVtv], ['SENASA', c.vtoSenasa], ['Seguro', c.vtoSeguro]];
+  document.getElementById('fk-vtos').innerHTML = items.map(([n,v])=>{
+    const e = estadoVto(v);
+    return `<span class="vto-badge ${e.cls}"><b>${n}:</b> ${e.txt}</span>`;
+  }).join('') + (c.nSenasa ? `<span class="vto-badge vto-sin">N° SENASA ${escapeHtml(c.nSenasa)}</span>` : '');
+}
+function renderDocFicha(c){
+  const el = document.getElementById('fk-doc'); if(!el || !c) return;
+  const d = c.documentacion;
+  const elegir = `document.getElementById('fk-doc-file').click()`;
+  if(d && d.url){
+    el.innerHTML = `<div class="fk-doc">📄 <span style="flex:1;min-width:160px;"><b>${escapeHtml(d.nombre||'documentacion.pdf')}</b><br><span class="t-sub">Subido el ${fmtDateLarga(d.fecha)}${d.por?' por '+escapeHtml(d.por):''}</span></span>
+      <a class="btn btn-outline btn-sm" href="${d.url}" target="_blank" rel="noopener">Ver PDF</a>
+      <button class="btn btn-outline btn-sm admin-only" onclick="${elegir}">Reemplazar</button>
+      <button class="btn btn-outline btn-sm admin-only" onclick="quitarDocumentacion()">Quitar</button></div>`;
+  }else{
+    el.innerHTML = `<div class="fk-doc"><span style="flex:1;color:var(--muted);">Todavía no hay PDF cargado.</span><button class="btn btn-primary btn-sm admin-only" onclick="${elegir}">Subir PDF</button></div>`;
+  }
+}
+async function subirDocumentacion(input){
+  const file = input.files && input.files[0]; input.value = '';
+  if(!file) return;
+  if(file.type!=='application/pdf' && !/\.pdf$/i.test(file.name)){ await alertDialog('Tiene que ser un archivo PDF.'); return; }
+  if(file.size > 20*1024*1024){ await alertDialog('El PDF pesa más de 20 MB. Comprimilo o escanealo con menos resolución.'); return; }
+  const id = fichaCamionId, c = camion(id); if(!c) return;
+  document.getElementById('fk-doc').innerHTML = '<div class="fk-doc">Subiendo PDF…</div>';
+  try{
+    const path = `liand/docs/${id}/documentacion-${Date.now()}.pdf`;
+    const url = await subirArchivo(path, file, 'application/pdf');
+    const c2 = camion(id); if(!c2) return;
+    const anterior = c2.documentacion && c2.documentacion.path;
+    c2.documentacion = {url, path, nombre:file.name, fecha:hoyLocal(), por:emailUsuario()};
+    await saveState();
+    if(anterior) borrarArchivo(anterior);
+  }catch(e){
+    await alertDialog(mensajeErrorStorage(e), 'No se subió el PDF');
+  }
+  renderDocFicha(camion(id));
+}
+async function quitarDocumentacion(){
+  const c = camion(fichaCamionId); if(!c || !c.documentacion) return;
+  if(!(await confirmDialog('¿Quitar el PDF de documentación de '+c.patente+'?', 'Quitar documentación', 'Quitar'))) return;
+  const path = c.documentacion.path;
+  c.documentacion = null;
   await saveState();
-  closeModal('modal-gasto-real');
-  refrescarHistorialesCamion(h.camionId);
+  borrarArchivo(path);
+  renderDocFicha(c);
+}
+
+/* ---------------- tickets de combustible ---------------- */
+function estimadosPendientes(camionId){
+  return STATE.historialCamiones
+    .filter(h=>h.esEstimadoCombustible && h.montoReal==null && (!camionId || h.camionId===camionId))
+    .sort((a,b)=>b.fecha.localeCompare(a.fecha));
+}
+function etiquetaEstimado(h, conPatente){
+  const c = camion(h.camionId);
+  return `${fmtDateCorta(h.fecha)}${conPatente&&c?' · '+c.patente:''} · ${h.tramo?escapeHtml(h.tramo):(h.km?h.km+' km':'Tramo')} — ${fmtMoney(h.montoEstimado)}`;
+}
+function opcionesEstimado(sel, camionId, pre){
+  const lista = estimadosPendientes(camionId);
+  sel.innerHTML = `<option value="">Ninguno (carga suelta)</option>` + lista.map(h=>`<option value="${h.id}">${etiquetaEstimado(h, !camionId)}</option>`).join('');
+  sel.value = (pre && lista.some(h=>h.id===pre)) ? pre : '';
+}
+function litrosEstimadosDe(h){
+  if(h.litrosEstimados) return h.litrosEstimados;
+  const m = /([\d.,]+) L estimados/.exec(h.descripcion||'');
+  return m ? parseFloat(m[1].replace(',','.')) : null;
+}
+function difHtml(real, est, fmt){
+  if(est==null || real==null) return '–';
+  const d = real-est;
+  if(Math.abs(d) < 0.5) return '<span class="dif-menos">igual</span>';
+  return d>0 ? `<span class="dif-mas">+${fmt(d)}</span>` : `<span class="dif-menos">−${fmt(-d)}</span>`;
+}
+const fmtLitros = n => (Math.round(n*10)/10).toLocaleString('es-AR')+' L';
+function comparacionHtml(h, litros, costo){
+  const le = litrosEstimadosDe(h);
+  return `<div class="calc-line"><span>Estimado</span><b>${le!=null?fmtLitros(le)+' · ':''}${fmtMoney(h.montoEstimado)}</b></div>
+    <div class="calc-line"><span>Real</span><b>${litros?fmtLitros(litros)+' · ':''}${costo?fmtMoney(costo):'–'}</b></div>
+    <div class="calc-line calc-total"><span>Diferencia</span><b>${costo?difHtml(costo, h.montoEstimado, fmtMoney):'–'}${(litros&&le!=null)?' · '+difHtml(litros, le, fmtLitros):''}</b></div>`;
+}
+async function registrarTicket(t){
+  const id = uid('tk');
+  let fotoUrl = null, fotoPath = null, avisoFoto = null;
+  if(t.file){
+    try{
+      const blob = await comprimirImagen(t.file);
+      fotoPath = `liand/tickets/${t.camionId}/${id}.jpg`;
+      fotoUrl = await subirArchivo(fotoPath, blob, 'image/jpeg');
+    }catch(e){ fotoPath = null; fotoUrl = null; avisoFoto = mensajeErrorStorage(e); }
+  }
+  const tk = {id, camionId:t.camionId, fecha:t.fecha, litros:t.litros, costo:t.costo, fotoUrl, fotoPath,
+              estimadoId:t.estimadoId||null, historialId:null, por:emailUsuario(), creadoEn:Date.now()};
+  const est = t.estimadoId ? STATE.historialCamiones.find(h=>h.id===t.estimadoId) : null;
+  if(est){
+    est.montoReal = t.costo; est.monto = t.costo; est.litrosReales = t.litros; est.ticketId = id;
+    tk.historialId = est.id;
+  }else{
+    const h = {id:uid('hk'), camionId:t.camionId, fecha:t.fecha, tipo:'gasto',
+               descripcion:`Combustible — ticket de ${fmtLitros(t.litros)}`, monto:t.costo, ticketId:id};
+    STATE.historialCamiones.push(h);
+    tk.historialId = h.id;
+  }
+  if(!STATE.ticketsCombustible) STATE.ticketsCombustible = [];
+  STATE.ticketsCombustible.unshift(tk);
+  await saveState();
+  refrescarHistorialesCamion(t.camionId);
+  refrescarCombustible();
+  if(avisoFoto) await alertDialog('El ticket quedó guardado, pero sin la foto. '+avisoFoto, 'Ticket guardado sin foto');
+}
+function leerTicketForm(pref){
+  return {
+    camionId: document.getElementById(pref+'-camion').value,
+    estimadoId: document.getElementById(pref+'-estimado').value || null,
+    fecha: document.getElementById(pref+'-fecha').value || hoyLocal(),
+    litros: numFromMiles(pref+'-litros'),
+    costo: numFromMiles(pref+'-costo'),
+    file: (document.getElementById(pref+'-foto').files||[])[0] || null
+  };
+}
+async function validarTicket(t){
+  if(!t.camionId){ await alertDialog('Elegí el camión.'); return false; }
+  if(!(t.litros>0)){ await alertDialog('Ingresá los litros cargados.'); return false; }
+  if(!(t.costo>0)){ await alertDialog('Ingresá el costo del ticket.'); return false; }
+  return true;
+}
+async function guardarTicketDesdeCombustible(){
+  const t = leerTicketForm('tk');
+  if(!(await validarTicket(t))) return;
+  const btn = document.getElementById('tk-btn'); btn.disabled = true; btn.textContent = 'Guardando…';
+  try{ await registrarTicket(t); }
+  finally{ btn.disabled = false; btn.textContent = 'Guardar ticket'; }
+  ['tk-litros','tk-costo','tk-foto'].forEach(i=>document.getElementById(i).value='');
+  opcionesEstimado(document.getElementById('tk-estimado'), document.getElementById('tk-camion').value, null);
+  actualizarComparacionTicket();
+}
+function abrirTicket(camionId, estimadoId){
+  const c = camion(camionId); if(!c) return;
+  document.getElementById('mt-camion').value = camionId;
+  document.getElementById('mt-sub').textContent = c.patente + (c.modelo ? ' — '+c.modelo : '');
+  opcionesEstimado(document.getElementById('mt-estimado'), camionId, estimadoId);
+  document.getElementById('mt-fecha').value = hoyLocal();
+  ['mt-litros','mt-costo','mt-foto'].forEach(i=>document.getElementById(i).value='');
+  openModal('modal-ticket');
+}
+// compatibilidad con botones viejos
+function abrirGastoReal(id){ const h = STATE.historialCamiones.find(x=>x.id===id); if(h) abrirTicket(h.camionId, id); }
+async function guardarTicketModal(){
+  const t = leerTicketForm('mt');
+  if(!(await validarTicket(t))) return;
+  const btn = document.getElementById('mt-btn'); btn.disabled = true; btn.textContent = 'Guardando…';
+  try{ await registrarTicket(t); closeModal('modal-ticket'); }
+  finally{ btn.disabled = false; btn.textContent = 'Guardar ticket'; }
+}
+async function borrarTicket(id){
+  const tk = (STATE.ticketsCombustible||[]).find(x=>x.id===id); if(!tk) return;
+  if(!(await confirmDialog('¿Eliminar este ticket? Si estaba asociado a un tramo estimado, el tramo vuelve a quedar sin ticket.', 'Eliminar ticket', 'Eliminar'))) return;
+  quitarTicketDelEstado(tk);
+  await saveState();
+  borrarArchivo(tk.fotoPath);
+  refrescarHistorialesCamion(tk.camionId);
+  refrescarCombustible();
+}
+function quitarTicketDelEstado(tk){
+  const h = STATE.historialCamiones.find(x=>x.id===tk.historialId);
+  if(h){
+    if(h.esEstimadoCombustible){ h.montoReal = null; h.monto = h.montoEstimado; delete h.litrosReales; delete h.ticketId; }
+    else STATE.historialCamiones = STATE.historialCamiones.filter(x=>x.id!==h.id);
+  }
+  STATE.ticketsCombustible = (STATE.ticketsCombustible||[]).filter(x=>x.id!==tk.id);
+}
+function verFoto(url){ if(url) window.open(url, '_blank', 'noopener'); }
+function fotoTicketHtml(tk){
+  return tk.fotoUrl ? `<img class="tk-thumb" src="${tk.fotoUrl}" alt="Ticket" loading="lazy" onclick="verFoto('${tk.fotoUrl}')">` : '<span class="t-sub">sin foto</span>';
+}
+function difTicketHtml(tk){
+  const h = tk.estimadoId ? STATE.historialCamiones.find(x=>x.id===tk.estimadoId) : null;
+  return h ? difHtml(tk.costo, h.montoEstimado, fmtMoney) : '<span class="t-sub">suelto</span>';
+}
+function renderTicketsFicha(camionId){
+  const el = document.getElementById('fk-tickets'); if(!el) return;
+  const lista = (STATE.ticketsCombustible||[]).filter(t=>t.camionId===camionId).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  if(!lista.length){ el.innerHTML = '<div class="empty-msg">Sin tickets cargados.</div>'; return; }
+  el.innerHTML = lista.map(tk=>`<div class="fk-tk">${fotoTicketHtml(tk)}
+    <div class="grow"><b>${fmtDateLarga(tk.fecha)}</b> · ${fmtLitros(tk.litros)} · <b>${fmtMoney(tk.costo)}</b><br><span class="t-sub">vs. estimado: ${difTicketHtml(tk)}</span></div>
+    <button class="mae-link admin-only" style="color:var(--off);" onclick="borrarTicket('${tk.id}')">Eliminar</button></div>`).join('');
+}
+function refrescarCombustible(){
+  if(fichaCamionId) renderTicketsFicha(fichaCamionId);
+  const pend = document.getElementById('cb-pendientes'); if(!pend) return;
+  const lista = estimadosPendientes(null);
+  pend.innerHTML = lista.map(h=>{
+    const c = camion(h.camionId), le = litrosEstimadosDe(h);
+    return `<tr><td>${fmtDateCorta(h.fecha)}</td><td>${c?c.patente:'–'}</td><td style="font-family:var(--body);">${escapeHtml(h.tramo||'')||(h.km?h.km+' km':'–')}</td>
+      <td>${le!=null?fmtLitros(le):'–'}</td><td>${fmtMoney(h.montoEstimado)}</td>
+      <td><button class="mae-link admin-only" onclick="abrirTicket('${h.camionId}','${h.id}')">Cargar ticket</button></td></tr>`;
+  }).join('') || '<tr><td colspan="6" style="font-family:var(--body);color:var(--muted);font-style:italic;">No hay tramos esperando ticket.</td></tr>';
+  const tks = (STATE.ticketsCombustible||[]).slice().sort((a,b)=>b.fecha.localeCompare(a.fecha) || b.creadoEn-a.creadoEn).slice(0,30);
+  document.getElementById('cb-tickets').innerHTML = tks.map(tk=>{
+    const c = camion(tk.camionId);
+    return `<tr><td>${fmtDateCorta(tk.fecha)}</td><td>${c?c.patente:'–'}</td><td>${fmtLitros(tk.litros)}</td><td>${fmtMoney(tk.costo)}</td><td>${difTicketHtml(tk)}</td>
+      <td style="white-space:nowrap;">${fotoTicketHtml(tk)} <button class="mae-link admin-only" style="color:var(--off);" onclick="borrarTicket('${tk.id}')">✕</button></td></tr>`;
+  }).join('') || '<tr><td colspan="6" style="font-family:var(--body);color:var(--muted);font-style:italic;">Todavía no se cargaron tickets.</td></tr>';
+}
+function onTicketCamionChange(){
+  opcionesEstimado(document.getElementById('tk-estimado'), document.getElementById('tk-camion').value, null);
+  actualizarComparacionTicket();
+}
+function actualizarComparacionTicket(){
+  const el = document.getElementById('tk-comparacion'); if(!el) return;
+  const estId = document.getElementById('tk-estimado').value;
+  const h = estId ? STATE.historialCamiones.find(x=>x.id===estId) : null;
+  if(h && !document.getElementById('tk-camion').value){
+    document.getElementById('tk-camion').value = h.camionId;
+    opcionesEstimado(document.getElementById('tk-estimado'), h.camionId, h.id);
+  }
+  el.innerHTML = h ? comparacionHtml(h, numFromMiles('tk-litros'), numFromMiles('tk-costo')) : '';
 }
 function openGastoCamionModal(camionId, entry){
   document.getElementById('gc-title').textContent = entry ? 'Editar registro' : 'Registrar en la ficha del camión';
@@ -2240,9 +2781,12 @@ async function borrarGastoCamion(id){
   const entry = STATE.historialCamiones.find(h=>h.id===id); if(!entry) return;
   if(!(await confirmDialog('¿Eliminar este registro? Esta acción no se puede deshacer.'))) return;
   const camionId = entry.camionId;
+  const tk = entry.ticketId ? (STATE.ticketsCombustible||[]).find(t=>t.id===entry.ticketId) : null;
+  if(tk){ STATE.ticketsCombustible = STATE.ticketsCombustible.filter(t=>t.id!==tk.id); borrarArchivo(tk.fotoPath); }
   STATE.historialCamiones = STATE.historialCamiones.filter(h=>h.id!==id);
   await saveState();
   refrescarHistorialesCamion(camionId);
+  refrescarCombustible();
 }
 function refrescarHistorialesCamion(camionId){
   if(fichaCamionId===camionId) renderHistorialCamion(camionId, 'fk-historial', 'fk-total');
@@ -2279,38 +2823,39 @@ function calcularCombustible(){
   document.getElementById('cb-litros').textContent = consumo>0 ? litros.toFixed(1)+' L' : '–';
   document.getElementById('cb-total').textContent = fmtMoney(total);
 }
-function renderTicker(){
-  const el = document.getElementById('ticker-track');
-  if(!el) return;
-  const precio = numFromMiles('cb-precio') || STATE.config.precioCombustible || 2431;
-  const item = `<span class="ticker-item">⛽ GASOIL YPF (Infinia) · Buenos Aires <span class="tick-sep">·</span> <b>${fmtMoney(precio)}</b>/l <span class="tick-sep">·</span> referencia 10/08/2026, ajustable abajo</span>`;
-  el.innerHTML = item.repeat(6) + item.repeat(6);
-}
 async function guardarPrecioCombustibleRef(){
   if(!adminMode) return;
   const precio = numFromMiles('cb-precio');
-  if(precio>0){ STATE.config.precioCombustible = precio; await saveState(); }
-  renderTicker();
+  if(precio>0 && precio!==STATE.config.precioCombustible){ STATE.config.precioCombustible = precio; await saveState(); }
 }
 async function agregarGastoCombustible(){
   const camionId = document.getElementById('cb-camion').value;
-  if(!camionId){ await alertDialog('Elegí un camión arriba para poder cargarle el gasto.'); return; }
+  if(!camionId){ await alertDialog('Elegí el camión para poder guardar el estimado.'); return; }
   const precio = numFromMiles('cb-precio');
+  if(!(precio>0)){ await alertDialog('Cargá el precio del gasoil.'); return; }
   const consumo = parseFloat(document.getElementById('cb-consumo').value)||0;
+  if(!(consumo>0)){ await alertDialog('Cargá el consumo del camión (L/100km).'); return; }
   const km = numFromMiles('cb-km');
   if(km<=0){ await alertDialog('Ingresá los km a recorrer.'); return; }
-  const litros = consumo>0 ? (km*consumo)/100 : 0;
+  const tramo = document.getElementById('cb-tramo').value.trim();
+  const litros = Math.round((km*consumo)/100*10)/10;
   const total = Math.round(litros*precio);
   STATE.historialCamiones.push({
-    id: uid('hk'), camionId, fecha: new Date().toISOString().slice(0,10), tipo:'gasto',
-    descripcion: `Combustible — ${km} km a ${consumo} L/100km ($${precio}/l, ${litros.toFixed(1)} L estimados)`,
-    monto: total, montoEstimado: total, montoReal: null, esEstimadoCombustible: true
+    id: uid('hk'), camionId, fecha: hoyLocal(), tipo:'gasto',
+    descripcion: `Combustible estimado${tramo?' — '+tramo:''} — ${km.toLocaleString('es-AR')} km a ${consumo} L/100km, ${fmtMoney(precio)}/l (${litros} L estimados)`,
+    monto: total, montoEstimado: total, montoReal: null, esEstimadoCombustible: true,
+    tramo, km, consumo, precioLitro: precio, litrosEstimados: litros
   });
   await saveState();
-  await alertDialog('Gasto estimado cargado a la ficha del camión. Cuando el camión llegue a destino, cargale el gasto real desde ahí para comparar.', 'Listo');
   refrescarHistorialesCamion(camionId);
+  refrescarCombustible();
+  const tsel = document.getElementById('tk-camion');
+  if(!tsel.value) tsel.value = camionId;
+  opcionesEstimado(document.getElementById('tk-estimado'), tsel.value, document.getElementById('tk-estimado').value);
   document.getElementById('cb-km').value = '';
+  document.getElementById('cb-tramo').value = '';
   calcularCombustible();
+  await alertDialog('Quedó en "Tramos estimados sin ticket". Cuando el camión cargue, subí el ticket en el recuadro de la derecha y elegí este tramo para comparar.', 'Estimado guardado');
 }
 
 /* ---------------- autorizaciones de carga de combustible ---------------- */
@@ -2336,26 +2881,15 @@ function colorEstadoAuth(est){
   return '#C97C1F'; // vencida
 }
 
-function setLitrosAuth(n){
-  setMilesValue('auth-litros', n);
-  actualizarMontoAuth();
-}
-function actualizarMontoAuth(){
-  const litros = numFromMiles('auth-litros');
-  const precio = numFromMiles('auth-precio');
-  document.getElementById('auth-monto-preview').textContent = fmtMoney(litros*precio);
-}
+function setLitrosAuth(n){ setMilesValue('auth-litros', n); }
 function abrirNuevaAutorizacion(){
   fillSelect(document.getElementById('auth-chofer'), STATE.choferes, '', 'Elegí chofer');
-  fillSelect(document.getElementById('auth-camion'), STATE.camiones.map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+c.modelo:'')})), document.getElementById('cb-camion').value, 'Elegí camión');
-  const precioSugerido = numFromMiles('cb-precio') || STATE.config.precioCombustible || null;
-  setMilesValue('auth-precio', precioSugerido);
+  fillSelect(document.getElementById('auth-camion'), motrices().map(c=>({id:c.id, nombre:c.patente+(c.modelo?' — '+c.modelo:'')})), document.getElementById('cb-camion').value, 'Elegí camión');
   // sugerimos litros según lo que ya se haya calculado arriba en la calculadora, si hay algo cargado
   const kmv = numFromMiles('cb-km')||0, consv = parseFloat(document.getElementById('cb-consumo').value)||0;
   const litrosSugeridos = (consv>0 && kmv>0) ? Math.round((kmv*consv)/100) : null;
   setMilesValue('auth-litros', litrosSugeridos);
   document.getElementById('auth-notas').value = '';
-  actualizarMontoAuth();
   openModal('modal-autorizacion');
 }
 async function guardarAutorizacion(){
@@ -2364,13 +2898,11 @@ async function guardarAutorizacion(){
   if(!choferId || !camionId){ await alertDialog('Elegí chofer y camión.'); return; }
   const litros = numFromMiles('auth-litros');
   if(litros<=0){ await alertDialog('Ingresá la cantidad de litros.'); return; }
-  const precioLitro = numFromMiles('auth-precio');
-  const monto = Math.round(litros*precioLitro);
   const nueva = {
     id: uid('auth'),
     codigo: generarCodigoAuth(),
     fecha: new Date().toISOString().slice(0,10),
-    choferId, camionId, litros, precioLitro, monto,
+    choferId, camionId, litros,
     notas: document.getElementById('auth-notas').value.trim(),
     autorizadoPor: (window.FB.auth.currentUser && window.FB.auth.currentUser.email) || 'admin',
     creadoEn: Date.now(),
@@ -2398,11 +2930,12 @@ function renderAutorizaciones(){
       <td style="font-family:var(--body);">${ch?escapeHtml(ch.nombre):'(eliminado)'}</td>
       <td>${cm?cm.patente:'(eliminado)'}</td>
       <td>${fmtDateLarga(a.fecha)}</td>
-      <td>${fmtMoney(a.monto)}</td>
+      <td>${(a.litros||0).toLocaleString('es-AR')} L</td>
+      <td class="td-desc">${escapeHtml(a.notas||'')||'–'}</td>
       <td><span class="pill" style="background:${color}22;color:${color};">${ETIQUETA_ESTADO_AUTH[est]}</span></td>
       <td><button class="mae-link" onclick="verVoucher('${a.id}')">Ver</button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="7" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin autorizaciones generadas.</td></tr>';
+  }).join('') || '<tr><td colspan="8" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin autorizaciones generadas.</td></tr>';
 }
 let voucherActualId = null;
 function verVoucher(id){
@@ -2419,8 +2952,7 @@ function verVoucher(id){
     <div class="voucher-row"><b>Chofer</b>${ch?escapeHtml(ch.nombre):'(eliminado)'}</div>
     <div class="voucher-row"><b>Camión</b>${cm?cm.patente+(cm.modelo?' — '+escapeHtml(cm.modelo):''):'(eliminado)'}</div>
     <div class="voucher-row"><b>Fecha</b>${fmtDateLarga(a.fecha)} — válida solo hoy</div>
-    <div class="voucher-row"><b>Litros autorizados</b><span style="font-size:21px;font-weight:700;color:var(--burgundy);font-family:var(--mono);">${a.litros} L</span></div>
-    <div class="voucher-row"><b>Costo estimado</b>${fmtMoney(a.monto)} (a ${fmtMoney(a.precioLitro)}/l)</div>
+    <div class="voucher-row"><b>Litros autorizados</b><span style="font-size:21px;font-weight:700;color:var(--burgundy);font-family:var(--mono);">${(a.litros||0).toLocaleString('es-AR')} L</span></div>
     ${a.notas?`<div class="voucher-row"><b>Descripción</b>${escapeHtml(a.notas)}</div>`:''}
     <div class="voucher-row"><b>Autorizado por</b>${escapeHtml(a.autorizadoPor)} — ${new Date(a.creadoEn).toLocaleString('es-AR')}</div>
     ${a.aprobacion==='aprobada' && a.aprobadoPor?`<div class="voucher-row"><b>Aprobada por</b>${escapeHtml(a.aprobadoPor)} — ${new Date(a.aprobadoEn).toLocaleString('es-AR')}</div>`:''}
@@ -2469,7 +3001,7 @@ function avisarPorWhatsapp(){
   const msg = 'Hola! Necesito que apruebes esta autorización de carga:\n\n'
     + `Chofer: ${ch?ch.nombre:''}\n`
     + `Camión: ${cm?cm.patente:''}\n`
-    + `Litros: ${a.litros} L (${fmtMoney(a.monto)})\n`
+    + `Litros: ${a.litros} L\n`
     + (a.notas?`Descripción: ${a.notas}\n`:'')
     + `Código: ${a.codigo}\n\n`
     + '¿La autorizás? Entrá a la app para aprobarla, o avisame por acá.';
@@ -2585,7 +3117,7 @@ function celdaPlan(destinoPlanId, dia){
 async function guardarCampoCelda(destinoPlanId, dia, campo, valor){
   let c = STATE.planCeldas.find(x=>x.semana===semanaActualPlan && x.destinoPlanId===destinoPlanId && x.dia===dia);
   if(!c){
-    c = {id:uid('pc'), semana:semanaActualPlan, destinoPlanId, dia, choferId:null, camionId:null, destinoId:null, productoId:null};
+    c = {id:uid('pc'), semana:semanaActualPlan, destinoPlanId, dia, choferId:null, camionId:null, remolqueId:null, destinoId:null, productoId:null};
     STATE.planCeldas.push(c);
   }
   c[campo] = valor;
@@ -2707,9 +3239,9 @@ async function borrarProducto(id){
 function campoPlanHtml(destinoPlanId, dia, campo, campoDB, valorActual, icono){
   const key = planFieldKey(destinoPlanId,dia,campo);
   const editing = editingPlanCell === key;
-  if(campo==='camion' || campo==='chofer'){
-    const lista = campo==='camion' ? STATE.camiones : STATE.choferes;
-    const getLabel = campo==='camion' ? (x=>x.patente) : (x=>x.nombre);
+  if(campo==='camion' || campo==='chofer' || campo==='enganche'){
+    const lista = campo==='camion' ? motrices() : (campo==='enganche' ? enganches() : STATE.choferes);
+    const getLabel = campo==='chofer' ? (x=>x.nombre) : (campo==='enganche' ? (x=>`${x.patente} · ${TIPOS_UNIDAD[x.tipo]||''}`) : (x=>x.patente));
     if(editing){
       const opts = lista.map(x=>`<option value="${x.id}" ${valorActual===x.id?'selected':''}>${escapeHtml(getLabel(x))}</option>`).join('');
       return `<div class="plan-field editing"><select id="plan-field-live" onchange="onSeleccionCampo('${destinoPlanId}','${dia}','${campoDB}',this.value)" onblur="cerrarEdicionCelda()"><option value="">—</option>${opts}</select></div>`;
@@ -2769,6 +3301,7 @@ function renderPlanificacion(){
       const c = celdaPlan(dp.id,d);
       html += '<div class="plan-daycell">';
       html += campoPlanHtml(dp.id, d, 'camion',  'camionId',   c?c.camionId:null,   '🚚');
+      html += campoPlanHtml(dp.id, d, 'enganche','remolqueId', c?c.remolqueId:null, '🔗');
       html += campoPlanHtml(dp.id, d, 'destino', 'destinoId',  c?c.destinoId:null,  '📍');
       html += campoPlanHtml(dp.id, d, 'carga',   'productoId', c?c.productoId:null, '📦');
       html += campoPlanHtml(dp.id, d, 'chofer',  'choferId',   c?c.choferId:null,   '👤');
@@ -2856,6 +3389,9 @@ function dibujarBarChart(canvasId, labels, data, color, prevChart, onBarClick){
     }
   });
 }
+function esGastoCombustible(h){ return !!(h.esEstimadoCombustible || h.ticketId || /^combustible/i.test(h.descripcion||'')); }
+function montoOGuion(n){ return n ? fmtMoney(n) : '<span class="t-sub">–</span>'; }
+function isoDeViaje(v){ try{ return new Date(v.fecha).toISOString().slice(0,10); }catch(e){ return ''; } }
 function renderDetalleLista(items){
   const cont = document.getElementById('fin-detalle-lista');
   if(items.length===0){ cont.innerHTML = '<div class="empty-msg">Sin movimientos registrados.</div>'; return; }
@@ -2863,17 +3399,19 @@ function renderDetalleLista(items){
     <div class="ticket" style="cursor:default;">
       <div class="t-row1"><div class="t-name" style="font-size:13.5px;">${escapeHtml(it.tipo)}</div><span class="t-sub">${fmtDateLarga(it.fecha)}</span></div>
       <div class="t-meta">${escapeHtml(it.descripcion||'(sin descripción)')}</div>
-      <div class="t-meta"><b>${fmtMoney(it.monto)}</b></div>
+      <div class="t-meta"><b>${it.monto?fmtMoney(it.monto):'Sin costo'}</b>${it.foto?` · <a href="${it.foto}" target="_blank" rel="noopener">ver ticket</a>`:''}</div>
     </div>`).join('');
 }
 function mostrarDetalleCamion(camionId){
   const c = camion(camionId);
   const items = [];
   STATE.historialCamiones.filter(h=>h.camionId===camionId).forEach(h=>{
-    items.push({fecha:h.fecha, tipo:TIPO_GASTO_CAMION[h.tipo]||h.tipo, descripcion:h.descripcion, monto:h.monto||0});
+    const tk = h.ticketId ? (STATE.ticketsCombustible||[]).find(t=>t.id===h.ticketId) : null;
+    const tipo = esGastoCombustible(h) ? (h.esEstimadoCombustible && h.montoReal==null ? 'Combustible (estimado, sin ticket)' : 'Combustible') : (TIPO_GASTO_CAMION[h.tipo]||h.tipo);
+    items.push({fecha:h.fecha, tipo, descripcion:h.descripcion, monto:h.monto||0, foto: tk && tk.fotoUrl});
   });
   STATE.viajes.filter(v=>v.camionId===camionId).forEach(v=>{
-    items.push({fecha:new Date(v.fecha).toISOString().slice(0,10), tipo:'Viaje (combustible/peajes)', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
+    items.push({fecha:isoDeViaje(v), tipo:'Viaje (combustible/peajes)', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
   });
   items.sort((a,b)=> a.fecha<b.fecha?1:(a.fecha>b.fecha?-1:0));
   document.getElementById('fin-detalle-titulo').textContent = `Detalle — ${c?c.patente:'(camión eliminado)'}${c&&c.modelo?' · '+c.modelo:''}`;
@@ -2889,10 +3427,10 @@ function mostrarDetalleChofer(choferId){
     items.push({fecha:h.fecha, tipo:TIPO_INCIDENTE_CHOFER[h.tipo]||h.tipo, descripcion:h.descripcion, monto:h.monto||0});
   });
   STATE.viajes.filter(v=>v.choferId===choferId).forEach(v=>{
-    items.push({fecha:new Date(v.fecha).toISOString().slice(0,10), tipo:'Viaje (combustible/peajes)', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
+    items.push({fecha:isoDeViaje(v), tipo:'Viaje (combustible/peajes)', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
   });
   items.sort((a,b)=> a.fecha<b.fecha?1:(a.fecha>b.fecha?-1:0));
-  document.getElementById('fin-detalle-titulo').textContent = `Detalle — ${ch?escapeHtml(ch.nombre):'(chofer eliminado)'}`;
+  document.getElementById('fin-detalle-titulo').textContent = `Detalle — ${ch?ch.nombre:'(chofer eliminado)'}`;
   renderDetalleLista(items);
   const wrap = document.getElementById('fin-detalle-wrap');
   wrap.style.display = 'block';
@@ -2921,32 +3459,66 @@ function movimientosDelMes(mesStr){
   const movs = [];
   STATE.historialCamiones.forEach(h=>{
     if(h.fecha && h.fecha.startsWith(mesStr)){
-      const c = camion(h.camionId);
-      movs.push({fecha:h.fecha, tipo:'Camión', categoria:TIPO_GASTO_CAMION[h.tipo]||h.tipo, camion:c?c.patente:'(eliminado)', chofer:'', descripcion:h.descripcion||'', monto:h.monto||0});
+      const c = camion(h.camionId), comb = esGastoCombustible(h);
+      const pendiente = h.esEstimadoCombustible && h.montoReal==null;
+      movs.push({fecha:h.fecha, tipo:'Camión', rubro: comb?'combustible':'service',
+        categoria: comb ? (pendiente?'Combustible (estimado)':'Combustible') : (TIPO_GASTO_CAMION[h.tipo]||h.tipo),
+        camionId:h.camionId, camion:c?c.patente:'(eliminado)', choferId:null, chofer:'',
+        descripcion:h.descripcion||'', monto:h.monto||0, litros: litrosDeTicket(h)});
     }
   });
   STATE.historialChoferes.forEach(h=>{
     if(h.fecha && h.fecha.startsWith(mesStr)){
       const ch = chofer(h.choferId);
-      movs.push({fecha:h.fecha, tipo:'Chofer', categoria:TIPO_INCIDENTE_CHOFER[h.tipo]||h.tipo, camion:'', chofer:ch?ch.nombre:'(eliminado)', descripcion:h.descripcion||'', monto:h.monto||0});
+      movs.push({fecha:h.fecha, tipo:'Chofer', rubro:'novedades', categoria:TIPO_INCIDENTE_CHOFER[h.tipo]||h.tipo, camionId:null, camion:'', choferId:h.choferId, chofer:ch?ch.nombre:'(eliminado)', descripcion:h.descripcion||'', monto:h.monto||0});
     }
   });
   STATE.gastosTaller.forEach(g=>{
     if(g.fecha && g.fecha.startsWith(mesStr)){
-      movs.push({fecha:g.fecha, tipo:'Taller', categoria:g.categoria||'General', camion:'', chofer:'', descripcion:g.descripcion||'', monto:g.monto||0});
+      movs.push({fecha:g.fecha, tipo:'Taller', rubro:'taller', categoria:g.categoria||'General', camionId:null, camion:'', choferId:null, chofer:'', descripcion:g.descripcion||'', monto:g.monto||0});
     }
   });
   STATE.viajes.forEach(v=>{
-    const fechaStr = new Date(v.fecha).toISOString().slice(0,10);
+    const fechaStr = isoDeViaje(v);
     if(fechaStr.startsWith(mesStr)){
       const c = camion(v.camionId), ch = chofer(v.choferId);
-      movs.push({fecha:fechaStr, tipo:'Viaje', categoria:'Combustible / peajes', camion:c?c.patente:'(eliminado)', chofer:ch?ch.nombre:'', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0});
+      movs.push({fecha:fechaStr, tipo:'Viaje', rubro:'viajes', categoria:'Combustible / peajes', camionId:v.camionId||null, camion:c?c.patente:(v.camionId?'(eliminado)':''), choferId:v.choferId||null, chofer:ch?ch.nombre:'', descripcion:(v.notas?v.notas+' — ':'')+`${v.km} km`, monto:v.total||0, km:v.km||0});
     }
   });
   movs.sort((a,b)=> a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:0));
   return movs;
 }
-
+function recortar(t, n){ t = String(t||''); return t.length>n ? t.slice(0,n-1)+'…' : t; }
+function litrosDeTicket(h){
+  if(h.litrosReales) return h.litrosReales;
+  const t = h.ticketId ? (STATE.ticketsCombustible||[]).find(x=>x.id===h.ticketId) : null;
+  return t ? (t.litros||0) : 0;
+}
+function agregadosMes(movs){
+  const cam = {}, cho = {};
+  movs.forEach(m=>{
+    if(m.camionId){
+      const o = cam[m.camionId] || (cam[m.camionId] = {id:m.camionId, patente:m.camion, service:0, combustible:0, viajes:0, litros:0, cant:0, mayor:null});
+      if(m.rubro==='combustible') o.combustible += m.monto; else if(m.rubro==='viajes') o.viajes += m.monto; else o.service += m.monto;
+      o.litros += (m.litros||0); o.cant++;
+      if(m.monto && (!o.mayor || m.monto > o.mayor.monto)) o.mayor = m;
+    }
+    if(m.choferId){
+      const o = cho[m.choferId] || (cho[m.choferId] = {id:m.choferId, nombre:m.chofer, viajes:0, cantViajes:0, km:0, novedades:0, cantNov:0});
+      if(m.rubro==='viajes'){ o.viajes += m.monto; o.cantViajes++; o.km += (m.km||0); }
+      else { o.novedades += m.monto; o.cantNov++; }
+    }
+  });
+  const camiones = Object.values(cam).map(o=>({...o, total:o.service+o.combustible+o.viajes})).sort((a,b)=>b.total-a.total);
+  const choferes = Object.values(cho).map(o=>({...o, total:o.viajes+o.novedades})).sort((a,b)=>b.total-a.total || b.cantViajes-a.cantViajes);
+  return {camiones, choferes};
+}
+let rmFiltro = null; // {tipo:'camion'|'chofer', id, nombre}
+function filtrarResumen(tipo, id, nombre){
+  rmFiltro = (rmFiltro && rmFiltro.id===id) ? null : {tipo, id, nombre};
+  renderResumenMensual();
+  if(rmFiltro) document.getElementById('rm-tabla-movimientos').scrollIntoView({behavior:'smooth', block:'start'});
+}
 function renderResumenMensual(){
   document.getElementById('rm-mes-label').textContent = etiquetaMes(mesActualResumen);
   const movs = movimientosDelMes(mesActualResumen);
@@ -2959,21 +3531,34 @@ function renderResumenMensual(){
   document.getElementById('rm-total-camiones').textContent = fmtMoney(totalCamiones);
   document.getElementById('rm-total-choferes').textContent = fmtMoney(totalChoferes);
   document.getElementById('rm-total-taller').textContent = fmtMoney(totalTaller);
-  document.getElementById('rm-count-movs').textContent = movs.length;
 
-  const porCamion = {};
-  movs.forEach(m=>{ if(m.camion){ porCamion[m.camion] = (porCamion[m.camion]||0) + m.monto; } });
-  const filasCamion = Object.entries(porCamion).sort((a,b)=>b[1]-a[1])
-    .map(([patente,total])=>`<tr><td>${patente}</td><td>${fmtMoney(total)}</td></tr>`).join('');
-  document.getElementById('rm-tabla-camiones').innerHTML = filasCamion || '<tr><td colspan="2" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin movimientos de camiones este mes.</td></tr>';
+  const {camiones, choferes} = agregadosMes(movs);
+  const sel = id => rmFiltro && rmFiltro.id===id ? ' fila-sel' : '';
+  document.getElementById('rm-tabla-camiones').innerHTML = camiones.map(o=>{
+    const c = camion(o.id);
+    const sub = [c&&c.modelo?escapeHtml(c.modelo):'', `${o.cant} mov.`, o.litros?fmtLitros(o.litros):''].filter(Boolean).join(' · ');
+    const mayor = o.mayor ? `<div class="rm-mayor">Mayor gasto: ${escapeHtml(recortar(o.mayor.descripcion||o.mayor.categoria, 70))} (${fmtMoney(o.mayor.monto)})</div>` : '';
+    return `<tr class="fila-click${sel(o.id)}" onclick="filtrarResumen('camion','${o.id}','${o.patente}')">
+      <td><b>${o.patente}</b><div class="t-sub">${sub}</div>${mayor}</td>
+      <td>${montoOGuion(o.service)}</td><td>${montoOGuion(o.combustible)}</td><td>${montoOGuion(o.viajes)}</td><td><b>${fmtMoney(o.total)}</b></td></tr>`;
+  }).join('') || '<tr><td colspan="5" class="td-vacio">Sin movimientos de camiones este mes.</td></tr>';
 
-  const porChofer = {};
-  movs.forEach(m=>{ if(m.chofer){ porChofer[m.chofer] = (porChofer[m.chofer]||0) + m.monto; } });
-  const filasChofer = Object.entries(porChofer).sort((a,b)=>b[1]-a[1])
-    .map(([nombre,total])=>`<tr><td style="font-family:var(--body);">${escapeHtml(nombre)}</td><td>${fmtMoney(total)}</td></tr>`).join('');
-  document.getElementById('rm-tabla-choferes').innerHTML = filasChofer || '<tr><td colspan="2" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin movimientos de choferes este mes.</td></tr>';
+  document.getElementById('rm-tabla-choferes').innerHTML = choferes.map(o=>`
+    <tr class="fila-click${sel(o.id)}" onclick="filtrarResumen('chofer','${o.id}','${escapeHtml(o.nombre).replace(/'/g,'&#39;')}')">
+      <td style="font-family:var(--body);"><b>${escapeHtml(o.nombre)}</b>${o.km?`<div class="t-sub">${o.km.toLocaleString('es-AR')} km</div>`:''}</td>
+      <td>${o.cantViajes||'–'}${o.viajes?`<div class="t-sub">${fmtMoney(o.viajes)}</div>`:''}</td>
+      <td>${o.cantNov||'–'}${o.novedades?`<div class="t-sub">${fmtMoney(o.novedades)}</div>`:''}</td>
+      <td><b>${fmtMoney(o.total)}</b></td></tr>`).join('') || '<tr><td colspan="4" class="td-vacio">Sin movimientos de choferes este mes.</td></tr>';
 
-  const filasMovs = movs.map(m=>`
+  const filtrados = rmFiltro ? movs.filter(m=> rmFiltro.tipo==='camion' ? m.camionId===rmFiltro.id : m.choferId===rmFiltro.id) : movs;
+  const fEl = document.getElementById('rm-filtro');
+  if(rmFiltro){
+    fEl.style.display = 'block';
+    fEl.innerHTML = `<span class="pill" style="background:var(--panel-alt);">Mostrando solo ${rmFiltro.tipo==='camion'?'la unidad':'a'} <b>${rmFiltro.nombre}</b> · ${fmtMoney(filtrados.reduce((s,m)=>s+m.monto,0))}</span> <button class="mae-link" onclick="rmFiltro=null;renderResumenMensual()">Ver todos</button>`;
+  }else fEl.style.display = 'none';
+  document.getElementById('rm-count-movs').textContent = filtrados.length;
+
+  const filasMovs = filtrados.map(m=>`
     <tr>
       <td>${fmtDateLarga(m.fecha)}</td>
       <td style="font-family:var(--body);">${m.tipo}</td>
@@ -2981,9 +3566,9 @@ function renderResumenMensual(){
       <td>${m.camion||'–'}</td>
       <td style="font-family:var(--body);">${escapeHtml(m.chofer||'–')}</td>
       <td style="font-family:var(--body);">${escapeHtml(m.descripcion)}</td>
-      <td>${fmtMoney(m.monto)}</td>
+      <td>${montoOGuion(m.monto)}</td>
     </tr>`).join('');
-  document.getElementById('rm-tabla-movimientos').innerHTML = filasMovs || '<tr><td colspan="7" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin movimientos cargados este mes.</td></tr>';
+  document.getElementById('rm-tabla-movimientos').innerHTML = filasMovs || '<tr><td colspan="7" class="td-vacio">Sin movimientos cargados este mes.</td></tr>';
 }
 
 function exportarResumenExcel(){
@@ -3007,13 +3592,15 @@ function exportarResumenExcel(){
   ]);
   XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
 
-  const porCamion = {};
-  movs.forEach(m=>{ if(m.camion){ porCamion[m.camion] = (porCamion[m.camion]||0) + m.monto; } });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Camión','Total del mes'], ...Object.entries(porCamion)]), 'Por camion');
-
-  const porChofer = {};
-  movs.forEach(m=>{ if(m.chofer){ porChofer[m.chofer] = (porChofer[m.chofer]||0) + m.monto; } });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Chofer','Total del mes'], ...Object.entries(porChofer)]), 'Por chofer');
+  const ag = agregadosMes(movs);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['Unidad','Tipo','Service / gastos','Combustible','Litros (tickets)','Viajes / peajes','Total del mes','Movimientos','Mayor gasto'],
+    ...ag.camiones.map(o=>{ const c=camion(o.id); return [o.patente, c?TIPOS_UNIDAD[c.tipo||'camion']:'', o.service, o.combustible, o.litros, o.viajes, o.total, o.cant, o.mayor?`${o.mayor.categoria} — ${o.mayor.descripcion} (${o.mayor.monto})`:'']; })
+  ]), 'Por camion');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['Chofer','Viajes','Km','$ viajes','Novedades','$ novedades','Total del mes'],
+    ...ag.choferes.map(o=>[o.nombre, o.cantViajes, o.km, o.viajes, o.cantNov, o.novedades, o.total])
+  ]), 'Por chofer');
 
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
     ['Fecha','Tipo','Categoría','Camión','Chofer','Descripción','Monto'],
@@ -3043,8 +3630,14 @@ function exportarResumenPDF(){
   docPdf.text(`Choferes (novedades): ${fmtMoney(totalChoferes)}`, 14, 45);
   docPdf.text(`Taller (general): ${fmtMoney(totalTaller)}`, 14, 51);
 
+  const ag = agregadosMes(movs);
+  const estilo = { styles:{fontSize:8}, headStyles:{fillColor:[166,58,42]} };
+  docPdf.autoTable({ startY: 58, head:[['Unidad','Service / gastos','Combustible','Viajes / peajes','Total']],
+    body: ag.camiones.map(o=>[o.patente, fmtMoney(o.service), fmtMoney(o.combustible), fmtMoney(o.viajes), fmtMoney(o.total)]), ...estilo });
+  docPdf.autoTable({ startY: docPdf.lastAutoTable.finalY + 8, head:[['Chofer','Viajes','Km','Novedades','Total']],
+    body: ag.choferes.map(o=>[o.nombre, o.cantViajes, o.km.toLocaleString('es-AR'), o.cantNov, fmtMoney(o.total)]), ...estilo });
   docPdf.autoTable({
-    startY: 58,
+    startY: docPdf.lastAutoTable.finalY + 8,
     head: [['Fecha','Tipo','Categoría','Camión','Chofer','Descripción','Monto']],
     body: movs.map(m=>[fmtDateLarga(m.fecha), m.tipo, m.categoria, m.camion||'–', m.chofer||'–', m.descripcion, fmtMoney(m.monto)]),
     styles: { fontSize: 7.5 },
@@ -3057,14 +3650,20 @@ function exportarResumenPDF(){
 /* ---------------- datos maestros (listas centrales, edición/borrado permanente) ---------------- */
 function renderMaestros(){
   document.getElementById('mae-count-camiones').textContent = STATE.camiones.length;
-  document.getElementById('mae-tabla-camiones').innerHTML = STATE.camiones.map(c=>`
+  const ordenTipo = ['camion',...ORDEN_ENGANCHES];
+  const unidadesOrdenadas = STATE.camiones.slice().sort((a,b)=> ordenTipo.indexOf(a.tipo||'camion')-ordenTipo.indexOf(b.tipo||'camion') || a.patente.localeCompare(b.patente));
+  const celdaVto = iso=>{ const e = estadoVto(iso); const corto = iso==='no_aplica' ? 'No aplica' : (iso ? fmtDateLarga(iso) : '–'); return `<span class="vto-badge ${e.cls}" title="${e.txt}">${corto}</span>`; };
+  document.getElementById('mae-tabla-camiones').innerHTML = unidadesOrdenadas.map(c=>`
     <tr>
-      <td>${c.patente}</td>
+      <td><span class="eng-id" onclick="openFichaCamion('${c.id}')">${c.patente}</span></td>
+      <td style="font-family:var(--body);">${TIPOS_UNIDAD[c.tipo||'camion']}</td>
       <td style="font-family:var(--body);">${escapeHtml(c.modelo||'–')}</td>
-      <td style="font-family:var(--body);">${TIPO_CARGA[c.tipoCarga]||'–'}</td>
+      <td>${celdaVto(c.vtoVtv)}</td>
+      <td>${celdaVto(c.vtoSenasa)}</td>
+      <td>${celdaVto(c.vtoSeguro)}</td>
       <td><span class="pill st-${c.estado}">${ESTADOS_CAMION[c.estado]}</span></td>
       <td style="white-space:nowrap;"><button class="mae-link admin-only" onclick="openCamionModal('${c.id}')">Editar</button> <button class="mae-link del admin-only" onclick="borrarCamion('${c.id}')">Eliminar</button></td>
-    </tr>`).join('') || '<tr><td colspan="5" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin camiones cargados.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="8" style="font-family:Inter;color:var(--muted);font-style:italic;">Sin unidades cargadas.</td></tr>';
 
   document.getElementById('mae-count-choferes').textContent = STATE.choferes.length;
   document.getElementById('mae-tabla-choferes').innerHTML = STATE.choferes.map(ch=>`
@@ -3115,55 +3714,67 @@ function renderFinanzas(){
   document.getElementById('fin-total-viajes').textContent = fmtMoney(totalViajes);
   document.getElementById('fin-total-taller').textContent = fmtMoney(totalTaller);
 
-  // ---- gasto por camión: gastos/service de su ficha + combustible/peajes de sus viajes ----
+  // ---- gasto por camión: service/gastos + combustible (tickets/estimados) + peajes de viajes ----
   const porCamion = {};
+  const nuevoC = ()=>({gastos:0, combustible:0, viajes:0, ultimo:null});
+  const marcarUltimo = (o, fecha, txt)=>{ if(!o.ultimo || fecha > o.ultimo.fecha) o.ultimo = {fecha, txt}; };
   STATE.historialCamiones.forEach(h=>{
-    if(!porCamion[h.camionId]) porCamion[h.camionId] = {gastos:0, viajes:0};
-    porCamion[h.camionId].gastos += (h.monto||0);
+    const o = porCamion[h.camionId] || (porCamion[h.camionId] = nuevoC());
+    if(esGastoCombustible(h)) o.combustible += (h.monto||0); else o.gastos += (h.monto||0);
+    marcarUltimo(o, h.fecha||'', h.descripcion || (TIPO_GASTO_CAMION[h.tipo]||h.tipo));
   });
   STATE.viajes.forEach(v=>{
     if(!v.camionId) return;
-    if(!porCamion[v.camionId]) porCamion[v.camionId] = {gastos:0, viajes:0};
-    porCamion[v.camionId].viajes += (v.total||0);
+    const o = porCamion[v.camionId] || (porCamion[v.camionId] = nuevoC());
+    o.viajes += (v.total||0);
+    marcarUltimo(o, isoDeViaje(v), 'Viaje' + (v.notas?' — '+v.notas:'') + (v.km?` (${v.km} km)`:''));
   });
-  const camionIds = Object.keys(porCamion).sort((a,b)=>(porCamion[b].gastos+porCamion[b].viajes)-(porCamion[a].gastos+porCamion[a].viajes));
+  const totC = id => porCamion[id].gastos + porCamion[id].combustible + porCamion[id].viajes;
+  const camionIds = Object.keys(porCamion).sort((a,b)=>totC(b)-totC(a));
+  document.getElementById('fin-tabla-camiones').innerHTML = camionIds.map(id=>{
+    const c = camion(id), g = porCamion[id];
+    return `<tr class="fila-click" onclick="mostrarDetalleCamion('${id}')">
+      <td><b>${c?c.patente:'(eliminado)'}</b>${c&&!esMotriz(c)?'<br><span class="t-sub">'+(TIPOS_UNIDAD[c.tipo]||'')+'</span>':''}</td>
+      <td class="td-desc">${g.ultimo?`<span class="t-sub">${fmtDateCorta(g.ultimo.fecha)}</span> ${escapeHtml(g.ultimo.txt)}`:'–'}</td>
+      <td>${montoOGuion(g.gastos)}</td><td>${montoOGuion(g.combustible)}</td><td>${montoOGuion(g.viajes)}</td>
+      <td><b>${fmtMoney(totC(id))}</b></td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="td-vacio">Todavía no hay gastos cargados por camión.</td></tr>';
 
-  const filasCamiones = camionIds.map(camionId=>{
-    const c = camion(camionId);
-    const g = porCamion[camionId];
-    return `<tr><td>${c?c.patente:'(camión eliminado)'}</td><td style="font-family:var(--body);">${c&&c.modelo?escapeHtml(c.modelo):'–'}</td><td>${fmtMoney(g.gastos)}</td><td>${fmtMoney(g.viajes)}</td><td><b>${fmtMoney(g.gastos+g.viajes)}</b></td></tr>`;
-  });
-  document.getElementById('fin-tabla-camiones').innerHTML = filasCamiones.join('') || '<tr><td colspan="5" style="font-family:Inter;color:var(--muted);font-style:italic;">Todavía no hay gastos cargados por camión.</td></tr>';
-
-  chartPorCamion = dibujarBarChart(
-    'chart-por-camion',
+  chartPorCamion = dibujarBarChart('chart-por-camion',
     camionIds.map(id=>{ const c=camion(id); return c?c.patente:'(eliminado)'; }),
-    camionIds.map(id=>porCamion[id].gastos+porCamion[id].viajes),
-    '#A63A2A',
-    chartPorCamion
-  );
+    camionIds.map(totC), '#A63A2A', chartPorCamion,
+    i=>mostrarDetalleCamion(camionIds[i]));
 
   // ---- gasto por chofer: novedades con costo + combustible/peajes de los viajes que manejó ----
   const porChofer = {};
+  const nuevoCh = ()=>({novedades:0, cantNov:0, viajes:0, cantViajes:0, ultimo:null});
   STATE.historialChoferes.forEach(h=>{
-    if(!h.monto) return;
-    if(!porChofer[h.choferId]) porChofer[h.choferId] = 0;
-    porChofer[h.choferId] += h.monto;
+    const o = porChofer[h.choferId] || (porChofer[h.choferId] = nuevoCh());
+    o.novedades += (h.monto||0); o.cantNov++;
+    marcarUltimo(o, h.fecha||'', h.descripcion || (TIPO_INCIDENTE_CHOFER[h.tipo]||h.tipo));
   });
   STATE.viajes.forEach(v=>{
     if(!v.choferId) return;
-    if(!porChofer[v.choferId]) porChofer[v.choferId] = 0;
-    porChofer[v.choferId] += (v.total||0);
+    const o = porChofer[v.choferId] || (porChofer[v.choferId] = nuevoCh());
+    o.viajes += (v.total||0); o.cantViajes++;
+    marcarUltimo(o, isoDeViaje(v), 'Viaje' + (v.notas?' — '+v.notas:'') + (v.km?` (${v.km} km)`:''));
   });
-  const choferIds = Object.keys(porChofer).sort((a,b)=>porChofer[b]-porChofer[a]);
+  const totCh = id => porChofer[id].novedades + porChofer[id].viajes;
+  const choferIds = Object.keys(porChofer).filter(id=>totCh(id)>0 || porChofer[id].cantNov>0).sort((a,b)=>totCh(b)-totCh(a));
+  document.getElementById('fin-tabla-choferes').innerHTML = choferIds.map(id=>{
+    const ch = chofer(id), g = porChofer[id];
+    return `<tr class="fila-click" onclick="mostrarDetalleChofer('${id}')">
+      <td style="font-family:var(--body);"><b>${ch?escapeHtml(ch.nombre):'(eliminado)'}</b></td>
+      <td class="td-desc">${g.ultimo?`<span class="t-sub">${fmtDateCorta(g.ultimo.fecha)}</span> ${escapeHtml(g.ultimo.txt)}`:'–'}</td>
+      <td>${montoOGuion(g.novedades)}${g.cantNov?` <span class="t-sub">(${g.cantNov})</span>`:''}</td>
+      <td>${montoOGuion(g.viajes)}${g.cantViajes?` <span class="t-sub">(${g.cantViajes})</span>`:''}</td>
+      <td><b>${fmtMoney(totCh(id))}</b></td></tr>`;
+  }).join('') || '<tr><td colspan="5" class="td-vacio">Todavía no hay novedades ni viajes con costo por chofer.</td></tr>';
 
-  chartPorChofer = dibujarBarChart(
-    'chart-por-chofer',
+  chartPorChofer = dibujarBarChart('chart-por-chofer',
     choferIds.map(id=>{ const ch=chofer(id); return ch?ch.nombre:'(eliminado)'; }),
-    choferIds.map(id=>porChofer[id]),
-    '#3E5C8A',
-    chartPorChofer
-  );
+    choferIds.map(totCh), '#3E5C8A', chartPorChofer,
+    i=>mostrarDetalleChofer(choferIds[i]));
 
   const filasTaller = STATE.gastosTaller.slice().sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(g=>`
     <tr><td>${fmtDateLarga(g.fecha)}</td><td style="font-family:var(--body);">${escapeHtml(g.categoria)}</td><td style="font-family:var(--body);">${escapeHtml(g.descripcion||'')}</td><td>${fmtMoney(g.monto)}</td>
@@ -3196,7 +3807,7 @@ async function borrarGastoTaller(id){
 
 /* ---------------- nuevo viaje / calculadora ---------------- */
 function openViajeModal(){
-  const camionOptions = STATE.camiones.map(c=>({id:c.id, nombre:`${c.patente} — ${TIPO_CARGA[c.tipoCarga]}`}));
+  const camionOptions = motrices().map(c=>({id:c.id, nombre:`${c.patente} — ${TIPO_CARGA[c.tipoCarga]}`}));
   fillSelect(document.getElementById('mv-camion'), camionOptions, '', 'Elegí un camión');
   fillSelect(document.getElementById('mv-origen'), STATE.ubicaciones, '', 'Elegí origen');
   fillSelect(document.getElementById('mv-destino'), STATE.ubicaciones, '', 'Elegí destino');
