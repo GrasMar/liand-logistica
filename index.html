@@ -52,6 +52,8 @@
   #gate-error{display:none;color:var(--off);font-size:12.5px;font-weight:600;margin:-4px 0 12px;text-align:left;}
   #gate-form{display:none;}
   #gate-cargando{font-size:12.5px;color:var(--muted);}
+  .gate-olvido{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;margin-top:12px;cursor:pointer;}
+  #gate-ok{display:none;color:var(--ok);font-size:12.5px;font-weight:600;margin-top:10px;}
   .gate-pie{font-size:11px;color:var(--muted);margin-top:22px;}
   #aviso-sin-guardado{
     flex-shrink:0;background:var(--off);color:#fff;display:flex;align-items:center;gap:10px;
@@ -270,6 +272,8 @@
       <div class="field"><label for="login-pass">Contraseña</label><input id="login-pass" type="password" autocomplete="current-password" required></div>
       <div id="gate-error"></div>
       <button type="submit" class="btn btn-primary" id="gate-btn">Ingresar</button>
+      <button type="button" class="gate-olvido" onclick="olvideContrasena()">¿Olvidaste tu contraseña?</button>
+      <div id="gate-ok"></div>
       <div class="gate-pie">Acceso exclusivo para personal de Liand S.A.</div>
     </form>
   </div>
@@ -1053,7 +1057,7 @@
     getFirestore, doc, onSnapshot, setDoc
   } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
   import {
-    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail
   } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -1068,7 +1072,7 @@
   const db = getFirestore(fbApp);
   const auth = getAuth(fbApp);
 
-  window.FB = { db, auth, doc, onSnapshot, setDoc, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+  window.FB = { db, auth, doc, onSnapshot, setDoc, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail };
   window.firebaseReady = true;
   document.dispatchEvent(new CustomEvent('firebase-ready'));
 </script>
@@ -1897,6 +1901,15 @@ async function hacerLogin(){
   }finally{
     btn.disabled = false; btn.textContent = 'Ingresar';
   }
+}
+async function olvideContrasena(){
+  const email = document.getElementById('login-email').value.trim();
+  const errEl = document.getElementById('gate-error'), okEl = document.getElementById('gate-ok');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  if(!email){ errEl.textContent = 'Escribí tu email arriba y volvé a tocar "¿Olvidaste tu contraseña?".'; errEl.style.display = 'block'; return; }
+  try{ await window.FB.sendPasswordResetEmail(window.FB.auth, email); }catch(e){ /* no revelamos si el mail existe o no */ }
+  okEl.textContent = 'Si ese email tiene acceso, te llegó un mail para crear una contraseña nueva. Revisá también spam.';
+  okEl.style.display = 'block';
 }
 function tickClock(){
   const now = new Date();
